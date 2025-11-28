@@ -1,1 +1,0 @@
-# Trophees-NSI OK
