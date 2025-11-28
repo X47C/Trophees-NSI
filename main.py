@@ -1,1 +1,2 @@
-# nan mon main
+def true():
+    return True
