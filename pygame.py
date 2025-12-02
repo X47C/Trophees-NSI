@@ -1,0 +1,1 @@
+# Ensemble des methodes servant a faire marcher pygame
