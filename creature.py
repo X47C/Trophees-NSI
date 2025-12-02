@@ -11,6 +11,7 @@ class  Creature():
         self.view = View
         self.color = Color
         self.ate = 0
+        self.baby = False
 
     def __str__(self):
         """
@@ -22,18 +23,22 @@ class  Creature():
         """
         Se reproduit avec un pourcentage de proximité a ses parametres actuels
         """
-        Creature(self.speed * rd(100 - variation_speed, 100 + variation_speed), self.view * rd(100 - variation_size, 100 + variation_size), self.speed * rd(100 - variation_view, 100 + variation_view), self.color)
+        if self.baby:
+            Creature(self.speed * rd(100 - variation_speed, 100 + variation_speed), self.view * rd(100 - variation_size, 100 + variation_size), self.speed * rd(100 - variation_view, 100 + variation_view), self.color)
 
     def Eat(self):
         """
         A mangé
         """
         self.ate += 1
-        if True:
-            pass
+        self.energy += 10
+        if self.ate == 2:
+            self.baby = True
+            
 
     def New_Day(self):
         """
         Gere un nouveau jour
         """
         self.ate = 0
+        self.baby = False
