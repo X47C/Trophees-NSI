@@ -5,24 +5,24 @@ class  Creature():
     """
     Entrée : Speed, Size, View (float, compris entre 1 et 10) 
     """
-    def __init__(self, Speed, Size, View, Variation_Speed, Variation_Size, Variation_View, Color = 'red'):
+    def __init__(self, Speed, Size, View, Variation_Speed, Variation_Size, Variation_View, Days_Max, Color = 'red'):
         self.speed = Speed
         self.size = Size
         self.view = View
         self.color = Color
         self.ate = 0
-        self.baby = False
         self.energy = 100
         self.variation_speed = Variation_Speed
         self.variation_size = Variation_Size
-        self
+        self.variation_view = Variation_View
+        self.days = 0
+        self.days_max = Days_Max
 
-    def Baby(self, variation_size,  variation_view ):
+    def Baby(self):
         """
         Se reproduit avec un pourcentage de proximité a ses parametres actuels
         """
-        if self.baby:
-            Creature(self.speed * rd(100 - self.variation_speed, 100 + self.variation_speed), self.view * rd(100 - variation_size, 100 + variation_size), self.speed * rd(100 - variation_view, 100 + variation_view), self.color)
+        Creature(self.speed * rd(100 - self.variation_speed, 100 + self.variation_speed), self.view * rd(100 - self.variation_size, 100 + self.variation_size), self.speed * rd(100 - self.variation_view, 100 + self.variation_view), self.color)
 
     def Eat(self):
         """
@@ -33,14 +33,15 @@ class  Creature():
             self.energy = 100
         else:
             self.Baby()
+            self.energy = 0
 
     def New_Day(self):
         """
         Gere un nouveau jour
         """
-        self.ate = 0
-        self.baby = False
-        pass
+        if self.ate >= 1 and not self.days >= self.days_max:
+            pass
+
 
     def is_alive(self):
         """
