@@ -5,35 +5,59 @@ class  Creature():
     """
     Entrée : Speed, Size, View (float, compris entre 1 et 10) 
     """
-    def __init__(self, Speed, Size, View, Color = 'red'):
+    def __init__(self, Speed, Size, View, Variation_Speed, Variation_Size, Variation_View, Color = 'red'):
         self.speed = Speed
         self.size = Size
         self.view = View
         self.color = Color
         self.ate = 0
+        self.baby = False
+        self.energy = 100
+        self.variation_speed = Variation_Speed
+        self.variation_size = Variation_Size
+        self
 
-    def __str__(self):
-        """
-        affiche les entitées        
-        """
-        pass
-
-    def Baby(self, variation_speed,  variation_size,  variation_view ):
+    def Baby(self, variation_size,  variation_view ):
         """
         Se reproduit avec un pourcentage de proximité a ses parametres actuels
         """
-        Creature(self.speed * rd(100 - variation_speed, 100 + variation_speed), self.view * rd(100 - variation_size, 100 + variation_size), self.speed * rd(100 - variation_view, 100 + variation_view), self.color)
+        if self.baby:
+            Creature(self.speed * rd(100 - self.variation_speed, 100 + self.variation_speed), self.view * rd(100 - variation_size, 100 + variation_size), self.speed * rd(100 - variation_view, 100 + variation_view), self.color)
 
     def Eat(self):
         """
         A mangé
         """
         self.ate += 1
-        if True:
-            pass
+        if self.ate == 1:
+            self.energy = 100
+        else:
+            self.Baby()
 
     def New_Day(self):
         """
         Gere un nouveau jour
         """
         self.ate = 0
+        self.baby = False
+        pass
+
+    def is_alive(self):
+        """
+        Check si le mec est en vie renvois True ou false
+        """
+        pass
+
+    def lives(self):
+        """
+        Tue le mec si il as plus d'energie, fait en sorte que il aille ou non a un nouveaux jour celon son age et la bouffe qu'il as mangé
+        Consomme l'energie aussi ect
+        """
+        pass
+
+    def get_color(self):
+        """
+        renvoie la couleur du machin
+        """
+        return self.color
+
