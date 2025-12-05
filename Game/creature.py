@@ -5,7 +5,7 @@ class  Creature():
     """
     Entrée : Speed, Size, View (float, compris entre 1 et 10) 
     """
-    def __init__(self, Speed, Size, View, Variation_Speed, Variation_Size, Variation_View, Days_Max, Color = 'red'):
+    def __init__(self, Speed, Size, View, Variation_Speed, Variation_Size, Variation_View, Days_Max, Color):
         self.speed = Speed
         self.size = Size
         self.view = View
