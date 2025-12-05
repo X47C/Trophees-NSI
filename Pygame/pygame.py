@@ -7,9 +7,10 @@ class Before_Game:
     permet de gérer la partie
     """
     def __init__(self, screen):
+        """
+        """
         self.screen = screen
         self.Button_Left = Button(pg.Rect(0, 0, 50, 50),'Left the game') 
         self.Button_Start = Button(pg.Rect(0, 0, 50, 50),'Start')
-        
         
 
