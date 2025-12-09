@@ -8,9 +8,9 @@ class Before_Game:
     """
     def __init__(self, screen):
         """
+        à faire 
         """
         self.screen = screen
-        self.Button_Left = Button(pg.Rect(0, 0, 50, 50),'Left the game') 
-        self.Button_Start = Button(pg.Rect(0, 0, 50, 50),'Start')
-        
+        self.Button_Left = Button(pg.Rect(0, 0, 50, 50),'Left the game') #bouton actif uniquement avant le debut de la partie
+        self.Button_Start = Button(pg.Rect(0, 0, 50, 50),'Start') #bouton actif uniquement avant le debut de la partie
 
