@@ -18,6 +18,12 @@ class  Creature():
         self.days = 0
         self.days_max = Days_Max
 
+    def __del__(self):
+        """
+        detruit la creature
+        """
+        pass
+
     def Baby(self):
         """
         Se reproduit avec un pourcentage de proximité a ses parametres actuels
@@ -26,28 +32,35 @@ class  Creature():
 
     def Eat(self):
         """
-        A mangé
+        Viens de manger
         """
         self.ate += 1
         if self.ate == 1:
             self.energy = 100
         else:
-            self.Baby()
             self.energy = 0
 
     def New_Day(self):
         """
         Gere un nouveau jour
         """
-        if self.ate >= 1 and not self.days >= self.days_max:
-            pass
+        if self.is_alive():
+            if self.ate >= 2:
+                self.Baby()
+            self.days += 1
+            if not self.is_alive():
+                return
+            else:
+                self.energy = 100
+                self.ate = 0
+            
 
 
     def is_alive(self):
         """
         Check si le mec est en vie renvois True ou false
         """
-        pass
+        return self.energie > 0 and self.days <= self.days_max
 
     def lives(self):
         """
@@ -58,7 +71,31 @@ class  Creature():
 
     def get_color(self):
         """
-        renvoie la couleur du machin
+        renvoie la couleur de la creature
         """
         return self.color
-
+    
+    def get_energy(self):
+        """
+        renvoie l'energie de la creature
+        """
+        return self.energy
+    
+    def get_size(self):
+        """
+        renvoie la taille de la creature
+        """
+        return self.size
+    
+    def get_speed(self):
+        """
+        renvoie la vitesse de la creature
+        """
+        return self.speed
+    
+    def get_view(self):
+        """
+        renvoie la vue de la creature
+        """
+        return self.view
+    
