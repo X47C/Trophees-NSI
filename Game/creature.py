@@ -18,12 +18,6 @@ class  Creature():
         self.days = 0
         self.days_max = Days_Max
 
-    def __del__(self):
-        """
-        detruit la creature
-        """
-        pass
-
     def Baby(self):
         """
         Se reproduit avec un pourcentage de proximité a ses parametres actuels
@@ -55,7 +49,6 @@ class  Creature():
                 self.ate = 0
             
 
-
     def is_alive(self):
         """
         Check si le mec est en vie renvois True ou false
@@ -64,10 +57,11 @@ class  Creature():
 
     def lives(self):
         """
-        Tue le mec si il as plus d'energie, fait en sorte que il aille ou non a un nouveaux jour celon son age et la bouffe qu'il as mangé
         Consomme l'energie aussi ect
         """
-        pass
+        if self.is_alive():
+            self.energy -= 10
+        
 
     def get_color(self):
         """
