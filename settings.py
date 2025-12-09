@@ -8,4 +8,5 @@ View_variation = 15 #min 1 max 500, pourcentage
 Days_max = 10 #min 1 max 1000
 Simulation_duration = 1 #min 1 max 10000, en jours
 Color = 'white' #white, red, green, blue, yellow, cyan, magenta, black
-    
+Button_font = 'arial' #nom de la police d'écriture pour les boutons
+Display_size = (800, 600) #taille de la fenêtre d'affichage (largeur, hauteur)
