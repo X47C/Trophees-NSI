@@ -14,6 +14,12 @@ class Food():
         """
         pass
 
+    def __del__(self):
+        """
+        detruit la nourriture
+        """
+        pass
+
     def new_position(self, position):
         """
         modifie la position de la nouriture
