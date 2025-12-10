@@ -2,6 +2,7 @@
 import pygame as pg
 from Pygame.pygame import Before_Game, Settings, In_Game, Post_Game
 import settings
+from Game.game import Day_Manager
 
 running = True
 pg.init()
@@ -10,6 +11,8 @@ Befg = Before_Game(pg.display.set_mode(settings.Display_size))
 Sett = Settings(pg.display.set_mode(settings.Display_size))
 Ing = In_Game(pg.display.set_mode(settings.Display_size))
 Engd = Post_Game(pg.display.set_mode(settings.Display_size))
+
+day_manager = Day_Manager()
 
 
 state = 'home'
@@ -35,11 +38,16 @@ while running:
                 match Sett.handle_event(event):
                     case 'start':
                         state = 'in_game'
+
             case 'in_game':
                 Ing.draw()
+                if day_manager.uptdate(100):
+                    state = 'post_game'
+
                 match Ing.handle_event(event):
                     case 'end':
                         state = 'post_game'
+
             case 'post_game':
                 Engd.draw()
                 match Engd.handle_event(event):
@@ -47,16 +55,18 @@ while running:
                         running = False
                     case 'home':
                         state = 'home'
+
             case 'credits':
                 Befg.credits()
                 match Befg.handle_event(event):
                     case 'home':
                         state = 'home'
 
+
     
 
     pg.display.flip()
-    pg.time.Clock().tick(60)
+    pg.time.Clock().tick(settings.Fps)
 
 
 
