@@ -1,7 +1,7 @@
 # Ensemble des methodes servant a faire marcher pygame, on a before game avec les menu et les dispositions pour créer une partie
 # on a post game et in game
 import pygame as pg
-from .button import Button
+from Pygame.button import Button
 from pygame import Rect
 import settings
 
@@ -17,7 +17,7 @@ class Before_Game:
         self.width, self.height = settings.Display_size
         self.screen = screen
 
-        self.Button_exit = Button(Rect(self.width // 2 - 110, self.height // 2 - 40, 220, 80),'Exit') 
+        self.Button_exit = Button(Rect(self.width // 2 - 110, self.height // 2 - 40, 220, 80),'Exit', pg.display.set_mode(settings.Display_size))
         self.Button_Start = Button(Rect(self.width // 2 - 110, self.height // 2 - 130, 220, 80),'Start')
         self.Button_credits = Button(Rect(self.width // 2 - 110, self.height // 2 + 50, 220, 80),'Credits') 
         self.Button_credits_exit = Button(Rect(self.width // 2 - 65, self.height // 2 + 130, 130, 50),'Back')
@@ -34,7 +34,7 @@ class Before_Game:
         Dessine l'écran avant le lancement de la partie
         """
         self.screen.blit(self.bg_asset, (0, 0))
-        self.Button_exit.draw(self.screen, self.Button_font)
+        self.Button_exit.draw(self.screen, self.Button_font, 'assets/button-exit.png')
         self.Button_Start.draw(self.screen, self.Button_font)
         self.Button_credits.draw(self.screen, self.Button_font)
 
@@ -180,3 +180,6 @@ class Post_Game:
                     return 'exit'
                 if self.Button_home.rect.collidepoint(event.pos):
                     return 'home'
+
+
+
