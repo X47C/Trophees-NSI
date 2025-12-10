@@ -20,6 +20,6 @@ Credits_font = 'arial' #nom de la police d'écriture des crédits
 Credits_font_size = 30 #taille de la police d'écriture des crédits
 
 
-Display_size = (800, 600) #taille de la fenêtre d'affichage (largeur, hauteur)
+Display_size = (1920, 1080) #taille de la fenêtre d'affichage (largeur, hauteur)
 
 Credits_Text = ["Game developed by:",'Grafan Jules', 'Cros Cyprien', 'Quota Feminin']
