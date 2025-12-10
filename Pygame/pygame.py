@@ -38,10 +38,10 @@ class Before_Game:
         if pg.event.peek(pg.MOUSEBUTTONDOWN):
             event = pg.event.wait()
             if event.type == pg.MOUSEBUTTONDOWN:
-                if self.Button_Left.is_clicked(event.pos, self.Button_Left_pos):
+                if self.Button_Left.is_clicked(event.pos, Rect(self.width // 2 - 110, self.height // 2 - 40, 220, 80)):
                     print('left') #test
                     return 'left'
-                if self.Button_Start.is_clicked(event.pos, self.Button_Start_pos):
+                if self.Button_Start.is_clicked(event.pos, Rect(0, 0, 50, 50)):
                     return 'start'
     
 
