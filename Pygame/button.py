@@ -15,7 +15,7 @@ class Button:
             text_surface = font.render(self.text, True, (255,255,255))
             surf.blit(text_surface, (self.rect.x + (self.rect.w - text_surface.get_width()) // 2, self.rect.y + (self.rect.h - text_surface.get_height()) //  2))
         else:
-            self.screen.blit(pg.image.load(asset), (surf.x, surf.y))
+            self.screen.blit(pg.image.load(asset), (self.rect.x, self.rect.y))
             
 
     def collide(self, pos):
