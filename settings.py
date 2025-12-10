@@ -26,4 +26,4 @@ Credits_Text = ["Game developed by:",'Graffan Jules', 'Cros Cyprien', 'Quota Fem
 
 Fps = 60
 
-Day_Duration = 10 * Fps #en secondes
+day_duration = 10

@@ -17,10 +17,10 @@ class Before_Game:
         self.width, self.height = settings.Display_size
         self.screen = screen
 
-        self.Button_exit = Button(Rect(self.width // 2 - 110, self.height // 2 - 40, 220, 80),'Exit', pg.display.set_mode(settings.Display_size))
-        self.Button_Start = Button(Rect(self.width // 2 - 110, self.height // 2 - 130, 220, 80),'Start')
-        self.Button_credits = Button(Rect(self.width // 2 - 110, self.height // 2 + 50, 220, 80),'Credits') 
-        self.Button_credits_exit = Button(Rect(self.width // 2 - 65, self.height // 2 + 130, 130, 50),'Back')
+        self.Button_exit = Button(Rect(self.width // 2 - 110, self.height // 2 - 40, 220, 80),'Exit', self.screen)
+        self.Button_Start = Button(Rect(self.width // 2 - 110, self.height // 2 - 130, 220, 80),'Start', self.screen)
+        self.Button_credits = Button(Rect(self.width // 2 - 110, self.height // 2 + 50, 220, 80),'Credits', self.screen) 
+        self.Button_credits_exit = Button(Rect(self.width // 2 - 65, self.height // 2 + 130, 130, 50),'Back', self.screen)
         
         # self.bg_asset = pg.image.load('assets/bg_menu.png')
         self.bg_asset = pg.Surface((self.width, self.height))
@@ -35,8 +35,8 @@ class Before_Game:
         """
         self.screen.blit(self.bg_asset, (0, 0))
         self.Button_exit.draw(self.screen, self.Button_font, 'assets/button-exit.png')
-        self.Button_Start.draw(self.screen, self.Button_font)
-        self.Button_credits.draw(self.screen, self.Button_font)
+        self.Button_Start.draw(self.screen, self.Button_font, 'assets/button-start.png')
+        self.Button_credits.draw(self.screen, self.Button_font, 'assets/button-credits.png')
 
     def handle_event(self, event):
         """
@@ -81,7 +81,7 @@ class Settings:
         self.bg_asset = pg.Surface(settings.Display_size)
         self.bg_asset.fill((200, 200, 200))
 
-        self.Start_Button = Button(pg.Rect(300, 500, 200, 50), 'Start Simulation')
+        self.Start_Button = Button(pg.Rect(300, 500, 200, 50), 'Start Simulation', self.screen)
         self.Button_font = pg.font.SysFont(settings.Button_font, settings.Button_font_size)
 
     def draw(self):
@@ -118,7 +118,7 @@ class In_Game:
         self.bg_asset = pg.Surface(settings.Display_size)
         self.bg_asset.fill((34, 139, 34))
 
-        self.continue_button = Button(pg.Rect(700, 10, 90, 40), 'End')
+        self.continue_button = Button(pg.Rect(700, 10, 90, 40), 'End', self.screen)
         self.Button_font = pg.font.SysFont(settings.Button_font, settings.Button_font_size)
 
     def draw(self):
@@ -155,8 +155,8 @@ class Post_Game:
         self.bg_asset = pg.Surface(settings.Display_size)
         self.bg_asset.fill((128, 0, 128))
 
-        self.Button_exit = Button(Rect(self.width // 2 - 110, self.height // 2 + 40, 220, 80), 'Exit to Desktop')
-        self.Button_home = Button(Rect(self.width // 2 - 110, self.height // 2 + 130, 220, 80), 'Return to Home')
+        self.Button_exit = Button(Rect(self.width // 2 - 110, self.height // 2 + 40, 220, 80), 'Exit to Desktop', self.screen)
+        self.Button_home = Button(Rect(self.width // 2 - 110, self.height // 2 + 130, 220, 80), 'Return to Home', self.screen)
 
         self.Button_font = pg.font.SysFont(settings.Button_font, settings.Button_font_size)
 
