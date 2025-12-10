@@ -22,9 +22,7 @@ class Before_Game:
         self.Button_credits = Button(Rect(self.width // 2 - 110, self.height // 2 + 50, 220, 80),'Credits', self.screen) 
         self.Button_credits_exit = Button(Rect(self.width // 2 - 65, self.height // 2 + 130, 130, 50),'Back', self.screen)
         
-        # self.bg_asset = pg.image.load('assets/bg_menu.png')
-        self.bg_asset = pg.Surface((self.width, self.height))
-        self.bg_asset.fill((100, 149, 237))
+        self.bg_asset = pg.image.load('assets/bg_menu.png')
 
         self.Button_font = pg.font.SysFont(settings.Button_font, settings.Button_font_size)
 

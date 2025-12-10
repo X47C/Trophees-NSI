@@ -11,9 +11,15 @@ class Day_Manager():
         """
         self.time += dt
         if self.time >= settings.day_duration:
-            return True
+            if self.current_day >= settings.day_number:
+                return 'end'
+            else:
+                self.new_day()
 
     def new_day(self):
-        pass
+        """
+        ce que doit faire le jeu a chaques debuts de jours
+        """
+        self.current_day += 1
 
 

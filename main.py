@@ -63,7 +63,7 @@ while running:
 
     # --- UPDATE LOGIC ---
     if state == 'in_game':
-        if day_manager.update(dt):
+        if day_manager.update(dt) == 'end':
             state = 'post_game'
 
     # --- DRAW ---
@@ -81,6 +81,8 @@ while running:
             Befg.credits()
 
     pg.display.flip()
+
+
 
 
 
