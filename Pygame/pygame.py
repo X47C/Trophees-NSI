@@ -31,19 +31,18 @@ class Before_Game:
         self.Button_Left.draw(self.screen, self.Button_font)
         self.Button_Start.draw(self.screen, self.Button_font)
 
-    def handle_event(self):
+    def handle_event(self, event):
         """
         Gère les événements de l'écran avant le lancement de la partie
         """
-        if pg.event.peek(pg.MOUSEBUTTONDOWN):
-            event = pg.event.wait()
-            if event.type == pg.MOUSEBUTTONDOWN:
-                if self.Button_Left.is_clicked(event.pos, Rect(self.width // 2 - 110, self.height // 2 - 40, 220, 80)):
-                    print('left') #test
-                    return 'left'
-                if self.Button_Start.is_clicked(event.pos, Rect(0, 0, 50, 50)):
-                    return 'start'
-    
+        if event.type == pg.MOUSEBUTTONUP:
+            if self.Button_Left.rect.collidepoint(event.pos):  
+                return 'left'
+            if self.Button_Start.is_clicked(event.pos, Rect(0, 0, 50, 50)):
+                return 'start'
+        if event.type == pg.QUIT:
+            return 'left'
+        
 
 class In_Game:
     """
