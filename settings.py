@@ -23,7 +23,10 @@ Button_font_size = 40 #taille de la police d'écriture des boutons*
 Credits_font = 'arial' #nom de la police d'écriture des crédits
 Credits_font_size = 30 #taille de la police d'écriture des crédits
 Days_font = 'arial'
-Days_font_size = 40 #taille de la police d'écriture des jours*
+Days_font_size = 40 #taille de la police d'écriture des jours
+Button_label_font = 'arial'
+Button_label_font_size = 40
+
 
 
 Display_size = (1920, 1080) #taille de la fenêtre d'affichage (largeur, hauteur)

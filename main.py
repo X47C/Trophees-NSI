@@ -45,6 +45,10 @@ while running:
                         state = 'in_game'
                     case 'back':
                         state = 'home'
+                    case "left:Button Gauche 1":
+                        print("left:Button Gauche 1")
+                    case "left:Button Gauche 2":
+                        print("left:Button Gauche 2")
 
             case 'in_game':
                 match Ing.handle_event(event):
