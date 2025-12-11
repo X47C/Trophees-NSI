@@ -79,15 +79,17 @@ class Settings:
         self.bg_asset = pg.Surface(settings.Display_size)
         self.bg_asset.fill((200, 200, 200))
 
-        self.Start_Button = Button(pg.Rect(300, 500, 200, 50), 'Start Simulation', self.screen)
+        self.Start_Button = Button(Rect(self.width - self.width // 8 - 110, self.height // 2 - 90, 220, 80), 'Start Simulation', self.screen)
         self.Button_font = pg.font.SysFont(settings.Button_font, settings.Button_font_size)
+        self.Back_Button = Button(Rect(self.width - self.width // 8 - 110, self.height //2 + 90, 220, 80), 'Back', self.screen)
 
     def draw(self):
         """
         Dessine l'écran des paramètres avant la partie
         """
         self.screen.blit(self.bg_asset, (0, 0))
-        self.Start_Button.draw(self.screen, self.Button_font)
+        self.Start_Button.draw(self.screen, self.Button_font, 'assets/button-start.png')
+        self.Back_Button.draw(self.screen, self.Button_font)
 
     def handle_event(self, event):
         """
@@ -97,6 +99,8 @@ class Settings:
             case pg.MOUSEBUTTONDOWN:
                 if self.Start_Button.rect.collidepoint(event.pos):
                     return 'start'
+                if self.Back_Button.rect.collidepoint(event.pos):
+                    return 'back'
         
             
 
@@ -116,7 +120,7 @@ class In_Game:
         self.bg_asset = pg.Surface(settings.Display_size)
         self.bg_asset.fill((34, 139, 34))
 
-        self.continue_button = Button(pg.Rect(700, 10, 90, 40), 'End', self.screen)
+        self.continue_button = Button(Rect(self.width - self.width // 17, self.height // 60, 90, 40), 'End', self.screen)
         self.Button_font = pg.font.SysFont(settings.Button_font, settings.Button_font_size)
 
     def draw(self):

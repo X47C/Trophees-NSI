@@ -30,37 +30,39 @@ while running:
             running = False
         match state:
             case 'home':
-                result = Befg.handle_event(event)
-                if result == 'start':
-                    state = 'settings'
-                elif result == 'exit':
-                    running = False
-                elif result == 'credits':
-                    state = 'credits'
+                match Befg.handle_event(event):
+                    case 'start':
+                        state = 'settings'
+                    case 'exit':
+                        running = False
+                    case 'credits':
+                        state = 'credits'
 
             case 'settings':
-                result = Sett.handle_event(event)
-                if result == 'start':
-                    day_manager.new_day()
-                    state = 'in_game'
+                match Sett.handle_event(event):
+                    case'start':
+                        day_manager.new_day()
+                        state = 'in_game'
+                    case 'back':
+                        state = 'home'
 
             case 'in_game':
-                result = Ing.handle_event(event)
-                if result == 'end':
-                    state = 'post_game'   
-                    day_manager.current_day = 0
+                match Ing.handle_event(event):
+                    case 'end':
+                        state = 'post_game'   
+                        day_manager.current_day = 0
 
             case 'post_game':
-                result = Engd.handle_event(event)
-                if result == 'exit':
-                    running = False
-                elif result == 'home':
-                    state = 'home'
+                match Engd.handle_event(event):
+                    case 'exit':
+                        running = False
+                    case 'home':
+                        state = 'home'
 
             case 'credits':
-                result = Befg.handle_event(event)
-                if result == 'home':
-                    state = 'home'
+                match Befg.handle_event(event):
+                    case 'home':
+                        state = 'home'
 
 
     # --- UPDATE --- 
