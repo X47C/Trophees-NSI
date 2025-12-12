@@ -9,7 +9,7 @@ pg.init()
 screen = pg.display.set_mode(settings.Display_size)
 clock = pg.time.Clock()
 
-Befg = Before_Game(screen)
+Befg = Before_Game(screen)a
 Sett = Settings(screen)
 Ing = In_Game(screen)
 Engd = Post_Game(screen)
