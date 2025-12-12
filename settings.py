@@ -1,3 +1,6 @@
+import pygame as pg
+pg.init()
+
 Food_quantity = 100
 Simulation_duration = 1 #min 1 max 10000, en jours
 
@@ -29,7 +32,7 @@ Button_label_font_size = 40
 
 
 
-Display_size = (1920, 1080) #taille de la fenêtre d'affichage (largeur, hauteur)
+Display_size = (pg.display.Info().current_w, pg.display.Info().current_h) #taille de la fenêtre d'affichage (largeur, hauteur)
 
 Credits_Text = ["Game developed by:",'Graffan Jules', 'Cros Cyprien', 'Quota Feminin']
 

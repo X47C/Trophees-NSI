@@ -41,7 +41,7 @@ class Before_Game:
         Gère les événements de l'écran avant le lancement de la partie
         """
         match event.type:
-            case pg.MOUSEBUTTONDOWN:
+            case pg.MOUSEBUTTONUP:
                 if self.Button_exit.rect.collidepoint(event.pos):  
                     return 'exit'
                 if self.Button_Start.rect.collidepoint(event.pos):
@@ -72,7 +72,7 @@ class Settings:
         self.width, self.height = settings.Display_size
 
         # ratio gauche / droite 
-        self.left_ratio = max(0.1, min(0.9, 0.75))
+        self.left_ratio = max(0.1, 0.75)
         self.left_width = int(self.width * self.left_ratio)
         self.right_width = self.width - self.left_width
         self.left_rect = Rect(0, 0, self.left_width, self.height)
@@ -107,7 +107,7 @@ class Settings:
         # zone gauche 
         self.left_padding = 16
         self.button_height = 72
-        self.button_spacing = 0  
+        self.button_spacing = 500
 
         # position manuelle des boutons 
         y = 60
@@ -119,12 +119,15 @@ class Settings:
         self.Left_Button_2 = Button(Rect(self.left_padding, y, btn_w_left, self.button_height),'Button Gauche 2')
         y += self.button_height + 60 + self.button_spacing
         self.Left_Button_3 = Button(Rect(self.left_padding, y, btn_w_left, self.button_height),'Button Gauche 2')
+        y += self.button_height + 60 + self.button_spacing
+        self.Left_Button_4 = Button(Rect(self.left_padding, y, btn_w_left, self.button_height),'Button Gauche 4')
         y += self.button_height + 20 #A ABSOLUMENT LAISSER A LA FIN DES BOUTONS
 
         # labek au dessus des boutons, garder la bonne forme : Nom_Button_label
         self.Left_Button_1_label = "bouton 1 chockbar"
         self.Left_Button_2_label = "J'aurais pas pu deviner que c'etait le deucx"
         self.Left_Button_3_label = "C'est bien centré ?"
+        self.Left_Button_4_label = "c'est le bouton 4"
 
         # calcul hauteur du contenu et création de la surface interne
         self.content_height = max(self.height, y)
@@ -194,6 +197,11 @@ class Settings:
             label_pos = (self.Left_Button_3.rect.x, self.Left_Button_3.rect.y - label_surf.get_height() - 6)
             self.content_surface.blit(label_surf, label_pos)
         self.Left_Button_3.draw(self.content_surface, self.Button_font)
+        if self.Left_Button_4_label:
+            label_surf = self.Settings_label_font.render(self.Left_Button_4_label, True, (0,0,0))
+            label_pos = (self.Left_Button_4.rect.x, self.Left_Button_4.rect.y - label_surf.get_height() - 6)
+            self.content_surface.blit(label_surf, label_pos)
+        self.Left_Button_4.draw(self.content_surface, self.Button_font)
 
         # blit de la portion visible (viewport)
         visible_src = Rect(0, self.scroll_offset, self.left_width, self.height)
