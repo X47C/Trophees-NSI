@@ -14,7 +14,7 @@ Sett = Settings(screen)
 Ing = In_Game(screen)
 Engd = Post_Game(screen)
 
-day_manager = Day_Manager()
+day_manager = Day_Manager(screen)
 
 running = True
 state = 'home'
@@ -24,50 +24,65 @@ while running:
 
     dt = clock.tick(settings.Fps) / 1000.0 
 
+    # --- EVENT HANDLING ---
     for event in pg.event.get():
         if event.type == pg.QUIT:
             running = False
-
-        # --- STATE MACHINE ---
         match state:
             case 'home':
-                result = Befg.handle_event(event)
-                if result == 'start':
-                    state = 'settings'
-                elif result == 'exit':
-                    running = False
-                elif result == 'credits':
-                    state = 'credits'
+                match Befg.handle_event(event):
+                    case 'start':
+                        state = 'settings'
+                    case 'exit':
+                        running = False
+                    case 'credits':
+                        state = 'credits'
 
             case 'settings':
-                result = Sett.handle_event(event)
-                if result == 'start':
-                    state = 'in_game'
+                match Sett.handle_event(event):
+                    case'start':
+                        day_manager.new_day()
+                        state = 'in_game'
+                    case 'back':
+                        state = 'home'
+                    case "left:Button Gauche 1":
+                        print("left:Button Gauche 1")
+                    case "left:Button Gauche 2":
+                        print("left:Button Gauche 2")
 
             case 'in_game':
-                result = Ing.handle_event(event)
-                if result == 'end':
-                    state = 'post_game'
+                match Ing.handle_event(event):
+                    case 'end':
+                        state = 'post_game'   
+                        day_manager.current_day = 0
 
             case 'post_game':
-                result = Engd.handle_event(event)
-                if result == 'exit':
-                    running = False
-                elif result == 'home':
-                    state = 'home'
+                match Engd.handle_event(event):
+                    case 'exit':
+                        running = False
+                    case 'home':
+                        state = 'home'
 
             case 'credits':
-                result = Befg.handle_event(event)
-                if result == 'home':
-                    state = 'home'
+                match Befg.handle_event(event):
+                    case 'home':
+                        state = 'home'
 
-    # --- UPDATE LOGIC ---
-    if state == 'in_game':
-        if day_manager.update(dt) == 'end':
-            state = 'post_game'
+
+    # --- UPDATE --- 
+    if state == "in_game":
+
+        match day_manager.update(dt):
+            case "end":
+                state = "post_game"
+                day_manager.current_day = 0
+            case "continue":
+                day_manager.new_day()
+
 
     # --- DRAW ---
     screen.fill((0,0,0))
+
     match state:
         case 'home':
             Befg.draw()
@@ -75,6 +90,7 @@ while running:
             Sett.draw()
         case 'in_game':
             Ing.draw()
+            day_manager.draw_current_day()
         case 'post_game':
             Engd.draw()
         case 'credits':
