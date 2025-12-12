@@ -40,8 +40,7 @@ class Before_Game:
         """
         Gère les événements de l'écran avant le lancement de la partie
         """
-        match event.type:
-            case pg.MOUSEBUTTONUP:
+        if event.type == pg.MOUSEBUTTONUP and event.button == 1:
                 if self.Button_exit.rect.collidepoint(event.pos):  
                     return 'exit'
                 if self.Button_Start.rect.collidepoint(event.pos):
@@ -222,7 +221,7 @@ class Settings:
 
     def handle_event(self, event):
         # Boutons droite
-        if event.type == pg.MOUSEBUTTONDOWN:
+        if event.type == pg.MOUSEBUTTONUP and event.button == 1:
             if self.Start_Button.rect.collidepoint(event.pos):
                 return 'start'
             if self.Back_Button.rect.collidepoint(event.pos):
@@ -236,8 +235,8 @@ class Settings:
                 self._clamp_scroll()
                 return None
 
-        # fallback molette (boutons 4/5)
-        if event.type == pg.MOUSEBUTTONDOWN and event.button in (4, 5):
+        # # fallback molette (boutons 4/5)
+        if event.type == pg.MOUSEBUTTONUP and event.button in (4, 5):
             if self.left_rect.collidepoint(event.pos):
                 if event.button == 4:
                     self.scroll_offset -= self.wheel_step
@@ -247,7 +246,7 @@ class Settings:
                 return None
 
         # Boutons gauches ( galere )
-        if event.type == pg.MOUSEBUTTONDOWN and event.button == 1:
+        if event.type == pg.MOUSEBUTTONUP and event.button == 1:
             if self.left_rect.collidepoint(event.pos):
                 rel_x = event.pos[0] - self.left_rect.x
                 rel_y = event.pos[1] - self.left_rect.y + self.scroll_offset
@@ -317,10 +316,9 @@ class In_Game:
         """
         Gère les événements de l'écran pendant la partie
         """
-        match event.type:
-            case pg.MOUSEBUTTONDOWN:
-                if self.continue_button.rect.collidepoint(event.pos):
-                    return 'end'
+        if event.type == pg.MOUSEBUTTONUP and event.button == 1 :        
+            if self.continue_button.rect.collidepoint(event.pos):
+                return 'end'
                 
 
 
@@ -359,12 +357,11 @@ class Post_Game:
         """
         Gère les événements de l'écran après la partie
         """
-        match event.type:
-            case pg.MOUSEBUTTONDOWN:
-                if self.Button_exit.rect.collidepoint(event.pos):
-                    return 'exit'
-                if self.Button_home.rect.collidepoint(event.pos):
-                    return 'home'
+        if event.type == pg.MOUSEBUTTONUP and event.button == 1:
+            if self.Button_exit.rect.collidepoint(event.pos):
+                return 'exit'
+            if self.Button_home.rect.collidepoint(event.pos):
+                return 'home'
 
 
 
