@@ -5,7 +5,6 @@ import settings
 from Game.game import Day_Manager
 
 # --- INIT ---
-pg.init()
 screen = pg.display.set_mode(settings.Display_size)
 clock = pg.time.Clock()
 
@@ -95,6 +94,7 @@ while running:
             Engd.draw()
         case 'credits':
             Befg.credits()
+
 
     pg.display.flip()
 
