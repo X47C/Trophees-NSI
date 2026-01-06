@@ -71,18 +71,9 @@ class Settings:
         self.screen = screen
         self.width, self.height = settings.Display_size
 
-<<<<<<< HEAD
         # fonts
         self.font_btn = pg.font.SysFont(settings.Button_font, settings.Button_font_size)
         self.font_lbl = pg.font.SysFont(settings.Button_label_font, settings.Button_label_font_size)
-=======
-        # ratio gauche / droite 
-        self.left_ratio = max(0.1, 0.75)
-        self.left_width = int(self.width * self.left_ratio)
-        self.right_width = self.width - self.left_width
-        self.left_rect = Rect(0, 0, self.left_width, self.height)
-        self.right_rect = Rect(self.left_width, 0, self.right_width, self.height)
->>>>>>> d40f72c75e5bd1e4161f926052f7eb947a913428
 
         # geometry
         self.padding = 20
@@ -118,21 +109,13 @@ class Settings:
         self._refresh_general_display()
         self._refresh_pop_display()
 
-<<<<<<< HEAD
     def _build_general_controls(self):
         total_w = self.width - self.padding * 2
         col_w = (total_w - self.gap) // 2
         val_w = col_w - self.small_w * 2 - 12
-=======
-        # zone gauche 
-        self.left_padding = 16
-        self.button_height = 72
-        self.button_spacing = 500
->>>>>>> d40f72c75e5bd1e4161f926052f7eb947a913428
 
         top_y = self.padding
 
-<<<<<<< HEAD
         # food - left
         x0 = self.padding
         lbl_y = top_y
@@ -156,23 +139,6 @@ class Settings:
             "plus": Button(Rect(x1 + self.small_w + 6 + val_w + 6, btn_y, self.small_w, self.btn_h), "+", self.screen),
             "lbl_pos": (x1 + (col_w // 2), lbl_y)
         }
-=======
-        # Boutons Gauches
-        self.Left_Button_1 = Button(Rect(self.left_padding, y, btn_w_left, self.button_height),'Button Gauche 1') 
-        y += self.button_height + 60 + self.button_spacing # a mettre entre chaques etages de boutons
-        self.Left_Button_2 = Button(Rect(self.left_padding, y, btn_w_left, self.button_height),'Button Gauche 2')
-        y += self.button_height + 60 + self.button_spacing
-        self.Left_Button_3 = Button(Rect(self.left_padding, y, btn_w_left, self.button_height),'Button Gauche 2')
-        y += self.button_height + 60 + self.button_spacing
-        self.Left_Button_4 = Button(Rect(self.left_padding, y, btn_w_left, self.button_height),'Button Gauche 4')
-        y += self.button_height + 20 #A ABSOLUMENT LAISSER A LA FIN DES BOUTONS
-
-        # labek au dessus des boutons, garder la bonne forme : Nom_Button_label
-        self.Left_Button_1_label = "bouton 1 chockbar"
-        self.Left_Button_2_label = "J'aurais pas pu deviner que c'etait le deucx"
-        self.Left_Button_3_label = "C'est bien centré ?"
-        self.Left_Button_4_label = "c'est le bouton 4"
->>>>>>> d40f72c75e5bd1e4161f926052f7eb947a913428
 
         base_line = btn_y + self.btn_h
         self.pop_manage_y = base_line + self.pop_manage_top_space
@@ -291,7 +257,6 @@ class Settings:
                 b = Button(Rect(rect.x, rect.y, rect.width, rect.height), str(i+1), self.screen)
                 b.draw(self.screen, self.font_btn)
 
-<<<<<<< HEAD
         # draw pop controls grid (labels centered)
         for key, c in self.pop_controls.items():
             label_surf = self.font_lbl.render(c["label"], True, (0,0,0))
@@ -301,29 +266,6 @@ class Settings:
             c["minus"].draw(self.screen, self.font_btn)
             c["value"].draw(self.screen, self.font_btn)
             c["plus"].draw(self.screen, self.font_btn)
-=======
-        # Le texte au desssu des boutons, a copier coller pour chaques boutons meme si pas de texte plzzzz
-        if self.Left_Button_1_label:
-            label_surf = self.Settings_label_font.render(self.Left_Button_1_label, True, (0,0,0))
-            label_pos = (self.Left_Button_1.rect.x, self.Left_Button_1.rect.y - label_surf.get_height() - 6)
-            self.content_surface.blit(label_surf, label_pos)
-        self.Left_Button_1.draw(self.content_surface, self.Button_font)
-        if self.Left_Button_2_label:
-            label_surf = self.Settings_label_font.render(self.Left_Button_2_label, True, (0,0,0))
-            label_pos = (self.Left_Button_2.rect.x, self.Left_Button_2.rect.y - label_surf.get_height() - 6)
-            self.content_surface.blit(label_surf, label_pos)
-        self.Left_Button_2.draw(self.content_surface, self.Button_font)
-        if self.Left_Button_3_label:
-            label_surf = self.Settings_label_font.render(self.Left_Button_3_label, True, (0,0,0))
-            label_pos = (self.Left_Button_3.rect.x, self.Left_Button_3.rect.y - label_surf.get_height() - 6)
-            self.content_surface.blit(label_surf, label_pos)
-        self.Left_Button_3.draw(self.content_surface, self.Button_font)
-        if self.Left_Button_4_label:
-            label_surf = self.Settings_label_font.render(self.Left_Button_4_label, True, (0,0,0))
-            label_pos = (self.Left_Button_4.rect.x, self.Left_Button_4.rect.y - label_surf.get_height() - 6)
-            self.content_surface.blit(label_surf, label_pos)
-        self.Left_Button_4.draw(self.content_surface, self.Button_font)
->>>>>>> d40f72c75e5bd1e4161f926052f7eb947a913428
 
         # bottom buttons
         self.btn_start.draw(self.screen, self.font_btn)
@@ -331,7 +273,7 @@ class Settings:
 
     def _refresh_general_display(self):
         self.general_food["value"].text = str(settings.Food_quantity)
-        self.general_days["value"].text = str(settings.Simulation_duration)
+        self.general_days["value"].text = str(settings.Days_max)
 
     def _refresh_pop_display(self):
         if len(settings.POPULATIONS) == 0:
@@ -345,62 +287,30 @@ class Settings:
                 c["value"].text = str(v)
 
     def handle_event(self, event):
-<<<<<<< HEAD
         if event.type == pg.MOUSEBUTTONDOWN and event.button == 1:
             # bottom
             if self.btn_start.rect.collidepoint(event.pos):
-=======
-        # Boutons droite
-        if event.type == pg.MOUSEBUTTONUP and event.button == 1:
-            if self.Start_Button.rect.collidepoint(event.pos):
->>>>>>> d40f72c75e5bd1e4161f926052f7eb947a913428
                 return 'start'
             if self.btn_back.rect.collidepoint(event.pos):
                 return 'back'
 
             mx, my = event.pos
 
-<<<<<<< HEAD
             # general controls
             for name, g in (("Food_quantity", self.general_food), ("Simulation_duration", self.general_days)):
                 if g["minus"].rect.collidepoint((mx,my)):
                     if name == "Food_quantity":
                         settings.Food_quantity = max(0, settings.Food_quantity - 1)
                     else:
-                        settings.Simulation_duration = max(1, settings.Simulation_duration - 1)
+                        settings.Days_max = max(1, settings.Days_max - 1)
                     self._refresh_general_display()
                     return None
                 if g["plus"].rect.collidepoint((mx,my)):
                     if name == "Food_quantity":
                         settings.Food_quantity += 1
                     else:
-                        settings.Simulation_duration += 1
+                        settings.Days_max += 1
                     self._refresh_general_display()
-=======
-        # # fallback molette (boutons 4/5)
-        if event.type == pg.MOUSEBUTTONUP and event.button in (4, 5):
-            if self.left_rect.collidepoint(event.pos):
-                if event.button == 4:
-                    self.scroll_offset -= self.wheel_step
-                else:
-                    self.scroll_offset += self.wheel_step
-                self._clamp_scroll()
-                return None
-
-        # Boutons gauches ( galere )
-        if event.type == pg.MOUSEBUTTONUP and event.button == 1:
-            if self.left_rect.collidepoint(event.pos):
-                rel_x = event.pos[0] - self.left_rect.x
-                rel_y = event.pos[1] - self.left_rect.y + self.scroll_offset
-
-                if self.Left_Button_1.rect.collidepoint((rel_x, rel_y)):
-                    return "left:Button Gauche 1"
-                if self.Left_Button_2.rect.collidepoint((rel_x, rel_y)):
-                    return "left:Button Gauche 2"
-                if self.thumb_rect.collidepoint(event.pos):
-                    self.dragging_thumb = True
-                    self.drag_mouse_y = event.pos[1] - self.thumb_rect.y
->>>>>>> d40f72c75e5bd1e4161f926052f7eb947a913428
                     return None
 
             # add / remove pop

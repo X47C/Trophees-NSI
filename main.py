@@ -5,6 +5,8 @@ import settings
 from Game.game import Day_Manager
 
 # --- INIT ---
+pg.init()
+
 screen = pg.display.set_mode(settings.Display_size)
 clock = pg.time.Clock()
 
