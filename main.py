@@ -22,7 +22,7 @@ state = 'home'
 # --- MAIN LOOP ---
 while running:
 
-    dt = clock.tick(settings.Fps) / 1000.0 
+    dt = clock.tick(settings.FPS) / 1000.0 
 
     # --- EVENT HANDLING ---
     for event in pg.event.get():

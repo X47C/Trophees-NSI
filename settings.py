@@ -1,36 +1,47 @@
-Food_quantity = 100
-Simulation_duration = 1 #min 1 max 10000, en jours
+# Paramètres globaux et valeurs par défaut
 
-Speed = 3 #min 1 max 10
-Size = 3 #min 1 max 10
-View = 3 #min 1 max 10
+# Affichage
+Display_size = (1280, 720)  # largeur, hauteur
+FPS = 60
 
-Speed_variation = 15 #min 1 max 500, pourcentage
-Size_variation = 15 #min 1 max 500, pourcentage
-View_variation = 15 #min 1 max 500, pourcentage
+# Police 
+Days_font = "arial"
+Days_font_size = 18
+Button_font = "arial" 
+Button_font_size = 18
+Button_label_font = "arial"
+Button_label_font_size = 14
 
-Color = 'white' #white, red, green, blue, yellow, cyan, magenta, black
+#  Boutons généraux 
+Food_quantity = 100         # Quantité de nourriture initiale
+Days_max = 1                # Nombre de jours de la simulation (min 1)
+day_duration = 5
 
+# limites populations 
+POPULATION_MIN = 1
+POPULATION_MAX = 6
 
+Color_options = ["white", "red", "green", "blue", "yellow", "purple", "black"]
 
-Days_max = 5 #min 1 max 1000
-day_duration = 5 #en secondes
+# Valeurs par défaut pour une population
+DEFAULT_POP = {
+    "name": "Population 1",
+    "life": 50,
+    "color": "white",
+    "quantity": 10,
+    "speed_variation": 15,
+    "size_variation": 15,
+    "view_variation": 15,
+    "view": 15,
+    "speed": 3,
+    "size": 3
+}
 
+# Liste des populations ( au moins 1 )
+POPULATIONS = [
+    DEFAULT_POP.copy()
+]
 
-
-Button_font = 'arial' #nom de la police d'écriture des boutons
-Button_font_size = 40 #taille de la police d'écriture des boutons*
-Credits_font = 'arial' #nom de la police d'écriture des crédits
-Credits_font_size = 30 #taille de la police d'écriture des crédits
-Days_font = 'arial'
-Days_font_size = 40 #taille de la police d'écriture des jours
-Button_label_font = 'arial'
-Button_label_font_size = 40
-
-
-
-Display_size = (1920, 1080) #taille de la fenêtre d'affichage (largeur, hauteur)
-
-Credits_Text = ["Game developed by:",'Graffan Jules', 'Cros Cyprien', 'Quota Feminin']
-
-Fps = 60
+# UI colors
+UI_BG_COLOR = (200, 200, 200)
+UI_PANEL_COLOR = (240, 240, 240)
