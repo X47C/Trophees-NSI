@@ -2,7 +2,7 @@
 
 # Affichage
 Display_size = (1280, 720)  # largeur, hauteur
-FPS = 60
+FPS = 30
 
 # texte des crédits
 Credits_Text = ['Dévellopé par : ','Cyprien Cros', 'Jules Graffan', 'Sara quelquechose', 'Remerciement à : ', 'Mme Rebinguet-Martres'] 

@@ -76,7 +76,6 @@ while running:
             case "continue":
                 day_manager.new_day()
                 t = 0
-        
         day_manager.update() 
 
         
@@ -85,14 +84,14 @@ while running:
 
     # --- DRAW ---
     screen.fill((0,0,0))
-
+    
     match state:
         case 'home':
             Befg.draw()
         case 'settings':
             Sett.draw()
         case 'in_game':
-            Ing.draw()
+            Ing.draw(day_manager.creatures, screen)
             day_manager.draw_current_day()
         case 'post_game':
             Engd.draw()

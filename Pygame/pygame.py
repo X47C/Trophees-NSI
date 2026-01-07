@@ -1,9 +1,9 @@
 # Ensemble des methodes servant a faire marcher pygame, on a before game avec les menu et les dispositions pour créer une partie
-
 import pygame as pg
 from Pygame.button import Button
 from pygame import Rect
 import settings
+from Game import game
 
 class Before_Game:
     """
@@ -420,12 +420,16 @@ class In_Game:
         self.continue_button = Button(Rect(self.width - self.width // 17, self.height // 60, 90, 40), 'End', self.screen)
         self.Button_font = pg.font.SysFont(settings.Button_font, settings.Button_font_size)
 
-    def draw(self):
+    def draw(self, l_creatures, screen):
         """
         Dessine l'écran pendant la partie
         """
         self.screen.blit(self.bg_asset, (0, 0))
         self.continue_button.draw(self.screen, self.Button_font)
+        #affiche les cratures
+        for a in l_creatures:
+            for c in a:
+                c.draw(screen)
 
     def handle_event(self, event):
         """

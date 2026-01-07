@@ -1,6 +1,7 @@
 # methodes pour gerer les creatures
 from random import randint as rd
 import pygame as pg
+import settings
 
 class  Creature():
     """
@@ -18,8 +19,8 @@ class  Creature():
         self.variation_view = Variation_View
         self.days = 0
         self.days_max = Days_Max
-        self.pos_x = 550
-        self.pos_y = 440
+        self.pos_x = settings.Display_size[0] // 2
+        self.pos_y = settings.Display_size[1] // 2
         self.image = pg.image.load("assets/creature.png")
 
     def draw(self, screen):

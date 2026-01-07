@@ -5,7 +5,7 @@ import pygame as pg
 class Day_Manager():
     def __init__(self, surf):
         self.surf = surf
-        self.current_day = 0
+        self.current_day = 1
         self.time = 0
         self.creatures = []
 
@@ -13,9 +13,7 @@ class Day_Manager():
         """
         gere a chaque tick :
         - faire bouger les cratures
-        - afficher les cratures
         - verifier si la nouriture est mangée
-        - afficher la nouriture
         le tout en appelant les fonctions correspondantes
         """
         # fait bouger et consomme la nouriture des creatures
@@ -24,15 +22,8 @@ class Day_Manager():
                 if not c.energy == 0:
                     c.lives()
                     c.moove()
-        #affiche les cratures
-        for a in self.creatures:
-            for c in a:
-                c.draw(self.surf)
-        
-        pg.display.flip()
 
     def first_day(self):
-        print('first day')
         for pop in settings.POPULATIONS:
             a = []
             for i in range(pop['quantity']):
@@ -44,7 +35,7 @@ class Day_Manager():
         """
         dt = temps passé depuis la derniere fois que la fonction as étée appelée
         """
-        self.time = dt / 60
+        self.time = dt / settings.FPS
         if self.time >= settings.day_duration:
             if self.current_day >= settings.Days_max:
                 return 'end'
