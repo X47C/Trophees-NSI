@@ -1,4 +1,5 @@
 import settings
+from .creature import Creature
 import pygame as pg
 
 class Day_Manager():
@@ -6,20 +7,50 @@ class Day_Manager():
         self.surf = surf
         self.current_day = 0
         self.time = 0
+        self.creatures = []
 
-    def update(self, dt):
+    def update(self):
+        """
+        gere a chaque tick :
+        - faire bouger les cratures
+        - afficher les cratures
+        - verifier si la nouriture est mangée
+        - afficher la nouriture
+        le tout en appelant les fonctions correspondantes
+        """
+        # fait bouger et consomme la nouriture des creatures
+        for a in self.creatures:
+            for c in a:
+                if not c.energy == 0:
+                    c.lives()
+                    c.moove()
+        #affiche les cratures
+        for a in self.creatures:
+            for c in a:
+                c.draw(self.surf)
+        
+        pg.display.flip()
+
+    def first_day(self):
+        print('first day')
+        for pop in settings.POPULATIONS:
+            a = []
+            for i in range(pop['quantity']):
+                a.append(Creature(pop['speed'], pop['size'], pop['view'], pop['speed_variation'],pop['size_variation'], pop['view_variation'], pop['life'], pop['color']))
+            self.creatures.append(a)
+
+
+    def is_over(self, dt):
         """
         dt = temps passé depuis la derniere fois que la fonction as étée appelée
         """
-        self.time += dt
+        self.time = dt / 60
         if self.time >= settings.day_duration:
             if self.current_day >= settings.Days_max:
                 return 'end'
             else:
-                print('end of the day')
                 return 'continue'
-        else:
-            self.day()
+  
 
     def new_day(self):
         """
@@ -27,7 +58,11 @@ class Day_Manager():
         """
         self.current_day += 1
         self.time = 0
-        print('start of a new_day')
+        for a in self.creatures:
+            for c in a:
+                c.pos_x = 550
+                c.pos_y = 440
+                c.energy = 100
 
     def draw_current_day(self):
         """

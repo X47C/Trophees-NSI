@@ -1,9 +1,10 @@
 # methodes pour gerer les creatures
 from random import randint as rd
+import pygame as pg
 
 class  Creature():
     """
-    Entrée : Speed, Size, View (float, compris entre 1 et 10) 
+    Entrée : Speed, Size, View (int, compris entre 1 et 10) 
     """
     def __init__(self, Speed, Size, View, Variation_Speed, Variation_Size, Variation_View, Days_Max, Color):
         self.speed = Speed
@@ -17,6 +18,16 @@ class  Creature():
         self.variation_view = Variation_View
         self.days = 0
         self.days_max = Days_Max
+        self.pos_x = 550
+        self.pos_y = 440
+        self.image = pg.image.load("assets/creature.png")
+
+    def draw(self, screen):
+        screen.blit(self.image, (self.pos_x, self.pos_y))
+
+    def moove(self):
+        self.pos_x += rd(-2 * self.speed, 2 * self.speed)
+        self.pos_y += rd(-2 * self.speed, 2 * self.speed)
 
     def Baby(self):
         """
@@ -53,14 +64,14 @@ class  Creature():
         """
         Check si le mec est en vie renvois True ou false
         """
-        return self.energie > 0 and self.days <= self.days_max
+        return self.energy > 0 and self.days <= self.days_max
 
     def lives(self):
         """
         Consomme l'energie aussi ect
         """
         if self.is_alive():
-            self.energy -= 10
+            self.energy -= 1
         
 
     def get_color(self):

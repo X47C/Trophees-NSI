@@ -1,5 +1,5 @@
 # Ensemble des methodes servant a faire marcher pygame, on a before game avec les menu et les dispositions pour créer une partie
-# on a post game et in game
+
 import pygame as pg
 from Pygame.button import Button
 from pygame import Rect
@@ -307,9 +307,9 @@ class Settings:
                     return None
                 if g["plus"].rect.collidepoint((mx,my)):
                     if name == "Food_quantity":
-                        settings.Food_quantity += 1
+                        settings.Food_quantity = min(settings.Max_foood_quantity, settings.Food_quantity + 1)
                     else:
-                        settings.Days_max += 1
+                        settings.Days_max = min(settings.Max_days_max, settings.Days_max + 1)
                     self._refresh_general_display()
                     return None
 
@@ -340,7 +340,6 @@ class Settings:
                     self._refresh_pop_display()
                 return None
 
-            # select population by number (uses same y)
             for rect, idx in self.pop_number_buttons:
                 if rect.collidepoint((mx,my)):
                     self.selected_pop = idx
@@ -348,7 +347,7 @@ class Settings:
                     self._refresh_pop_display()
                     return None
 
-            # per-population controls
+            # per-population controls yea yea I'm english c'est une catastrophe la motié des commentaires sont dans une langue et l'autre motiée dasn une autre
             if len(settings.POPULATIONS) == 0:
                 return None
             pop = settings.POPULATIONS[self.selected_pop]
@@ -363,39 +362,37 @@ class Settings:
                             except ValueError:
                                 i = 0
                             pop["color"] = opts[(i - 1) % len(opts)]
-                    elif isinstance(cur, bool):
-                        pop[key] = False
                     elif isinstance(cur, int):
                         pop[key] = max(0, cur - 1)
-                    else:
-                        try:
-                            val = int(cur)
-                            pop[key] = max(0, val - 1)
-                        except Exception:
-                            pass
                     self._refresh_pop_display()
                     return None
-
+                
                 if c["plus"].rect.collidepoint((mx,my)):
                     cur = pop.get(key)
-                    if key == "color":
-                        opts = getattr(settings, 'Color_options', [])
-                        if opts:
-                            try:
-                                i = opts.index(cur)
-                            except ValueError:
-                                i = 0
-                            pop["color"] = opts[(i + 1) % len(opts)]
-                    elif isinstance(cur, bool):
-                        pop[key] = True
-                    elif isinstance(cur, int):
-                        pop[key] = cur + 1
-                    else:
-                        try:
-                            val = int(cur)
-                            pop[key] = val + 1
-                        except Exception:
-                            pass
+                    match key:
+                        case 'color':
+                            if opts:
+                                try:
+                                    i = opts.index(cur)
+                                except ValueError:
+                                    i = 0
+                                pop["color"] = opts[(i + 1) % len(opts)]
+                        case 'life':
+                            pop[key] = min(cur + 1, settings.Max_life)
+                        case 'quantity':
+                            pop[key] = min(cur + 1, settings.Max_quantity)
+                        case 'size':
+                            pop[key] = min(cur + 1, settings.Max_caracteristic)
+                        case 'speed':
+                            pop[key] = min(cur + 1, settings.Max_caracteristic)
+                        case 'view':
+                            pop[key] = min(cur + 1, settings.Max_caracteristic)
+                        case 'size_variation':
+                            pop[key] = min(cur + 1, 100) #c'est des pourcent donc max 100 je crois je sais meme pas si ca a un sens 100
+                        case 'view_variation':
+                            pop[key] = min(cur + 1, 100) #c'est des pourcent donc max 100 je crois je sais meme pas si ca a un sens 100
+                        case 'speed_variation':
+                            pop[key] = min(cur + 1, 100) #c'est des pourcent donc max 100 je crois je sais meme pas si ca a un sens 100
                     self._refresh_pop_display()
                     return None
 
