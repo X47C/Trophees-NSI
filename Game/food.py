@@ -4,15 +4,18 @@ class Food():
     """
     Entry : position (tupple), is_eaten (bool)
     """
-    def __init__(self):
+    def __init__(self, x, y):
         self.position = (0, 0)
         self.is_eaten = False
+        self.pos_x = x
+        self.pos_y = y
+        self.image = pg.image.load('assets/food.png')
     
-    def __str__(self):
+    def draw(self, screen):
         """
         affiche la nourriture
         """
-        pass
+        screen.blit(self.image, (self.pos_x, self.pos_y))
 
     def __del__(self):
         """

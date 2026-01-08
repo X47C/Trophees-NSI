@@ -430,6 +430,8 @@ class In_Game:
         for a in l_creatures:
             for c in a:
                 c.draw(screen)
+        for f in settings.food_list:
+            f.draw(screen)
 
     def handle_event(self, event):
         """

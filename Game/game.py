@@ -1,13 +1,14 @@
 import settings
 from .creature import Creature
 import pygame as pg
+from .food import Food
+from random import randint as rd
 
 class Day_Manager():
     def __init__(self, surf):
         self.surf = surf
         self.current_day = 1
         self.time = 0
-        self.creatures = []
 
     def update(self):
         """
@@ -17,7 +18,7 @@ class Day_Manager():
         le tout en appelant les fonctions correspondantes
         """
         # fait bouger et consomme la nouriture des creatures
-        for a in self.creatures:
+        for a in settings.creatures_list:
             for c in a:
                 if not c.energy == 0:
                     c.lives()
@@ -28,7 +29,10 @@ class Day_Manager():
             a = []
             for i in range(pop['quantity']):
                 a.append(Creature(pop['speed'], pop['size'], pop['view'], pop['speed_variation'],pop['size_variation'], pop['view_variation'], pop['life'], pop['color']))
-            self.creatures.append(a)
+            settings.creatures_list.append(a)
+        for i in range(settings.Food_quantity):
+            settings.food_list.append(Food(rd(280, 1000), rd(70, 650)))
+        print(settings.food_list)
 
 
     def is_over(self, dt):
@@ -49,7 +53,7 @@ class Day_Manager():
         """
         self.current_day += 1
         self.time = 0
-        for a in self.creatures:
+        for a in settings.creatures_list:
             for c in a:
                 c.pos_x = 550
                 c.pos_y = 440
@@ -60,14 +64,3 @@ class Day_Manager():
         Affiche le jour actuel en haut a gauche de l'écran quand le jeu est lancé
         """
         self.surf.blit(pg.font.SysFont(settings.Days_font, settings.Days_font_size).render(f'Day : {self.current_day} / {settings.Days_max}', True, (255, 255, 255)), (10, 10))
-
-    def day(self):
-        """
-        tout ce qui se passe dans un jour
-        """
-        pass
-
-    
-
-
-

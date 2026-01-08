@@ -91,7 +91,7 @@ while running:
         case 'settings':
             Sett.draw()
         case 'in_game':
-            Ing.draw(day_manager.creatures, screen)
+            Ing.draw(settings.creatures_list, screen)
             day_manager.draw_current_day()
         case 'post_game':
             Engd.draw()
