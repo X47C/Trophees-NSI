@@ -1,4 +1,5 @@
 # methodes pour gerer la nouriture
+import pygame as pg
 
 class Food():
     """
@@ -15,7 +16,8 @@ class Food():
         """
         affiche la nourriture
         """
-        screen.blit(self.image, (self.pos_x, self.pos_y))
+        rect = self.image.get_rect(center=(int(self.pos_x), int(self.pos_y)))
+        screen.blit(self.image, rect)
 
     def __del__(self):
         """
