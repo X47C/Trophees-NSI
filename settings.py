@@ -1,5 +1,9 @@
 # Paramètres globaux et valeurs par défaut
 
+
+creatures_list = []
+food_list = []
+
 # Affichage
 Display_size = (1280, 720)  # largeur, hauteur
 FPS = 30

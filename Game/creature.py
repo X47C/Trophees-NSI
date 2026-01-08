@@ -27,8 +27,8 @@ class  Creature():
         screen.blit(self.image, (self.pos_x, self.pos_y))
 
     def moove(self):
-        self.pos_x += rd(-2 * self.speed, 2 * self.speed)
-        self.pos_y += rd(-2 * self.speed, 2 * self.speed)
+        self.pos_x += rd(-4 * self.speed, 4 * self.speed)
+        self.pos_y += rd(-4 * self.speed, 4 * self.speed)
 
     def Baby(self):
         """
