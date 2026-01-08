@@ -87,8 +87,8 @@ class Settings:
         self.pop_selected_bg = (120, 200, 140)
 
         # Espaces ajustables
-        self.pop_manage_top_space = 30
-        self.pop_manage_bottom_space = 18
+        self.pop_manage_top_space = 60
+        self.pop_manage_bottom_space = 48
 
         # selected population index
         self.selected_pop = 0
