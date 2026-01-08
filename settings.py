@@ -1,39 +1,60 @@
-import pygame as pg
-pg.init()
+# Paramètres globaux et valeurs par défaut
 
-Food_quantity = 100
-Simulation_duration = 1 #min 1 max 10000, en jours
+# Affichage
+Display_size = (1280, 720)  # largeur, hauteur
+FPS = 30
 
-Speed = 3 #min 1 max 10
-Size = 3 #min 1 max 10
-View = 3 #min 1 max 10
+# texte des crédits
+Credits_Text = ['Dévellopé par : ','Cyprien Cros', 'Jules Graffan', 'Sara quelquechose', 'Remerciement à : ', 'Mme Rebinguet-Martres'] 
 
-Speed_variation = 15 #min 1 max 500, pourcentage
-Size_variation = 15 #min 1 max 500, pourcentage
-View_variation = 15 #min 1 max 500, pourcentage
+# Police 
+Days_font = "arial"
+Days_font_size = 18
+Button_font = "arial" 
+Button_font_size = 18
+Button_label_font = "arial"
+Button_label_font_size = 14
+Credits_font = 'arial'
+Credits_font_size = 18
 
-Color = 'white' #white, red, green, blue, yellow, cyan, magenta, black
+#  Boutons généraux ( et leurs max)
+Food_quantity = 100         # Quantité de nourriture initiale
+Max_foood_quantity = 1000
+Days_max = 1                # Nombre de jours de la simulation 
+Max_days_max = 100
+day_duration = 5
 
+# limites populations 
+POPULATION_MIN = 1
+POPULATION_MAX = 6
 
+Color_options = ["white", "red", "green", "blue", "yellow", "purple", "black"]
 
-Days_max = 5 #min 1 max 1000
-day_duration = 5 #en secondes
+# Valeurs par défaut pour une population
 
+DEFAULT_POP = {
+    "name": "Population 1",
+    "life": 50,         #durée de vie mdr je viens de me rendre compte que c'est pas clair mais flemme de changer ( oui c'est un commentaire constructif ET trop long je sais merci )
+    "color": "white",
+    "quantity": 10,
+    "speed_variation": 15,
+    "size_variation": 15,
+    "view_variation": 15,
+    "view": 4,
+    "speed": 4,
+    "size": 4
+}
 
+# Valeurs par défaut pour une population : MAX
+Max_life = 53
+Max_quantity = 100
+Max_caracteristic = 10 # size, view et speed ( mais je sais meme pas si c'est un mot anglais mais chilll ) 
 
-Button_font = 'arial' #nom de la police d'écriture des boutons
-Button_font_size = 40 #taille de la police d'écriture des boutons*
-Credits_font = 'arial' #nom de la police d'écriture des crédits
-Credits_font_size = 30 #taille de la police d'écriture des crédits
-Days_font = 'arial'
-Days_font_size = 40 #taille de la police d'écriture des jours
-Button_label_font = 'arial'
-Button_label_font_size = 40
+# Liste des populations ( au moins 1 )
+POPULATIONS = [
+    DEFAULT_POP.copy()
+]
 
-
-
-Display_size = (pg.display.Info().current_w, pg.display.Info().current_h) #taille de la fenêtre d'affichage (largeur, hauteur)
-
-Credits_Text = ["Game developed by:",'Graffan Jules', 'Cros Cyprien', 'Quota Feminin']
-
-Fps = 60
+# UI colors
+UI_BG_COLOR = (200, 200, 200)
+UI_PANEL_COLOR = (240, 240, 240)

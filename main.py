@@ -5,6 +5,8 @@ import settings
 from Game.game import Day_Manager
 
 # --- INIT ---
+pg.init()
+
 screen = pg.display.set_mode(settings.Display_size)
 clock = pg.time.Clock()
 
@@ -18,10 +20,10 @@ day_manager = Day_Manager(screen)
 running = True
 state = 'home'
 
+t = 0
+
 # --- MAIN LOOP ---
 while running:
-
-    dt = clock.tick(settings.Fps) / 1000.0 
 
     # --- EVENT HANDLING ---
     for event in pg.event.get():
@@ -40,14 +42,10 @@ while running:
             case 'settings':
                 match Sett.handle_event(event):
                     case'start':
-                        day_manager.new_day()
+                        day_manager.first_day()
                         state = 'in_game'
                     case 'back':
                         state = 'home'
-                    case "left:Button Gauche 1":
-                        print("left:Button Gauche 1")
-                    case "left:Button Gauche 2":
-                        print("left:Button Gauche 2")
 
             case 'in_game':
                 match Ing.handle_event(event):
@@ -70,25 +68,30 @@ while running:
 
     # --- UPDATE --- 
     if state == "in_game":
-
-        match day_manager.update(dt):
+        t += 1
+        match day_manager.is_over(t):
             case "end":
                 state = "post_game"
                 day_manager.current_day = 0
             case "continue":
                 day_manager.new_day()
+                t = 0
+        day_manager.update() 
+
+        
+        
 
 
     # --- DRAW ---
     screen.fill((0,0,0))
-
+    
     match state:
         case 'home':
             Befg.draw()
         case 'settings':
             Sett.draw()
         case 'in_game':
-            Ing.draw()
+            Ing.draw(day_manager.creatures, screen)
             day_manager.draw_current_day()
         case 'post_game':
             Engd.draw()
@@ -97,6 +100,7 @@ while running:
 
 
     pg.display.flip()
+    clock.tick(settings.FPS)
 
 
 

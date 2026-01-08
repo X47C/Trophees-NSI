@@ -1,9 +1,9 @@
 # Ensemble des methodes servant a faire marcher pygame, on a before game avec les menu et les dispositions pour créer une partie
-# on a post game et in game
 import pygame as pg
 from Pygame.button import Button
 from pygame import Rect
 import settings
+from Game import game
 
 class Before_Game:
     """
@@ -66,220 +66,335 @@ class Before_Game:
 class Settings:
     """
     """
+
     def __init__(self, screen):
         self.screen = screen
         self.width, self.height = settings.Display_size
 
-        # ratio gauche / droite 
-        self.left_ratio = max(0.1, 0.75)
-        self.left_width = int(self.width * self.left_ratio)
-        self.right_width = self.width - self.left_width
-        self.left_rect = Rect(0, 0, self.left_width, self.height)
-        self.right_rect = Rect(self.left_width, 0, self.right_width, self.height)
+        # fonts
+        self.font_btn = pg.font.SysFont(settings.Button_font, settings.Button_font_size)
+        self.font_lbl = pg.font.SysFont(settings.Button_label_font, settings.Button_label_font_size)
 
-        # fond global 
-        self.bg_asset = pg.Surface((self.width, self.height))
-        self.bg_asset.fill((200, 200, 200))
+        # geometry
+        self.padding = 20
+        self.gap = 18
+        self.btn_h = 44
+        self.small_w = 48
+        self.label_gap = 6
 
-        # fond gauche
-        # self.left_bg_surface = pg.image.load('assets/left_bg.png').convert()
-        # self.left_bg_surface = pg.transform.scale(self.left_bg_surface, (self.left_width, self.content_height))
-        self.left_bg_surface = pg.Surface((self.left_width, self.height))
-        self.left_bg_surface.fill((230, 230, 230)) 
+        # couleur de fond pour le bouton numéroté sélectionné (modifiable)
+        # ex : (120, 200, 140) = vert doux ; remplace par ce que tu veux
+        self.pop_selected_bg = (120, 200, 140)
 
-        # fond droit
-        # self.right_bg_surface = pg.image.load('assets/right_bg.png').convert()
-        # self.right_bg_surface = pg.transform.scale(self.right_bg_surface, (self.right_width, self.height))
-        self.right_bg_surface = pg.Surface((self.right_width, self.height))
-        self.right_bg_surface.fill((200, 200, 200)) 
+        # Espaces ajustables
+        self.pop_manage_top_space = 60
+        self.pop_manage_bottom_space = 48
 
-        # police pour textes de boutons 
-        self.Button_font = pg.font.SysFont(settings.Button_font, settings.Button_font_size)
+        # selected population index
+        self.selected_pop = 0
 
-        # police pour labels au-dessus des boutons gauches 
-        self.Settings_label_font = pg.font.SysFont(settings.Button_label_font, settings.Button_label_font_size)
+        # construction initiale de l'UI
+        self._build_general_controls()
+        self._build_pop_management_buttons()
+        self._build_pop_controls()
+        self._build_bottom_buttons()
 
-        # boutons colonne droite 
-        self.Start_Button = Button(Rect(self.left_width + (self.right_width - 220) // 2, self.height // 2 - 90, 220, 80),'Start Simulation', self.screen)
-        self.Back_Button = Button(Rect(self.left_width + (self.right_width - 220) // 2, self.height // 2 + 90, 220, 80),'Back', self.screen)
+    def update_layout(self):
+        sel = self.selected_pop
+        self._build_general_controls()
+        self._build_pop_management_buttons()
+        self._build_pop_controls()
+        self._build_bottom_buttons()
+        self.selected_pop = sel
+        self._refresh_general_display()
+        self._refresh_pop_display()
 
-        # zone gauche 
-        self.left_padding = 16
-        self.button_height = 72
-        self.button_spacing = 500
+    def _build_general_controls(self):
+        total_w = self.width - self.padding * 2
+        col_w = (total_w - self.gap) // 2
+        val_w = col_w - self.small_w * 2 - 12
 
-        # position manuelle des boutons 
-        y = 60
-        btn_w_left = self.left_width - 2 * self.left_padding - 18  # laisse place au scrollbar
+        top_y = self.padding
 
-        # Boutons Gauches
-        self.Left_Button_1 = Button(Rect(self.left_padding, y, btn_w_left, self.button_height),'Button Gauche 1') 
-        y += self.button_height + 60 + self.button_spacing # a mettre entre chaques etages de boutons
-        self.Left_Button_2 = Button(Rect(self.left_padding, y, btn_w_left, self.button_height),'Button Gauche 2')
-        y += self.button_height + 60 + self.button_spacing
-        self.Left_Button_3 = Button(Rect(self.left_padding, y, btn_w_left, self.button_height),'Button Gauche 2')
-        y += self.button_height + 60 + self.button_spacing
-        self.Left_Button_4 = Button(Rect(self.left_padding, y, btn_w_left, self.button_height),'Button Gauche 4')
-        y += self.button_height + 20 #A ABSOLUMENT LAISSER A LA FIN DES BOUTONS
+        # food - left
+        x0 = self.padding
+        lbl_y = top_y
+        btn_y = lbl_y + self.font_lbl.get_height() + self.label_gap
+        self.general_food = {
+            "label": "Quantité de nourriture",
+            "minus": Button(Rect(x0, btn_y, self.small_w, self.btn_h), "-", self.screen),
+            "value": Button(Rect(x0 + self.small_w + 6, btn_y, val_w, self.btn_h), str(settings.Food_quantity), self.screen),
+            "plus": Button(Rect(x0 + self.small_w + 6 + val_w + 6, btn_y, self.small_w, self.btn_h), "+", self.screen),
+            "lbl_pos": (x0 + (col_w // 2), lbl_y)
+        }
 
-        # labek au dessus des boutons, garder la bonne forme : Nom_Button_label
-        self.Left_Button_1_label = "bouton 1 chockbar"
-        self.Left_Button_2_label = "J'aurais pas pu deviner que c'etait le deucx"
-        self.Left_Button_3_label = "C'est bien centré ?"
-        self.Left_Button_4_label = "c'est le bouton 4"
+        # days - right
+        x1 = self.padding + col_w + self.gap
+        lbl_y = top_y
+        btn_y = lbl_y + self.font_lbl.get_height() + self.label_gap
+        self.general_days = {
+            "label": "Nombre de jours de la simulation",
+            "minus": Button(Rect(x1, btn_y, self.small_w, self.btn_h), "-", self.screen),
+            "value": Button(Rect(x1 + self.small_w + 6, btn_y, val_w, self.btn_h), str(settings.Days_max), self.screen),
+            "plus": Button(Rect(x1 + self.small_w + 6 + val_w + 6, btn_y, self.small_w, self.btn_h), "+", self.screen),
+            "lbl_pos": (x1 + (col_w // 2), lbl_y)
+        }
 
-        # calcul hauteur du contenu et création de la surface interne
-        self.content_height = max(self.height, y)
-        self.content_surface = pg.Surface((self.left_width, self.content_height), flags=pg.SRCALPHA)
-        self.content_surface.blit(self.left_bg_surface, (0,0))
+        base_line = btn_y + self.btn_h
+        self.pop_manage_y = base_line + self.pop_manage_top_space
+        self.pop_controls_start_y = self.pop_manage_y + 36 + self.pop_manage_bottom_space
 
-        # scroll
-        self.scroll_offset = 0
-        self.max_scroll = max(0, self.content_height - self.height)
-        self.wheel_step = 30
+    def _build_pop_management_buttons(self):
+        y = self.pop_manage_y
 
-        # scrollbar visuelle
-        self.scrollbar_w = 14
-        self.scrollbar_track_rect = Rect(self.left_width - self.scrollbar_w - 4, 8,self.scrollbar_w, self.height - 16)
-        self.dragging_thumb = False
-        self.drag_mouse_y = 0
-        self.thumb_rect = self._compute_thumb_rect()
+        # boutons + / -
+        self.btn_add_pop = Button(Rect(self.padding, y, 110, 36), "+ Pop", self.screen)
+        self.btn_rem_pop = Button(Rect(self.padding + 120, y, 110, 36), "- Pop", self.screen)
 
-    def _compute_thumb_rect(self):
-        """
-        scrollbar helpers ( chiant de fou je suis mort )
-        """
-        track = self.scrollbar_track_rect
-        if self.content_height <= self.height:
-            return Rect(track.x, track.y, track.w, track.h)
-        view_ratio = self.height / self.content_height
-        thumb_h = max(24, int(track.h * view_ratio))
-        max_travel = track.h - thumb_h
-        if self.max_scroll == 0:
-            thumb_y = track.y
-        else:
-            thumb_y = track.y + int((self.scroll_offset / self.max_scroll) * max_travel)
-        return Rect(track.x, thumb_y, track.w, thumb_h)
+        # petits boutons numérotés alignés sur la même ligne (même y)
+        self.pop_number_buttons = []
+        x = self.padding + 260
+        for i in range(len(settings.POPULATIONS)):
+            rect = Rect(x, y, 40, 36)
+            self.pop_number_buttons.append((rect, i))
+            x += 46
 
-    def _clamp_scroll(self):
-        self.max_scroll = max(0, self.content_height - self.height)
-        self.scroll_offset = max(0, min(self.scroll_offset, self.max_scroll))
-        self.thumb_rect = self._compute_thumb_rect()
+    def _build_pop_controls(self):
+        if len(settings.POPULATIONS) == 0:
+            if hasattr(settings, 'DEFAULT_POP'):
+                settings.POPULATIONS.append(settings.DEFAULT_POP.copy())
+            else:
+                settings.POPULATIONS.append({
+                    "name": "Population 1", "life": 50, "color": "white", "quantity": 10,
+                    "speed_variation": 15, "size_variation": 15, "view_variation": 15,
+                    "view": 15, "speed": 3, "size": 3
+                })
 
+        self.selected_pop = max(0, min(self.selected_pop, len(settings.POPULATIONS) - 1))
+        pop = settings.POPULATIONS[self.selected_pop]
+
+        labels = [
+            ("Durée de vie des créatures", "life"),
+            ("Couleur des créatures", "color"),
+            ("Quantité de créatures", "quantity"),
+            ("Taux de variation de la vitesse", "speed_variation"),
+            ("Taux de variation de la taille", "size_variation"),
+            ("Taux de variation de la vue", "view_variation"),
+            ("Taille de vue au départ", "view"),
+            ("Vitesse de départ", "speed"),
+            ("Taille de départ", "size"),
+        ]
+
+        total_w = self.width - 2 * self.padding
+        col_w = (total_w - 2 * self.gap) // 3
+        val_w = col_w - self.small_w * 2 - 12
+
+        self.pop_controls = {}
+        for idx, (label, key) in enumerate(labels):
+            col = idx % 3
+            row = idx // 3
+            x = self.padding + col * (col_w + self.gap)
+            y_label = self.pop_controls_start_y + row * (self.font_lbl.get_height() + self.label_gap + self.btn_h + 18)
+            y_btn = y_label + self.font_lbl.get_height() + self.label_gap
+
+            cur_val = pop.get(key, "")
+            if isinstance(cur_val, bool):
+                display = '1' if cur_val else '0'
+            else:
+                display = str(cur_val)
+
+            minus = Button(Rect(x, y_btn, self.small_w, self.btn_h), "-", self.screen)
+            value = Button(Rect(x + self.small_w + 6, y_btn, val_w, self.btn_h), display, self.screen)
+            plus = Button(Rect(x + self.small_w + 6 + val_w + 6, y_btn, self.small_w, self.btn_h), "+", self.screen)
+
+            center_x = x + (col_w // 2)
+            self.pop_controls[key] = {
+                "label": label,
+                "label_pos": (center_x, y_label),
+                "minus": minus,
+                "value": value,
+                "plus": plus
+            }
+
+    def _build_bottom_buttons(self):
+        y = self.height - (self.btn_h + 20)
+        w = 220
+        gap = 24
+        x = (self.width - (2 * w + gap)) // 2
+        self.btn_start = Button(Rect(x, y, w, self.btn_h), "Start", self.screen)
+        self.btn_back = Button(Rect(x + w + gap, y, w, self.btn_h), "Back", self.screen)
 
     def draw(self):
-        # fond global (fallback)
-        self.screen.blit(self.bg_asset, (0, 0))
+        self.screen.fill(settings.UI_BG_COLOR if hasattr(settings, 'UI_BG_COLOR') else (200, 200, 200))
+        pg.draw.rect(self.screen, settings.UI_PANEL_COLOR if hasattr(settings, 'UI_PANEL_COLOR') else (240,240,240),
+                     (0, 0, self.width, self.height))
 
-        # fond de gauche
-        self.screen.blit(self.left_bg_surface, (0, 0))
+        # general labels + buttons
+        for g in (self.general_food, self.general_days):
+            label_surf = self.font_lbl.render(g["label"], True, (0, 0, 0))
+            cx, ly = g["lbl_pos"]
+            lx = int(cx - label_surf.get_width() // 2)
+            self.screen.blit(label_surf, (lx, ly))
+            g["minus"].draw(self.screen, self.font_btn)
+            g["value"].draw(self.screen, self.font_btn)
+            g["plus"].draw(self.screen, self.font_btn)
 
-        # fond de droite
-        self.screen.blit(self.right_bg_surface, (self.left_width, 0))
+        # draw pop manage line (add/remove + numbers)
+        self.btn_add_pop.draw(self.screen, self.font_btn)
+        self.btn_rem_pop.draw(self.screen, self.font_btn)
 
-        # redessine le contenu gauche sur la content_surface 
-        self.content_surface.blit(self.left_bg_surface, (0,0))
+        for rect, i in self.pop_number_buttons:
+            if i == self.selected_pop:
+                # highlight by filling the button background with the chosen color
+                highlight_color = self.pop_selected_bg
+                pg.draw.rect(self.screen, highlight_color, (rect.x, rect.y, rect.width, rect.height))
+                # draw number text in WHITE to contrast
+                txt = self.font_btn.render(str(i+1), True, (255, 255, 255))
+                tx = rect.x + (rect.width - txt.get_width()) // 2
+                ty = rect.y + (rect.height - txt.get_height()) // 2
+                self.screen.blit(txt, (tx, ty))
+            else:
+                b = Button(Rect(rect.x, rect.y, rect.width, rect.height), str(i+1), self.screen)
+                b.draw(self.screen, self.font_btn)
 
-        # Le texte au desssu des boutons, a copier coller pour chaques boutons meme si pas de texte plzzzz
-        if self.Left_Button_1_label:
-            label_surf = self.Settings_label_font.render(self.Left_Button_1_label, True, (0,0,0))
-            label_pos = (self.Left_Button_1.rect.x, self.Left_Button_1.rect.y - label_surf.get_height() - 6)
-            self.content_surface.blit(label_surf, label_pos)
-        self.Left_Button_1.draw(self.content_surface, self.Button_font)
-        if self.Left_Button_2_label:
-            label_surf = self.Settings_label_font.render(self.Left_Button_2_label, True, (0,0,0))
-            label_pos = (self.Left_Button_2.rect.x, self.Left_Button_2.rect.y - label_surf.get_height() - 6)
-            self.content_surface.blit(label_surf, label_pos)
-        self.Left_Button_2.draw(self.content_surface, self.Button_font)
-        if self.Left_Button_3_label:
-            label_surf = self.Settings_label_font.render(self.Left_Button_3_label, True, (0,0,0))
-            label_pos = (self.Left_Button_3.rect.x, self.Left_Button_3.rect.y - label_surf.get_height() - 6)
-            self.content_surface.blit(label_surf, label_pos)
-        self.Left_Button_3.draw(self.content_surface, self.Button_font)
-        if self.Left_Button_4_label:
-            label_surf = self.Settings_label_font.render(self.Left_Button_4_label, True, (0,0,0))
-            label_pos = (self.Left_Button_4.rect.x, self.Left_Button_4.rect.y - label_surf.get_height() - 6)
-            self.content_surface.blit(label_surf, label_pos)
-        self.Left_Button_4.draw(self.content_surface, self.Button_font)
+        # draw pop controls grid (labels centered)
+        for key, c in self.pop_controls.items():
+            label_surf = self.font_lbl.render(c["label"], True, (0,0,0))
+            cx, ly = c["label_pos"]
+            lx = int(cx - label_surf.get_width() // 2)
+            self.screen.blit(label_surf, (lx, ly))
+            c["minus"].draw(self.screen, self.font_btn)
+            c["value"].draw(self.screen, self.font_btn)
+            c["plus"].draw(self.screen, self.font_btn)
 
-        # blit de la portion visible (viewport)
-        visible_src = Rect(0, self.scroll_offset, self.left_width, self.height)
-        self.screen.blit(self.content_surface, (self.left_rect.x, self.left_rect.y), area=visible_src)
+        # bottom buttons
+        self.btn_start.draw(self.screen, self.font_btn)
+        self.btn_back.draw(self.screen, self.font_btn)
 
-        # dessine scrollbar
-        pg.draw.rect(self.screen, (210, 210, 210), self.scrollbar_track_rect, border_radius=6)
-        self.thumb_rect = self._compute_thumb_rect()
-        pg.draw.rect(self.screen, (170, 170, 170), self.thumb_rect, border_radius=6)
+    def _refresh_general_display(self):
+        self.general_food["value"].text = str(settings.Food_quantity)
+        self.general_days["value"].text = str(settings.Days_max)
 
-        # séparation colonne
-        pg.draw.line(self.screen, (160, 160, 160), (self.left_width, 0), (self.left_width, self.height), 2)
-
-        # colonne droite (fixe)
-        # si tu veux un fond image pour la droite, remplace right_bg_surface comme indiqué plus haut
-        self.Start_Button.draw(self.screen, self.Button_font, 'assets/button-start.png')
-        self.Back_Button.draw(self.screen, self.Button_font)
+    def _refresh_pop_display(self):
+        if len(settings.POPULATIONS) == 0:
+            return
+        pop = settings.POPULATIONS[self.selected_pop]
+        for key, c in self.pop_controls.items():
+            v = pop.get(key, "")
+            if isinstance(v, bool):
+                c["value"].text = '1' if v else '0'
+            else:
+                c["value"].text = str(v)
 
     def handle_event(self, event):
-        # Boutons droite
-        if event.type == pg.MOUSEBUTTONUP and event.button == 1:
-            if self.Start_Button.rect.collidepoint(event.pos):
+        if event.type == pg.MOUSEBUTTONDOWN and event.button == 1:
+            # bottom
+            if self.btn_start.rect.collidepoint(event.pos):
                 return 'start'
-            if self.Back_Button.rect.collidepoint(event.pos):
+            if self.btn_back.rect.collidepoint(event.pos):
                 return 'back'
 
-        # molette 
-        if event.type == pg.MOUSEWHEEL:
-            mx, my = pg.mouse.get_pos()
-            if self.left_rect.collidepoint((mx, my)):
-                self.scroll_offset -= event.y * self.wheel_step
-                self._clamp_scroll()
-                return None
+            mx, my = event.pos
 
-        # # fallback molette (boutons 4/5)
-        if event.type == pg.MOUSEBUTTONUP and event.button in (4, 5):
-            if self.left_rect.collidepoint(event.pos):
-                if event.button == 4:
-                    self.scroll_offset -= self.wheel_step
-                else:
-                    self.scroll_offset += self.wheel_step
-                self._clamp_scroll()
-                return None
-
-        # Boutons gauches ( galere )
-        if event.type == pg.MOUSEBUTTONUP and event.button == 1:
-            if self.left_rect.collidepoint(event.pos):
-                rel_x = event.pos[0] - self.left_rect.x
-                rel_y = event.pos[1] - self.left_rect.y + self.scroll_offset
-
-                if self.Left_Button_1.rect.collidepoint((rel_x, rel_y)):
-                    return "left:Button Gauche 1"
-                if self.Left_Button_2.rect.collidepoint((rel_x, rel_y)):
-                    return "left:Button Gauche 2"
-                if self.thumb_rect.collidepoint(event.pos):
-                    self.dragging_thumb = True
-                    self.drag_mouse_y = event.pos[1] - self.thumb_rect.y
+            # general controls
+            for name, g in (("Food_quantity", self.general_food), ("Simulation_duration", self.general_days)):
+                if g["minus"].rect.collidepoint((mx,my)):
+                    if name == "Food_quantity":
+                        settings.Food_quantity = max(0, settings.Food_quantity - 1)
+                    else:
+                        settings.Days_max = max(1, settings.Days_max - 1)
+                    self._refresh_general_display()
+                    return None
+                if g["plus"].rect.collidepoint((mx,my)):
+                    if name == "Food_quantity":
+                        settings.Food_quantity = min(settings.Max_foood_quantity, settings.Food_quantity + 1)
+                    else:
+                        settings.Days_max = min(settings.Max_days_max, settings.Days_max + 1)
+                    self._refresh_general_display()
                     return None
 
-        # drag thumb
-        if event.type == pg.MOUSEMOTION and self.dragging_thumb:
-            track = self.scrollbar_track_rect
-            new_y = event.pos[1] - self.drag_mouse_y
-            new_y = max(track.y, min(track.y + track.h - self.thumb_rect.h, new_y))
-            self.thumb_rect.y = new_y
-            max_travel = track.h - self.thumb_rect.h
-            if max_travel > 0:
-                ratio = (self.thumb_rect.y - track.y) / max_travel
-                self.scroll_offset = int(ratio * self.max_scroll)
-            else:
-                self.scroll_offset = 0
-            self._clamp_scroll()
-            return None
-
-        # relâchement souris -> stop drag
-        if event.type == pg.MOUSEBUTTONUP and event.button == 1:
-            if self.dragging_thumb:
-                self.dragging_thumb = False
+            # add / remove pop
+            if self.btn_add_pop.rect.collidepoint((mx,my)):
+                if len(settings.POPULATIONS) < settings.POPULATION_MAX:
+                    new_idx = len(settings.POPULATIONS) + 1
+                    base = settings.DEFAULT_POP.copy() if hasattr(settings, 'DEFAULT_POP') else {
+                        "name": f"Population {new_idx}",
+                        "life": 50, "color": "white", "quantity": 10,
+                        "speed_variation": 15, "size_variation": 15, "view_variation": 15,
+                        "view": 15, "speed": 3, "size": 3
+                    }
+                    base["name"] = f"Population {new_idx}"
+                    settings.POPULATIONS.append(base)
+                    self.selected_pop = len(settings.POPULATIONS) - 1
+                    self._build_pop_management_buttons()
+                    self._build_pop_controls()
+                    self._refresh_pop_display()
                 return None
+
+            if self.btn_rem_pop.rect.collidepoint((mx,my)):
+                if len(settings.POPULATIONS) > settings.POPULATION_MIN:
+                    settings.POPULATIONS.pop(self.selected_pop)
+                    self.selected_pop = max(0, min(self.selected_pop, len(settings.POPULATIONS)-1))
+                    self._build_pop_management_buttons()
+                    self._build_pop_controls()
+                    self._refresh_pop_display()
+                return None
+
+            for rect, idx in self.pop_number_buttons:
+                if rect.collidepoint((mx,my)):
+                    self.selected_pop = idx
+                    self._build_pop_controls()
+                    self._refresh_pop_display()
+                    return None
+
+            # per-population controls yea yea I'm english c'est une catastrophe la motié des commentaires sont dans une langue et l'autre motiée dasn une autre
+            if len(settings.POPULATIONS) == 0:
+                return None
+            pop = settings.POPULATIONS[self.selected_pop]
+            for key, c in self.pop_controls.items():
+                if c["minus"].rect.collidepoint((mx,my)):
+                    cur = pop.get(key)
+                    if key == "color":
+                        opts = getattr(settings, 'Color_options', [])
+                        if opts:
+                            try:
+                                i = opts.index(cur)
+                            except ValueError:
+                                i = 0
+                            pop["color"] = opts[(i - 1) % len(opts)]
+                    elif isinstance(cur, int):
+                        pop[key] = max(0, cur - 1)
+                    self._refresh_pop_display()
+                    return None
+                
+                if c["plus"].rect.collidepoint((mx,my)):
+                    cur = pop.get(key)
+                    match key:
+                        case 'color':
+                            if opts:
+                                try:
+                                    i = opts.index(cur)
+                                except ValueError:
+                                    i = 0
+                                pop["color"] = opts[(i + 1) % len(opts)]
+                        case 'life':
+                            pop[key] = min(cur + 1, settings.Max_life)
+                        case 'quantity':
+                            pop[key] = min(cur + 1, settings.Max_quantity)
+                        case 'size':
+                            pop[key] = min(cur + 1, settings.Max_caracteristic)
+                        case 'speed':
+                            pop[key] = min(cur + 1, settings.Max_caracteristic)
+                        case 'view':
+                            pop[key] = min(cur + 1, settings.Max_caracteristic)
+                        case 'size_variation':
+                            pop[key] = min(cur + 1, 100) #c'est des pourcent donc max 100 je crois je sais meme pas si ca a un sens 100
+                        case 'view_variation':
+                            pop[key] = min(cur + 1, 100) #c'est des pourcent donc max 100 je crois je sais meme pas si ca a un sens 100
+                        case 'speed_variation':
+                            pop[key] = min(cur + 1, 100) #c'est des pourcent donc max 100 je crois je sais meme pas si ca a un sens 100
+                    self._refresh_pop_display()
+                    return None
 
         return None
 
@@ -305,12 +420,16 @@ class In_Game:
         self.continue_button = Button(Rect(self.width - self.width // 17, self.height // 60, 90, 40), 'End', self.screen)
         self.Button_font = pg.font.SysFont(settings.Button_font, settings.Button_font_size)
 
-    def draw(self):
+    def draw(self, l_creatures, screen):
         """
         Dessine l'écran pendant la partie
         """
         self.screen.blit(self.bg_asset, (0, 0))
         self.continue_button.draw(self.screen, self.Button_font)
+        #affiche les cratures
+        for a in l_creatures:
+            for c in a:
+                c.draw(screen)
 
     def handle_event(self, event):
         """
