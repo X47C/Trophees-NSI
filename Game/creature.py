@@ -1,6 +1,6 @@
 # methodes pour gerer les creatures
-from random import randint as rd, gauss, uniform
-from math import radians, cos, sin
+from random import randint as rd, uniform
+from math import radians, cos, sin, atan2, degrees, hypot
 import pygame as pg
 import settings
 
@@ -23,53 +23,85 @@ class  Creature():
         self.pos_x = settings.Display_size[0] // 2
         self.pos_y = settings.Display_size[1] // 2
         self.image = pg.image.load("assets/creature.png")
-        self.angle_deg = uniform(0, 360)
+        self.angle_deg = rd(0, 360)
+        self.ang_vel_deg_s = uniform(-120.0, 120.0)  # vitesse angulaire initiale (deg/s)
+        self._move_time = 0.0                         # timer interne (s)
+        self._sin_freq = uniform(0.3, 1.2)            # fréquence sinusoïde pour motif
+        self._sin_phase = uniform(0, 2 * 3.14159265)
+        self.ang_vel = uniform(-180, 180)  # deg/s
+
+                
 
     def draw(self, screen):
         rect = self.image.get_rect(center=(int(self.pos_x), int(self.pos_y)))
         screen.blit(self.image, rect)
 
-    def moove(self, angle_sigma_deg = None):
-    
-        """
-        angle_sigma_deg : écart-type en degrés du bruit angulaire par seconde.
-        wrap : si True la créature réapparaît de l'autre côté de l'écran (wrap-around)
-        """
-        # dt calculé à partir du FPS
+
+    def moove(self):
         dt = 1.0 / settings.FPS
-
-        # si pas précisé dépend de la vitesse
-        if angle_sigma_deg is None:
-            angle_sigma_deg = 20.0 * (1.0 / max(1.0, self.speed))
-
-        # bruit angulaire 
-        delta_angle = gauss(0.0, angle_sigma_deg) * (dt ** 0.5)
-        self.angle_deg = (self.angle_deg + delta_angle) % 360.0
-
-        # déplacement
-        rad = radians(self.angle_deg)
-        dist = self.speed 
-        self.pos_x += cos(rad) * dist
-        self.pos_y += sin(rad) * dist
-
-        # gestion des collisions
         w, h = settings.Display_size
+        cx, cy = w * 0.5, h * 0.5
+
+        # --- paramètres simples ---
+        speed_px_s = self.speed * 45.0     # px/s
+        margin = 40 + int(self.size)
+
+        turn_noise = 600.0                 # deg/s² → zigzag
+        center_strength = 3.0              # attraction vers le centre
+        max_ang_vel = 400.0                # limite de rotation
+
+        # --- 1) bruit angulaire (zigzag) ---
+        self.ang_vel += uniform(-turn_noise, turn_noise) * dt
+
+        # --- 2) attraction vers le centre ---
+        dx = cx - self.pos_x
+        dy = cy - self.pos_y
+        dist = hypot(dx, dy)
+
+        if dist > 1.0:
+            angle_to_center = degrees(atan2(dy, dx))
+            diff = (angle_to_center - self.angle_deg + 180) % 360 - 180
+            self.ang_vel += diff * center_strength * dt
+
+        # --- 3) clamp vitesse angulaire ---
+        self.ang_vel = max(-max_ang_vel, min(max_ang_vel, self.ang_vel))
+
+        # --- 4) appliquer rotation ---
+        self.angle_deg = (self.angle_deg + self.ang_vel * dt) % 360
+
+        # --- 5) déplacement ---
+        step = speed_px_s * dt
+        r = radians(self.angle_deg)
+        self.pos_x += cos(r) * step
+        self.pos_y += sin(r) * step
+
+        # --- 6) rebond avant mur ---
         bounced = False
-        if self.pos_x < 0:
-            self.pos_x = 0
+
+        if self.pos_x < margin:
+            self.pos_x = margin
+            self.ang_vel = abs(self.ang_vel)
             bounced = True
-        elif self.pos_x > w:
-            self.pos_x = w
+        elif self.pos_x > w - margin:
+            self.pos_x = w - margin
+            self.ang_vel = -abs(self.ang_vel)
             bounced = True
-        if self.pos_y < 0:
-            self.pos_y = 0
+
+        if self.pos_y < margin:
+            self.pos_y = margin
+            self.ang_vel = abs(self.ang_vel)
             bounced = True
-        elif self.pos_y > h:
-            self.pos_y = h
+        elif self.pos_y > h - margin:
+            self.pos_y = h - margin
+            self.ang_vel = -abs(self.ang_vel)
             bounced = True
+
         if bounced:
-            # retourne l'angle de 180 degres
-            self.angle_deg = (self.angle_deg + 180.0 + gauss(0, 10.0)) % 360.0
+            self.ang_vel += uniform(-120, 120)
+
+        # --- sécurité ---
+        self.pos_x = min(max(self.pos_x, margin), w - margin)
+        self.pos_y = min(max(self.pos_y, margin), h - margin)
 
 
     def Baby(self):
@@ -101,7 +133,14 @@ class  Creature():
             else:
                 self.energy = 100
                 self.ate = 0
-            
+
+    def see_food(self):
+        """
+        return True si la creature a de la nouritture dans son champs de vision
+        False sinon. Toute la bouffe est stockée dans settings.food_list, c'est une liste d'objet ( les cooronées sont dans le init )
+        Les creatures on un champs de vision qui va de 1 a 10 donc plus c'est elevé plus elles voient loin
+        """
+        pass
 
     def is_alive(self):
         """
