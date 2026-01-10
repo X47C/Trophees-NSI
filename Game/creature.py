@@ -1,5 +1,5 @@
 # methodes pour gerer les creatures
-from random import randint as rd, uniform
+from random import randint as rd, uniform, random
 from math import radians, cos, sin, atan2, degrees, hypot
 import pygame as pg
 import settings
@@ -24,13 +24,7 @@ class  Creature():
         self.pos_y = settings.Display_size[1] // 2
         self.image = pg.image.load("assets/creature.png")
         self.angle_deg = rd(0, 360)
-        self.ang_vel_deg_s = uniform(-120.0, 120.0)  # vitesse angulaire initiale (deg/s)
-        self._move_time = 0.0                         # timer interne (s)
-        self._sin_freq = uniform(0.3, 1.2)            # fréquence sinusoïde pour motif
-        self._sin_phase = uniform(0, 2 * 3.14159265)
-        self.ang_vel = uniform(-180, 180)  # deg/s
 
-                
 
     def draw(self, screen):
         rect = self.image.get_rect(center=(int(self.pos_x), int(self.pos_y)))
@@ -40,68 +34,67 @@ class  Creature():
     def moove(self):
         dt = 1.0 / settings.FPS
         w, h = settings.Display_size
-        cx, cy = w * 0.5, h * 0.5
 
-        # --- paramètres simples ---
-        speed_px_s = self.speed * 45.0     # px/s
+        speed_px_s = float(self.speed) * 15.0   # LA vitesse
         margin = 40 + int(self.size)
 
-        turn_noise = 600.0                 # deg/s² → zigzag
-        center_strength = 3.0              # attraction vers le centre
-        max_ang_vel = 400.0                # limite de rotation
+        turn_noise = 450.0      
+        damping = 0.96         
+        burst_prob = 0.5        
+        burst_mag = 220.0       
 
-        # --- 1) bruit angulaire (zigzag) ---
+        if not hasattr(self, "ang_vel"):
+            self.ang_vel = uniform(-120.0, 120.0)
+
         self.ang_vel += uniform(-turn_noise, turn_noise) * dt
 
-        # --- 2) attraction vers le centre ---
-        dx = cx - self.pos_x
-        dy = cy - self.pos_y
-        dist = hypot(dx, dy)
+        if random() < burst_prob * dt:
+            self.ang_vel += uniform(-burst_mag, burst_mag)
 
-        if dist > 1.0:
-            angle_to_center = degrees(atan2(dy, dx))
-            diff = (angle_to_center - self.angle_deg + 180) % 360 - 180
-            self.ang_vel += diff * center_strength * dt
+        self.ang_vel *= damping
 
-        # --- 3) clamp vitesse angulaire ---
-        self.ang_vel = max(-max_ang_vel, min(max_ang_vel, self.ang_vel))
+        max_ang_vel = 550.0
+        if self.ang_vel > max_ang_vel:
+            self.ang_vel = max_ang_vel
+        elif self.ang_vel < -max_ang_vel:
+            self.ang_vel = -max_ang_vel
 
-        # --- 4) appliquer rotation ---
-        self.angle_deg = (self.angle_deg + self.ang_vel * dt) % 360
-
-        # --- 5) déplacement ---
-        step = speed_px_s * dt
+        self.angle_deg = (self.angle_deg + self.ang_vel * dt) % 360.0
         r = radians(self.angle_deg)
+        step = speed_px_s * dt
         self.pos_x += cos(r) * step
         self.pos_y += sin(r) * step
 
-        # --- 6) rebond avant mur ---
         bounced = False
 
         if self.pos_x < margin:
             self.pos_x = margin
-            self.ang_vel = abs(self.ang_vel)
+            self.angle_deg = (180.0 - self.angle_deg) % 360.0
+            self.ang_vel = -self.ang_vel + uniform(-90, 90)
             bounced = True
         elif self.pos_x > w - margin:
             self.pos_x = w - margin
-            self.ang_vel = -abs(self.ang_vel)
+            self.angle_deg = (180.0 - self.angle_deg) % 360.0
+            self.ang_vel = -self.ang_vel + uniform(-90, 90)
             bounced = True
 
         if self.pos_y < margin:
             self.pos_y = margin
-            self.ang_vel = abs(self.ang_vel)
+            self.angle_deg = (-self.angle_deg) % 360.0
+            self.ang_vel = -self.ang_vel + uniform(-90, 90)
             bounced = True
         elif self.pos_y > h - margin:
             self.pos_y = h - margin
-            self.ang_vel = -abs(self.ang_vel)
+            self.angle_deg = (-self.angle_deg) % 360.0
+            self.ang_vel = -self.ang_vel + uniform(-90, 90)
             bounced = True
 
         if bounced:
-            self.ang_vel += uniform(-120, 120)
+            self.ang_vel += uniform(-40, 40)
 
-        # --- sécurité ---
         self.pos_x = min(max(self.pos_x, margin), w - margin)
         self.pos_y = min(max(self.pos_y, margin), h - margin)
+
 
 
     def Baby(self):
