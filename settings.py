@@ -1,7 +1,7 @@
 # Paramètres globaux et valeurs par défaut
 
 
-creatures_list = []
+creatures_list = [] #liste de liste d'objets ( de creatures ) [[creature 1, ], []]
 food_list = []
 
 # Affichage
