@@ -62,3 +62,5 @@ POPULATIONS = [
 # UI colors
 UI_BG_COLOR = (200, 200, 200)
 UI_PANEL_COLOR = (240, 240, 240)
+
+
