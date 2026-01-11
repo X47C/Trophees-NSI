@@ -9,7 +9,7 @@ Display_size = (1280, 720)  # largeur, hauteur
 FPS = 30
 
 # texte des crédits
-Credits_Text = ['Dévellopé par : ','Cyprien Cros', 'Jules Graffan', 'Sara quelquechose', 'Remerciement à : ', 'Mme Rebinguet-Martres'] 
+Credits_Text = ['Dévellopé par : ','Cyprien Cros', 'Jules Graffan', 'Sarah Vignaud-Quantin', 'Remerciement à : ', 'Mme Rebinguet-Martres'] 
 
 # Police 
 Days_font = "arial"

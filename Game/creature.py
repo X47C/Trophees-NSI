@@ -3,6 +3,7 @@ from random import randint as rd, uniform, random
 from math import radians, cos, sin, atan2, degrees, hypot
 import pygame as pg
 import settings
+from Game.food import Food
 
 class  Creature():
     """
@@ -129,11 +130,13 @@ class  Creature():
 
     def see_food(self):
         """
-        return True si la creature a de la nouritture dans son champs de vision
-        False sinon. Toute la bouffe est stockée dans settings.food_list, c'est une liste d'objet ( les cooronées sont dans le init )
+        return True si la creature a de la nourriture dans son champs de vision
+        False sinon. Toute la bouffe est stockée dans settings.food_list, c'est une liste d'objet (les coordonées sont dans le init )
         Les creatures on un champs de vision qui va de 1 a 10 donc plus c'est elevé plus elles voient loin
         """
-        pass
+        if self.view >= Food.position() :
+            return True
+        return False
 
     def is_alive(self):
         """
