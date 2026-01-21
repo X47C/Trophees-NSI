@@ -3,7 +3,6 @@ import pygame as pg
 from Pygame.button import Button
 from pygame import Rect
 import settings
-from Game import game
 
 class Before_Game:
     """
@@ -245,10 +244,8 @@ class Settings:
 
         for rect, i in self.pop_number_buttons:
             if i == self.selected_pop:
-                # highlight by filling the button background with the chosen color
                 highlight_color = self.pop_selected_bg
                 pg.draw.rect(self.screen, highlight_color, (rect.x, rect.y, rect.width, rect.height))
-                # draw number text in WHITE to contrast
                 txt = self.font_btn.render(str(i+1), True, (255, 255, 255))
                 tx = rect.x + (rect.width - txt.get_width()) // 2
                 ty = rect.y + (rect.height - txt.get_height()) // 2
