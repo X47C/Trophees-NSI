@@ -134,9 +134,6 @@ class  Creature():
         False sinon. Toute la bouffe est stockée dans settings.food_list, c'est une liste d'objet (les coordonées sont dans le init )
         Les creatures on un champs de vision qui va de 1 a 10 donc plus c'est elevé plus elles voient loin
         """
-        if self.view >= Food.position() :
-            return True
-        return False
 
     def is_alive(self):
         """
