@@ -145,11 +145,8 @@ class  Creature():
         False sinon. Toute la bouffe est stockée dans settings.food_list, c'est une liste d'objet (les coordonées sont dans le init )
         Les creatures on un champs de vision qui va de 1 a 10 donc plus c'est elevé plus elles voient loin
         """
-<<<<<<< HEAD
         for food in settings.food_list:
             pass
-=======
->>>>>>> 3793de4ee0c67d28863a101d1b291f9bb8e4b57d
 
     def is_alive(self):
         """
