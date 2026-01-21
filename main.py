@@ -78,6 +78,9 @@ while running:
                 t = 0
         day_manager.update() 
 
+
+        
+
         
         
 

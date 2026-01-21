@@ -23,6 +23,7 @@ class  Creature():
         self.pos_x = settings.Display_size[0] // 2
         self.pos_y = settings.Display_size[1] // 2
         self.image = pg.image.load("assets/creature.png")
+        self.rect = self.image.get_rect(center=(int(self.pos_x), int(self.pos_y)))
         self.angle_deg = rd(0, 360)
         
     def draw(self, screen):
@@ -98,6 +99,8 @@ class  Creature():
         self.pos_x = min(max(self.pos_x, margin), w - margin)
         self.pos_y = min(max(self.pos_y, margin), h - margin)
 
+        #self.Eat()
+
 
 
     def Baby(self):
@@ -110,15 +113,17 @@ class  Creature():
         """
         Viens de manger
         """
-        self.ate += 1
-        if self.ate == 1:
-            self.energy = 100
-        else:
-            self.energy = 0
-        for elt in settings.food_list:
-            if self.collide(elt.rect):
-                settings.food_list.elt.__del__()
+        # self.ate += 1
+        # if self.ate == 1:
+        #     self.energy = 100
+        # else:
+        #     self.energy = 0
         
+        # for elt in settings.food_list:
+        #     print(len(settings.food_list))
+        #     if self.collide(elt):
+        #         settings.food_list.remove(elt)
+
     def collide(self, recte):
         """
         verifie si la creature entre en collision avec un rectangle
