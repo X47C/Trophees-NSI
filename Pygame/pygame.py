@@ -3,7 +3,10 @@ import pygame as pg
 from Pygame.button import Button
 from pygame import Rect
 import settings
+import matplotlib
+matplotlib.use("Agg")  # backend sans fenêtre
 import matplotlib.pyplot as plt
+from matplotlib.backends.backend_agg import FigureCanvasAgg
 import numpy as np
 
 class Before_Game:
@@ -77,7 +80,7 @@ class Settings:
         self.font_lbl = pg.font.SysFont(settings.Button_label_font, settings.Button_label_font_size)
 
         # geometry
-        self.padding = 20
+        settings.PostG_PADDING = 20
         self.gap = 18
         self.btn_h = 44
         self.small_w = 48
@@ -111,14 +114,14 @@ class Settings:
         self._refresh_pop_display()
 
     def _build_general_controls(self):
-        total_w = self.width - self.padding * 2
+        total_w = self.width - settings.PostG_PADDING * 2
         col_w = (total_w - self.gap) // 2
         val_w = col_w - self.small_w * 2 - 12
 
-        top_y = self.padding
+        top_y = settings.PostG_PADDING
 
         # food - left
-        x0 = self.padding
+        x0 = settings.PostG_PADDING
         lbl_y = top_y
         btn_y = lbl_y + self.font_lbl.get_height() + self.label_gap
         self.general_food = {
@@ -130,7 +133,7 @@ class Settings:
         }
 
         # days - right
-        x1 = self.padding + col_w + self.gap
+        x1 = settings.PostG_PADDING + col_w + self.gap
         lbl_y = top_y
         btn_y = lbl_y + self.font_lbl.get_height() + self.label_gap
         self.general_days = {
@@ -149,12 +152,12 @@ class Settings:
         y = self.pop_manage_y
 
         # boutons + / -
-        self.btn_add_pop = Button(Rect(self.padding, y, 110, 36), "+ Pop", self.screen)
-        self.btn_rem_pop = Button(Rect(self.padding + 120, y, 110, 36), "- Pop", self.screen)
+        self.btn_add_pop = Button(Rect(settings.PostG_PADDING, y, 110, 36), "+ Pop", self.screen)
+        self.btn_rem_pop = Button(Rect(settings.PostG_PADDING + 120, y, 110, 36), "- Pop", self.screen)
 
         # petits boutons numérotés alignés sur la même ligne (même y)
         self.pop_number_buttons = []
-        x = self.padding + 260
+        x = settings.PostG_PADDING + 260
         for i in range(len(settings.POPULATIONS)):
             rect = Rect(x, y, 40, 36)
             self.pop_number_buttons.append((rect, i))
@@ -186,7 +189,7 @@ class Settings:
             ("Taille de départ", "size"),
         ]
 
-        total_w = self.width - 2 * self.padding
+        total_w = self.width - 2 * settings.PostG_PADDING
         col_w = (total_w - 2 * self.gap) // 3
         val_w = col_w - self.small_w * 2 - 12
 
@@ -194,7 +197,7 @@ class Settings:
         for idx, (label, key) in enumerate(labels):
             col = idx % 3
             row = idx // 3
-            x = self.padding + col * (col_w + self.gap)
+            x = settings.PostG_PADDING + col * (col_w + self.gap)
             y_label = self.pop_controls_start_y + row * (self.font_lbl.get_height() + self.label_gap + self.btn_h + 18)
             y_btn = y_label + self.font_lbl.get_height() + self.label_gap
 
@@ -442,52 +445,202 @@ class In_Game:
                 
 
 
+
 class Post_Game:
     """
-    permet de gérer l'écran après la partie
+    écran après la partie
+    avec scrollbar + graphiques matplotlib intégrés
     """
+
     def __init__(self, screen):
-        """
-        screen = tuple(largueur, hauteur)
-        Initialise l'écran après la partie
-        """
         self.width, self.height = settings.Display_size
         self.screen = screen
 
-        # self.bg_asset = pg.image.load('assets/bg_post_game.png')
+        # fond
         self.bg_asset = pg.Surface(settings.Display_size)
         self.bg_asset.fill((128, 0, 128))
 
-        self.Button_exit = Button(Rect(self.width // 2 - 110, self.height // 2 + 40, 220, 80), 'Exit to Desktop', self.screen)
-        self.Button_home = Button(Rect(self.width // 2 - 110, self.height // 2 + 130, 220, 80), 'Return to Home', self.screen)
+        # boutons
+        self.Button_exit = Button(
+            Rect(self.width // 2 - 110, self.height - 180, 220, 60),
+            'Exit to Desktop', self.screen
+        )
+        self.Button_home = Button(
+            Rect(self.width // 2 - 110, self.height - 110, 220, 60),
+            'Return to Home', self.screen
+        )
 
         self.Button_font = pg.font.SysFont(settings.Button_font, settings.Button_font_size)
 
+        # scrollbar
+        self.scroll_y = 0
+        self.scroll_speed = 30
+        self.content_height = 1200  # hauteur 
+
+        self.scrollbar_rect = Rect(self.width - 18, 20, 12, self.height - 40)
+        self.scroll_thumb_height = 80
+        self.scroll_thumb_y = 20
+        self.dragging_scroll = False
+
+        # Graphes
+        self.graph_surfaces = []
+        self._build_graphs()
+
+    def _build_graphs(self):
+        """
+        l'endroit ou on fout les graphes
+        """
+
+        # -------- (template) --------
+        # fig1, ax1 = plt.subplots(figsize=(6, 3))
+        # x = np.arange(10)
+        # y = np.random.randint(0, 100, size=10)
+
+        # ax1.plot(x, y)
+        # ax1.set_title("Titre")
+        # ax1.set_xlabel("Bahhhx")
+        # ax1.set_ylabel("bahhhy")
+
+        # self.graph_surfaces.append(self._fig_to_surface(fig1))
+        # plt.close(fig1)
+
+
+
+
+        # -------- GRAPHE 1 --------
+        fig1, ax1 = plt.subplots(figsize = (6, 4))
+
+        days = list(range(1, settings.Days_max))
+
+        mean_speeds = [
+            np.mean([c.speed for sublist in settings.creatures_list_dico[d] for c in sublist])
+            if d in settings.creatures_list_dico and len(settings.creatures_list_dico[d]) > 0
+            else np.nan
+            for d in days
+        ]
+
+        ax1.plot(days, mean_speeds, marker='o', linestyle='-')  # Jour en X, vitesse moyenne en Y
+
+        ax1.set_xlim(1, settings.Days_max)
+        ax1.set_ylim(0, 10)
+
+        ax1.set_xlabel("Jour")
+        ax1.set_ylabel("Vitesse moyenne")
+        ax1.set_title("Vitesse moyenne")
+
+        self.graph_surfaces.append(self._fig_to_surface(fig1))
+        plt.close(fig1)
+
+
+
+
+
+
+    def _fig_to_surface(self, fig):
+        """
+        Convertit une figure matplotlib en pygame.Surface
+        """
+        canvas = FigureCanvasAgg(fig)
+        canvas.draw()
+        renderer = canvas.get_renderer()
+        raw_data = renderer.buffer_rgba()
+        size = canvas.get_width_height()
+
+        return pg.image.frombuffer(raw_data, size, "RGBA")
 
     def draw(self):
-        """
-        Dessine l'écran après la partie
-        """
         self.screen.blit(self.bg_asset, (0, 0))
-        
+
+        # surface scrollable
+        content_surf = pg.Surface((self.width - 30, self.content_height))
+        content_surf.fill((230, 230, 230))
+
+        y_offset = 20
+
+        # affichage des graphes
+        for graph in self.graph_surfaces:
+            content_surf.blit(graph, (40, y_offset))
+            y_offset += graph.get_height() + 40
+
+        # affichage dans la fenêtre avec scroll
+        self.screen.blit(
+            content_surf,
+            (0, 0),
+            area = Rect(0, self.scroll_y, self.width - 30, self.height)
+        )
+
+        # scrollbar
+        self._draw_scrollbar()
+
+        # boutons
         self.Button_exit.draw(self.screen, self.Button_font)
         self.Button_home.draw(self.screen, self.Button_font)
 
-        plt.style.use('_mpl-gallery')
-        data_moy_speed = [np.mean(elt.Speed) for elt in settings.creatures_list_dico.values()]
-        fig, ax = plt.subplots()
-        ax.ecdf(data_moy_speed)
-        plt.show()
+    def _draw_scrollbar(self):
+        pg.draw.rect(self.screen, (180, 180, 180), self.scrollbar_rect)
+
+        pg.draw.rect(
+            self.screen,
+            (100, 100, 100),
+            Rect(
+                self.scrollbar_rect.x,
+                self.scroll_thumb_y,
+                self.scrollbar_rect.width,
+                self.scroll_thumb_height
+            )
+        )
 
     def handle_event(self, event):
-        """
-        Gère les événements de l'écran après la partie
-        """
         if event.type == pg.MOUSEBUTTONUP and event.button == 1:
             if self.Button_exit.rect.collidepoint(event.pos):
                 return 'exit'
             if self.Button_home.rect.collidepoint(event.pos):
                 return 'home'
+            self.dragging_scroll = False
 
+        if event.type == pg.MOUSEBUTTONDOWN:
+            if event.button == 1:
+                thumb_rect = Rect(
+                    self.scrollbar_rect.x,
+                    self.scroll_thumb_y,
+                    self.scrollbar_rect.width,
+                    self.scroll_thumb_height
+                )
+                if thumb_rect.collidepoint(event.pos):
+                    self.dragging_scroll = True
+                    self.drag_offset = event.pos[1] - self.scroll_thumb_y
 
+            if event.button == 4:  # molette haut
+                self.scroll_y = max(0, self.scroll_y - self.scroll_speed)
+            if event.button == 5:  # molette bas
+                self.scroll_y = min(
+                    self.content_height - self.height,
+                    self.scroll_y + self.scroll_speed
+                )
+            self._sync_scrollbar()
+
+        if event.type == pg.MOUSEMOTION and self.dragging_scroll:
+            self.scroll_thumb_y = event.pos[1] - self.drag_offset
+            self.scroll_thumb_y = max(
+                self.scrollbar_rect.y,
+                min(
+                    self.scrollbar_rect.bottom - self.scroll_thumb_height,
+                    self.scroll_thumb_y
+                )
+            )
+            self._sync_content_scroll()
+
+    def _sync_scrollbar(self):
+        ratio = self.scroll_y / max(1, self.content_height - self.height)
+        self.scroll_thumb_y = (
+            self.scrollbar_rect.y +
+            ratio * (self.scrollbar_rect.height - self.scroll_thumb_height)
+        )
+
+    def _sync_content_scroll(self):
+        ratio = (
+            (self.scroll_thumb_y - self.scrollbar_rect.y) /
+            (self.scrollbar_rect.height - self.scroll_thumb_height)
+        )
+        self.scroll_y = ratio * (self.content_height - self.height)
 
