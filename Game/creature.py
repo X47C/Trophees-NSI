@@ -30,11 +30,7 @@ class  Creature():
         pg.draw.circle(screen, (40, 145, 40), (self.pos_x, self.pos_y), 10 * self.view)
         rect = self.image.get_rect(center=(int(self.pos_x), int(self.pos_y)))
         screen.blit(self.image, rect)
-<<<<<<< HEAD
         
-=======
-
->>>>>>> 16875341d7b0e8dcf9a02aae3277ebe6b08c54a3
     def moove(self):
         dt = 1.0 / settings.FPS
         w, h = settings.Display_size

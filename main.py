@@ -13,7 +13,6 @@ clock = pg.time.Clock()
 Befg = Before_Game(screen)
 Sett = Settings(screen)
 Ing = In_Game(screen)
-Engd = Post_Game(screen)
 
 day_manager = Day_Manager(screen)
 
@@ -49,7 +48,8 @@ while running:
 
             case 'in_game':
                 match Ing.handle_event(event):
-                    case 'end':
+                    case 'end': 
+                        Engd = Post_Game(screen)
                         state = 'post_game'   
                         day_manager.current_day = 0
 
@@ -67,16 +67,19 @@ while running:
 
 
     # --- UPDATE --- 
-    if state == "in_game":
-        t += 1
-        match day_manager.is_over(t):
-            case "end":
-                state = "post_game"
-                day_manager.current_day = 0
-            case "continue":
-                day_manager.new_day()
-                t = 0
-        day_manager.update() 
+    match state:
+        case "in_game":
+            t += 1
+            match day_manager.is_over(t):
+                case "end":
+                    Engd = Post_Game(screen)
+                    state = "post_game"
+                    day_manager.current_day = 0
+                case "continue":
+                    day_manager.new_day()
+                    t = 0
+            day_manager.update()
+    
 
 
         
