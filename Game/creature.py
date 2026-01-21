@@ -1,6 +1,6 @@
 # methodes pour gerer les creatures
 from random import randint as rd, uniform, random
-from math import radians, cos, sin, atan2, degrees, hypot
+from math import radians, cos, sin
 import pygame as pg
 import settings
 
@@ -29,7 +29,11 @@ class  Creature():
         pg.draw.circle(screen, (40, 145, 40), (self.pos_x, self.pos_y), 10 * self.view)
         rect = self.image.get_rect(center=(int(self.pos_x), int(self.pos_y)))
         screen.blit(self.image, rect)
+<<<<<<< HEAD
         
+=======
+
+>>>>>>> 16875341d7b0e8dcf9a02aae3277ebe6b08c54a3
     def moove(self):
         dt = 1.0 / settings.FPS
         w, h = settings.Display_size
@@ -111,6 +115,17 @@ class  Creature():
             self.energy = 100
         else:
             self.energy = 0
+        for elt in settings.food_list:
+            if self.collide(elt.rect):
+                settings.food_list.elt.__del__()
+        
+    def collide(self, recte):
+        """
+        verifie si la creature entre en collision avec un rectangle
+        """
+        if pg.sprite.collide_rect(self, recte):
+           return True
+        return False
 
     def New_Day(self):
         """
@@ -178,4 +193,5 @@ class  Creature():
         renvoie la vue de la creature
         """
         return self.view
+    
     
