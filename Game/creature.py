@@ -112,6 +112,17 @@ class  Creature():
             self.energy = 100
         else:
             self.energy = 0
+        for elt in settings.food_list:
+            if self.collide(elt.rect):
+                settings.food_list.elt.__del__()
+        
+    def collide(self, recte):
+        """
+        verifie si la creature entre en collision avec un rectangle
+        """
+        if pg.sprite.collide_rect(self, recte):
+           return True
+        return False
 
     def New_Day(self):
         """
@@ -133,9 +144,8 @@ class  Creature():
         False sinon. Toute la bouffe est stockée dans settings.food_list, c'est une liste d'objet (les coordonées sont dans le init )
         Les creatures on un champs de vision qui va de 1 a 10 donc plus c'est elevé plus elles voient loin
         """
-        if self.view >= Food.position() :
-            return True
-        return False
+        for food in settings.food_list:
+            pass
 
     def is_alive(self):
         """
@@ -180,4 +190,5 @@ class  Creature():
         renvoie la vue de la creature
         """
         return self.view
+    
     

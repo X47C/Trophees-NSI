@@ -1,23 +1,22 @@
 # methodes pour gerer la nouriture
 import pygame as pg
+import settings
 
 class Food():
     """
     Entry : position (tupple), is_eaten (bool)
     """
     def __init__(self, x, y):
-        self.position = (0, 0)
-        self.is_eaten = False
         self.pos_x = x
         self.pos_y = y
         self.image = pg.image.load('assets/food.png')
+        self.rect = self.image.get_rect(center=(int(self.pos_x), int(self.pos_y)))
     
     def draw(self, screen):
         """
         affiche la nourriture
         """
-        rect = self.image.get_rect(center=(int(self.pos_x), int(self.pos_y)))
-        screen.blit(self.image, rect)
+        screen.blit(self.image, self.rect)
 
     def __del__(self):
         """
@@ -31,11 +30,6 @@ class Food():
         """
         self.position = position
 
-    def get_eat(self):
-        """
-        modifie si la nouriture à était manger
-        """
-        self.is_eaten = True
 
     def is_alive(self):
         """
