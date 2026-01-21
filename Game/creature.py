@@ -1,6 +1,6 @@
 # methodes pour gerer les creatures
 from random import randint as rd, uniform, random
-from math import radians, cos, sin, atan2, degrees, hypot
+from math import radians, cos, sin
 import pygame as pg
 import settings
 from Game.food import Food
@@ -31,7 +31,6 @@ class  Creature():
     def draw(self, screen):
         rect = self.image.get_rect(center=(int(self.pos_x), int(self.pos_y)))
         screen.blit(self.image, rect)
-
 
     def moove(self):
         dt = 1.0 / settings.FPS

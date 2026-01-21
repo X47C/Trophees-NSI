@@ -51,6 +51,7 @@ class Day_Manager():
         """
         ce que doit faire le jeu a chaques debuts de jours
         """
+        settings.creatures_list_dico[self.current_day] = settings.creatures_list.copy() #allez voir le commentaire dans settings mais PAS TOUCHE !!!
         self.current_day += 1
         self.time = 0
         for a in settings.creatures_list:
@@ -58,6 +59,7 @@ class Day_Manager():
                 c.pos_x = 550
                 c.pos_y = 440
                 c.energy = 100
+        print(settings.creatures_list_dico)
 
     def draw_current_day(self):
         """

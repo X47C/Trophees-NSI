@@ -3,6 +3,8 @@ import pygame as pg
 from Pygame.button import Button
 from pygame import Rect
 import settings
+import matplotlib.pyplot as plt
+import numpy as np
 
 class Before_Game:
     """
@@ -470,6 +472,12 @@ class Post_Game:
         
         self.Button_exit.draw(self.screen, self.Button_font)
         self.Button_home.draw(self.screen, self.Button_font)
+
+        plt.style.use('_mpl-gallery')
+        data_moy_speed = [np.mean(elt.Speed) for elt in settings.creatures_list_dico.values()]
+        fig, ax = plt.subplots()
+        ax.ecdf(data_moy_speed)
+        plt.show()
 
     def handle_event(self, event):
         """

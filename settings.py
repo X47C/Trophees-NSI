@@ -3,6 +3,7 @@
 
 creatures_list = [] #liste de liste d'objets ( de creatures ) [[creature 1, ], []]
 food_list = []
+creatures_list_dico = {} #a la fin de chaques jours on va mettre le liste de liste de creature acutelle dans le dictionnaire avec comme cle le numero du jour pour faire les graphes de fin le commentaire est trop long ptndrrr
 
 # Affichage
 Display_size = (1280, 720)  # largeur, hauteur
