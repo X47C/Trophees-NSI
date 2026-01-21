@@ -117,10 +117,10 @@ class  Creature():
         #     self.energy = 0
 
         if pg.sprite.spritecollideany(self, settings.food_list):
-        for elt in settings.food_list:
-            print(len(settings.food_list))
-            if self.collide(elt):
-                settings.food_list.remove(elt)
+            for elt in settings.food_list:
+                print(len(settings.food_list))
+                if self.collide(elt):
+                    settings.food_list.remove(elt)
 
     def collide(self, recte):
         """
