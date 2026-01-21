@@ -77,7 +77,8 @@ while running:
                 day_manager.new_day()
                 t = 0
         day_manager.update() 
-
+        
+        
 
         
 

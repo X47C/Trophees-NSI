@@ -96,7 +96,8 @@ class  Creature():
         self.pos_x = min(max(self.pos_x, margin), w - margin)
         self.pos_y = min(max(self.pos_y, margin), h - margin)
 
-        #self.Eat()
+
+        self.Eat()
 
 
 
@@ -115,11 +116,12 @@ class  Creature():
         #     self.energy = 100
         # else:
         #     self.energy = 0
-        
-        # for elt in settings.food_list:
-        #     print(len(settings.food_list))
-        #     if self.collide(elt):
-        #         settings.food_list.remove(elt)
+
+        if pg.sprite.spritecollideany(self, settings.food_list):
+        for elt in settings.food_list:
+            print(len(settings.food_list))
+            if self.collide(elt):
+                settings.food_list.remove(elt)
 
     def collide(self, recte):
         """
