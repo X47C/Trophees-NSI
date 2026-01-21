@@ -28,10 +28,10 @@ class Day_Manager():
         for pop in settings.POPULATIONS:
             a = []
             for i in range(pop['quantity']):
-                a.append(Creature(pop['speed'], pop['size'], pop['view'], pop['speed_variation'],pop['size_variation'], pop['view_variation'], pop['life'], pop['color']))
+                a.append(Creature(pop['speed'], pop['size'], pop['view'], pop['speed_variation'],pop['size_variation'], pop['view_variation'], pop['life'], pop['color'], self.surf))
             settings.creatures_list.append(a)
         for i in range(settings.Food_quantity):
-            settings.food_list.append(Food(rd(280, 1000), rd(70, 650)))
+             settings.food_list.append(Food(rd(280, 1000), rd(70, 650)))
         print(settings.food_list)
 
 

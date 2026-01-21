@@ -3,13 +3,12 @@ from random import randint as rd, uniform, random
 from math import radians, cos, sin, atan2, degrees, hypot
 import pygame as pg
 import settings
-from Game.food import Food
 
 class  Creature():
     """
     Entrée : Speed, Size, View (int, compris entre 1 et 10) 
     """
-    def __init__(self, Speed, Size, View, Variation_Speed, Variation_Size, Variation_View, Days_Max, Color):
+    def __init__(self, Speed, Size, View, Variation_Speed, Variation_Size, Variation_View, Days_Max, Color, screen):
         self.speed = Speed
         self.size = Size
         self.view = View
@@ -25,13 +24,12 @@ class  Creature():
         self.pos_y = settings.Display_size[1] // 2
         self.image = pg.image.load("assets/creature.png")
         self.angle_deg = rd(0, 360)
-
-
+        
     def draw(self, screen):
+        pg.draw.circle(screen, (40, 145, 40), (self.pos_x, self.pos_y), 10 * self.view)
         rect = self.image.get_rect(center=(int(self.pos_x), int(self.pos_y)))
         screen.blit(self.image, rect)
-
-
+        
     def moove(self):
         dt = 1.0 / settings.FPS
         w, h = settings.Display_size
@@ -134,11 +132,8 @@ class  Creature():
         False sinon. Toute la bouffe est stockée dans settings.food_list, c'est une liste d'objet (les coordonées sont dans le init )
         Les creatures on un champs de vision qui va de 1 a 10 donc plus c'est elevé plus elles voient loin
         """
-<<<<<<< HEAD
         for food in settings.food_list:
             pass
-=======
->>>>>>> 3793de4ee0c67d28863a101d1b291f9bb8e4b57d
 
     def is_alive(self):
         """
