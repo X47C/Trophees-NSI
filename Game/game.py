@@ -32,7 +32,7 @@ class Day_Manager():
             settings.creatures_list.append(a)
         for i in range(settings.Food_quantity):
              settings.food_list.append(Food(rd(280, 1000), rd(70, 650)))
-        print(settings.food_list)
+
 
 
     def is_over(self, dt):
@@ -59,7 +59,6 @@ class Day_Manager():
                 c.pos_x = 550
                 c.pos_y = 440
                 c.energy = 100
-        print(settings.creatures_list_dico)
 
     def draw_current_day(self):
         """
