@@ -71,6 +71,7 @@ while running:
         t += 1
         match day_manager.is_over(t):
             case "end":
+                Engd = Post_Game(screen)
                 state = "post_game"
                 day_manager.current_day = 0
             case "continue":
