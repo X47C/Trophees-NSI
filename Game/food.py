@@ -16,22 +16,3 @@ class Food():
         affiche la nourriture
         """
         screen.blit(self.image, self.rect)
-
-    def __del__(self):
-        """
-        detruit la nourriture
-        """
-        pass
-
-    def new_position(self, position):
-        """
-        modifie la position de la nouriture
-        """
-        self.position = position
-
-
-    def is_alive(self):
-        """
-        affiche si la nourriture à était manger true pour oui false pour non
-        """
-        return self.is_eaten

@@ -155,7 +155,7 @@ class Settings:
         self.btn_add_pop = Button(Rect(settings.PostG_PADDING, y, 110, 36), "+ Pop", self.screen)
         self.btn_rem_pop = Button(Rect(settings.PostG_PADDING + 120, y, 110, 36), "- Pop", self.screen)
 
-        # petits boutons numérotés alignés sur la même ligne (même y)
+        # petits boutons numérotés alignés sur la même ligne
         self.pop_number_buttons = []
         x = settings.PostG_PADDING + 260
         for i in range(len(settings.POPULATIONS)):
@@ -373,6 +373,7 @@ class Settings:
                     cur = pop.get(key)
                     match key:
                         case 'color':
+                            opts = getattr(settings, 'Color_options', [])
                             if opts:
                                 try:
                                     i = opts.index(cur)

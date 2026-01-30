@@ -1,1 +1,0 @@
-# generation du monde au jour le jour
