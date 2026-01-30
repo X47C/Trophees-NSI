@@ -95,9 +95,7 @@ class  Creature():
         self.pos_x = min(max(self.pos_x, margin), w - margin)
         self.pos_y = min(max(self.pos_y, margin), h - margin)
 
-
-        self.Eat()
-
+        
 
 
     def Baby(self):
@@ -114,21 +112,30 @@ class  Creature():
         # if self.ate == 1:
         #     self.energy = 100
         # else:
-        #     self.energy = 0
+        #     self.energy = min(100, self.energy + 50)
+        for rect in settings.food_list:
+            if pg.Rect.collidelist(self.rect):
+                print('ok')
+        print('non')
 
-        if pg.sprite.spritecollideany(self, settings.food_list):
-            for elt in settings.food_list:
-                print(len(settings.food_list))
-                if self.collide(elt):
-                    settings.food_list.remove(elt)
 
+    def collidelist(self):
+        """
+        verifie si la creature entre en collision avec une liste de rectangles
+        """
+        for rect in settings.food_list:
+            if self.collide(rect.rect):
+                print('ok')
+        print('non')
+    
     def collide(self, recte):
         """
         verifie si la creature entre en collision avec un rectangle
         """
-        if pg.sprite.collide_rect(self, recte):
+        if pg.Rect.colliderect(self.rect, recte):
            return True
         return False
+    
 
     def New_Day(self):
         """

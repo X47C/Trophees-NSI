@@ -23,6 +23,7 @@ class Day_Manager():
                 if not c.energy == 0:
                     c.lives()
                     c.moove()
+                    c.Eat()
 
     def first_day(self):
         for pop in settings.POPULATIONS:
