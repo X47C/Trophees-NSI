@@ -2,7 +2,7 @@
 import pygame as pg
 import settings
 
-class Food():
+class Food(pg.sprite.Sprite):
     """
     Entry : position (tupple), is_eaten (bool)
     """

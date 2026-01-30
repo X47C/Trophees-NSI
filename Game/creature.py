@@ -4,11 +4,12 @@ from math import radians, cos, sin
 import pygame as pg
 import settings
 
-class  Creature():
+class  Creature(pg.sprite.Sprite):
     """
     Entrée : Speed, Size, View (int, compris entre 1 et 10) 
     """
     def __init__(self, Speed, Size, View, Variation_Speed, Variation_Size, Variation_View, Days_Max, Color, screen):
+        pg.sprite.Sprite.__init__(self)
         self.speed = Speed
         self.size = Size
         self.view = View
@@ -108,15 +109,8 @@ class  Creature():
         """
         Viens de manger
         """
-        # self.ate += 1
-        # if self.ate == 1:
-        #     self.energy = 100
-        # else:
-        #     self.energy = min(100, self.energy + 50)
-        for rect in settings.food_list:
-            if pg.Rect.collidelist(self.rect):
-                print('ok')
-        print('non')
+        if pg.sprite.collide_rect(self, self.food):
+            print('touche hehe')
 
 
     def collidelist(self):
