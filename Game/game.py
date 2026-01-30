@@ -26,6 +26,8 @@ class Day_Manager():
                     c.Eat()
 
     def first_day(self):
+        settings.food_list = []
+        settings.creatures_list = []
         for pop in settings.POPULATIONS:
             a = []
             for i in range(pop['quantity']):

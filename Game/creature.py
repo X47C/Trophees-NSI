@@ -4,12 +4,11 @@ from math import radians, cos, sin
 import pygame as pg
 import settings
 
-class  Creature(pg.sprite.Sprite):
+class  Creature():
     """
     Entrée : Speed, Size, View (int, compris entre 1 et 10) 
     """
     def __init__(self, Speed, Size, View, Variation_Speed, Variation_Size, Variation_View, Days_Max, Color, screen):
-        pg.sprite.Sprite.__init__(self)
         self.speed = Speed
         self.size = Size
         self.view = View
@@ -36,7 +35,7 @@ class  Creature(pg.sprite.Sprite):
         dt = 1.0 / settings.FPS
         w, h = settings.Display_size
 
-        speed_px_s = float(self.speed) * 15.0   # LA vitesse
+        speed_px_s = float(self.speed) * 15.0
         margin = 40 + int(self.size)
 
         turn_noise = 450.0      
@@ -95,6 +94,8 @@ class  Creature(pg.sprite.Sprite):
 
         self.pos_x = min(max(self.pos_x, margin), w - margin)
         self.pos_y = min(max(self.pos_y, margin), h - margin)
+        self.rect = self.image.get_rect(center=(int(self.pos_x), int(self.pos_y)))
+
 
         
 
@@ -105,12 +106,20 @@ class  Creature(pg.sprite.Sprite):
         """
         Creature(self.speed * rd(100 - self.variation_speed, 100 + self.variation_speed), self.view * rd(100 - self.variation_size, 100 + self.variation_size), self.speed * rd(100 - self.variation_view, 100 + self.variation_view), self.color)
 
+
     def Eat(self):
         """
-        Viens de manger
+        on verifie si il a mangé haha enfait c'est simple j'etait parti super loins pour rien mdr
         """
-        if pg.sprite.collide_rect(self, self.food):
-            print('touche hehe')
+        creature_rect = self.rect 
+
+        for i, food in enumerate(settings.food_list):
+            if creature_rect.colliderect(food.rect):
+                print(self, i)
+                self.ate += 1   
+                self.energy = 100
+                settings.food_list.pop(i)
+                return
 
 
     def collidelist(self):

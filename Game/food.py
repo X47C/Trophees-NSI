@@ -1,8 +1,7 @@
 # methodes pour gerer la nouriture
 import pygame as pg
-import settings
 
-class Food(pg.sprite.Sprite):
+class Food():
     """
     Entry : position (tupple), is_eaten (bool)
     """
