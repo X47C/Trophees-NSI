@@ -108,6 +108,7 @@ while running:
     clock.tick(settings.FPS)
 
 
+pg.Rect.collidelist()
 
 
 
