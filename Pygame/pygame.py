@@ -3,11 +3,11 @@ import pygame as pg
 from Pygame.button import Button
 from pygame import Rect
 import settings
-import matplotlib
-matplotlib.use("Agg")  # backend sans fenêtre
-import matplotlib.pyplot as plt
-from matplotlib.backends.backend_agg import FigureCanvasAgg
-import numpy as np
+import matplotlib as plt
+plt.use("Agg")  # backend sans fenêtre
+import pylab
+import matplotlib.backends.backend_agg as agg
+from numpy import mean
 
 class Before_Game:
     """
@@ -483,71 +483,44 @@ class Post_Game:
         self.scroll_thumb_y = 20
         self.dragging_scroll = False
 
-        # Graphes
-        self.graph_surfaces = []
+        self.graph_list = []
         self._build_graphs()
 
     def _build_graphs(self):
         """
         l'endroit ou on fout les graphes
         """
+        figsize_ = [8, 5]
+        dpi_ = 100
 
-        # -------- (template) --------
-        # fig1, ax1 = plt.subplots(figsize=(6, 3))
-        # x = np.arange(10)
-        # y = np.random.randint(0, 100, size=10)
+        #vitesse moyenne
+        fig1 = pylab.figure(figsize = figsize_, dpi = dpi_)
+        ax1 = fig1.gca()
+        ax1.plot([i for i in range(1, settings.Days_max + 1)],[mean([c.speed for c in l]) for ll in settings.creatures_list_dico.values() for l in ll])
+        ax1.set_ylabel('Vitesse moyenne')
+        ax1.set_xlabel('Jours')
+        self.graph_list.append(self._graph_to_surf(fig1))
 
-        # ax1.plot(x, y)
-        # ax1.set_title("Titre")
-        # ax1.set_xlabel("Bahhhx")
-        # ax1.set_ylabel("bahhhy")
+        #test
+        fig2 = pylab.figure(figsize = figsize_, dpi = dpi_)
+        ax2 = fig2.gca()
+        ax2.plot([1, 2, 3])
+        self.graph_list.append(self._graph_to_surf(fig2))
+    
 
-        # self.graph_surfaces.append(self._fig_to_surface(fig1))
-        # plt.close(fig1)
-
-
-
-
-        # -------- GRAPHE 1 --------
-        fig1, ax1 = plt.subplots(figsize = (6, 4))
-
-        days = list(range(1, settings.Days_max))
-
-        mean_speeds = [
-            np.mean([c.speed for sublist in settings.creatures_list_dico[d] for c in sublist])
-            if d in settings.creatures_list_dico and len(settings.creatures_list_dico[d]) > 0
-            else np.nan
-            for d in days
-        ]
-
-        ax1.plot(days, mean_speeds, marker='o', linestyle='-')  # Jour en X, vitesse moyenne en Y
-
-        ax1.set_xlim(1, settings.Days_max)
-        ax1.set_ylim(0, 10)
-
-        ax1.set_xlabel("Jour")
-        ax1.set_ylabel("Vitesse moyenne")
-        ax1.set_title("Vitesse moyenne")
-
-        self.graph_surfaces.append(self._fig_to_surface(fig1))
-        plt.close(fig1)
-
-
-
-
-
-
-    def _fig_to_surface(self, fig):
+    def _graph_to_surf(self, fig):
         """
-        Convertit une figure matplotlib en pygame.Surface
+        Transforme les graphes en surface affichables sur pygame
         """
-        canvas = FigureCanvasAgg(fig)
+        canvas = agg.FigureCanvasAgg(fig)
         canvas.draw()
-        renderer = canvas.get_renderer()
-        raw_data = renderer.buffer_rgba()
+        renderer = canvas.get_renderer()    
+        raw_data = renderer.tostring_argb()
         size = canvas.get_width_height()
+        
+        surf = pg.image.fromstring(raw_data, size, "RGBA")
+        return surf
 
-        return pg.image.frombuffer(raw_data, size, "RGBA")
 
     def draw(self):
         self.screen.blit(self.bg_asset, (0, 0))
@@ -556,12 +529,11 @@ class Post_Game:
         content_surf = pg.Surface((self.width - 30, self.content_height))
         content_surf.fill((230, 230, 230))
 
-        y_offset = 20
-
         # affichage des graphes
-        for graph in self.graph_surfaces:
-            content_surf.blit(graph, (40, y_offset))
-            y_offset += graph.get_height() + 40
+        y = 30
+        for g in self.graph_list:
+            content_surf.blit(g, (self.width // 2 - 410, y))
+            y += 530
 
         # affichage dans la fenêtre avec scroll
         self.screen.blit(

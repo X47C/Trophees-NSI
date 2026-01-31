@@ -69,6 +69,7 @@ while running:
     if state == "in_game":
         match day_manager.is_over():
             case "end":
+                settings.creatures_list_dico[settings.Days_max] = settings.creatures_list.copy() # pas touche
                 Engd = Post_Game(screen)
                 state = "post_game"
                 day_manager.current_day = 0
@@ -76,6 +77,7 @@ while running:
                 day_manager.new_day()
         day_manager.update() 
         
+
 
 
     # --- DRAW ---
@@ -91,6 +93,7 @@ while running:
             day_manager.draw_current_day()
         case 'post_game':
             Engd.draw()
+
         case 'credits':
             Befg.credits()
 
