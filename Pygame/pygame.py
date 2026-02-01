@@ -491,19 +491,17 @@ class Post_Game:
         """
         l'endroit ou on fout les graphes
         """
-        figsize_ = [8, 5]
-        dpi_ = 100
-
         #vitesse moyenne
-        fig1 = pylab.figure(figsize = figsize_, dpi = dpi_)
+        fig1 = pylab.figure(figsize = [8, 5], dpi = 100)
         ax1 = fig1.gca()
         ax1.plot([i for i in range(1, self.current_day + 1)], [(sum(speeds) / len(speeds)) for speeds in ([obj.speed for sub in settings.creatures_list_dico[k] for obj in sub] for k in sorted(settings.creatures_list_dico))])
         ax1.set_ylabel('Vitesse moyenne')
         ax1.set_xlabel('Jours')
         self.graph_list.append(self._graph_to_surf(fig1))
 
+
         #test
-        fig2 = pylab.figure(figsize = figsize_, dpi = dpi_)
+        fig2 = pylab.figure(figsize = [8, 5], dpi = 100)
         ax2 = fig2.gca()
         ax2.plot([1, 2, 3])
         self.graph_list.append(self._graph_to_surf(fig2))
