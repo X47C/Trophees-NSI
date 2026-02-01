@@ -48,7 +48,7 @@ while running:
             case 'in_game':
                 match Ing.handle_event(event):
                     case 'end': 
-                        Engd = Post_Game(screen)
+                        Engd = Post_Game(screen, day_manager.current_day)
                         state = 'post_game'   
                         day_manager.current_day = 0
 
@@ -70,9 +70,9 @@ while running:
         match day_manager.is_over():
             case "end":
                 settings.creatures_list_dico[settings.Days_max] = settings.creatures_list.copy() # pas touche
-                Engd = Post_Game(screen)
+                Engd = Post_Game(screen, day_manager.current_day)
                 state = "post_game"
-                day_manager.current_day = 0
+                day_manager.current_day = 1
             case "continue":
                 day_manager.new_day()
         day_manager.update() 

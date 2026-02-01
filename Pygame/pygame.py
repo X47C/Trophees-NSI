@@ -7,7 +7,6 @@ import matplotlib as plt
 plt.use("Agg")  # backend sans fenêtre
 import pylab
 import matplotlib.backends.backend_agg as agg
-from numpy import mean
 
 class Before_Game:
     """
@@ -78,6 +77,7 @@ class Settings:
         # fonts
         self.font_btn = pg.font.SysFont(settings.Button_font, settings.Button_font_size)
         self.font_lbl = pg.font.SysFont(settings.Button_label_font, settings.Button_label_font_size)
+        
 
         # geometry
         settings.PostG_PADDING = 20
@@ -453,9 +453,10 @@ class Post_Game:
     avec scrollbar + graphiques matplotlib intégrés
     """
 
-    def __init__(self, screen):
+    def __init__(self, screen, current_day):
         self.width, self.height = settings.Display_size
         self.screen = screen
+        self.current_day = current_day
 
         # fond
         self.bg_asset = pg.Surface(settings.Display_size)
@@ -496,7 +497,7 @@ class Post_Game:
         #vitesse moyenne
         fig1 = pylab.figure(figsize = figsize_, dpi = dpi_)
         ax1 = fig1.gca()
-        ax1.plot([i for i in range(1, settings.Days_max + 1)],[mean([c.speed for c in l]) for ll in settings.creatures_list_dico.values() for l in ll])
+        ax1.plot([i for i in range(1, self.current_day)], [(sum(speeds) / len(speeds)) for speeds in ([obj.speed for sub in settings.creatures_list_dico[k] for obj in sub] for k in sorted(settings.creatures_list_dico))])
         ax1.set_ylabel('Vitesse moyenne')
         ax1.set_xlabel('Jours')
         self.graph_list.append(self._graph_to_surf(fig1))

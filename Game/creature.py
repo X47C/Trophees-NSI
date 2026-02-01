@@ -107,7 +107,6 @@ class  Creature():
         """
         Creature(self.speed * rd(100 - self.variation_speed, 100 + self.variation_speed), self.view * rd(100 - self.variation_size, 100 + self.variation_size), self.speed * rd(100 - self.variation_view, 100 + self.variation_view), self.variation_speed, self.variation_size, self.variation_view, self.days_max, self.color)
 
-
     def Eat(self):
         """
         on verifie si il a mangé haha enfait c'est simple j'etait parti super loins pour rien mdr
@@ -129,7 +128,6 @@ class  Creature():
         if self.is_alive:
             if self.ate >= 2:
                 self.Baby()
-                print('bébé')
             self.ate = 0
             self.energy = 100
             self.pos_x = 550
