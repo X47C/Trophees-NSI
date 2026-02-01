@@ -33,6 +33,7 @@ class Day_Manager():
             settings.creatures_list.append(a)
         for i in range(settings.Food_quantity):
              settings.food_list.append(Food(rd(280, 1000), rd(70, 650)))
+        settings.creatures_list_dico[settings.Days_max] = settings.creatures_list.copy() # pas touche
 
 
 

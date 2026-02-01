@@ -69,7 +69,6 @@ while running:
     if state == "in_game":
         match day_manager.is_over():
             case "end":
-                settings.creatures_list_dico[settings.Days_max] = settings.creatures_list.copy() # pas touche
                 Engd = Post_Game(screen, day_manager.current_day)
                 state = "post_game"
                 day_manager.current_day = 1

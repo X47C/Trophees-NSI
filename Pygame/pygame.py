@@ -497,7 +497,7 @@ class Post_Game:
         #vitesse moyenne
         fig1 = pylab.figure(figsize = figsize_, dpi = dpi_)
         ax1 = fig1.gca()
-        ax1.plot([i for i in range(1, self.current_day)], [(sum(speeds) / len(speeds)) for speeds in ([obj.speed for sub in settings.creatures_list_dico[k] for obj in sub] for k in sorted(settings.creatures_list_dico))])
+        ax1.plot([i for i in range(1, self.current_day + 1)], [(sum(speeds) / len(speeds)) for speeds in ([obj.speed for sub in settings.creatures_list_dico[k] for obj in sub] for k in sorted(settings.creatures_list_dico))])
         ax1.set_ylabel('Vitesse moyenne')
         ax1.set_xlabel('Jours')
         self.graph_list.append(self._graph_to_surf(fig1))
