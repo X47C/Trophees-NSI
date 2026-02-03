@@ -38,7 +38,7 @@ class  Creature():
         deplace la creature en fonction de sa vitesse et de son angle
         """
         #if self.see_food()[0]: c'est pour faire en sorte qu'elle aille vers la bouffe mais j'ai pas reussi a le faire marcher
-         #   print('Cyprien est un gros caca')
+        
         #else:
         dt = 1.0 / settings.FPS
         w, h = settings.Display_size
@@ -119,7 +119,6 @@ class  Creature():
             for crea in settings.creatures_list[i]:
                 if crea == self:
                     settings.creatures_list[i].append(Baby)
-                    print(len(settings.creatures_list[0]))
                     return
                     
     def Eat(self):
