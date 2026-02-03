@@ -615,4 +615,3 @@ class Post_Game:
             (self.scrollbar_rect.height - self.scroll_thumb_height)
         )
         self.scroll_y = ratio * (self.content_height - self.height)
-
