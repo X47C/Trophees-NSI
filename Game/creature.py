@@ -29,7 +29,7 @@ class  Creature():
         self.radius = 10 * self.view
         
     def draw(self, screen):
-        pg.draw.circle(screen, (40, 145, 40), (self.pos_x, self.pos_y), self.radius)
+        pg.draw.circle(screen, (40, 145, 40), (self.pos_x, self.pos_y), 10 * self.view)
         rect = self.image.get_rect(center=(int(self.pos_x), int(self.pos_y)))
         screen.blit(self.image, rect)
         
@@ -113,13 +113,13 @@ class  Creature():
         """
         Se reproduit avec un pourcentage de proximité a ses parametres actuels
         """
-        Baby = Creature(self.speed * (rd(100 - self.variation_speed, 100 + self.variation_speed)/100), self.view * (rd(100 - self.variation_size, 100 + self.variation_size)/100), self.speed * (rd(100 - self.variation_view, 100 + self.variation_view)/100), self.variation_speed, self.variation_size, self.variation_view, self.days_max, self.color)
+        Baby = Creature(self.speed * (rd(100 - self.variation_speed, 100 + self.variation_speed)/100), self.size * (rd(100 - self.variation_size, 100 + self.variation_size)/100), self.view * (rd(100 - self.variation_view, 100 + self.variation_view)/100), self.variation_speed, self.variation_size, self.variation_view, self.days_max, self.color)
         Baby.ate = 1
         for i in range(len(settings.POPULATIONS)):
             for crea in settings.creatures_list[i]:
                 if crea == self:
                     settings.creatures_list[i].append(Baby)
-                    print(len(settings.creatures_list))
+                    print(len(settings.creatures_list[0]))
                     return
                     
     def Eat(self):
