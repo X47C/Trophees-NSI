@@ -460,7 +460,7 @@ class Post_Game:
 
         # fond
         self.bg_asset = pg.Surface(settings.Display_size)
-        self.bg_asset.fill((128, 0, 128))
+        self.bg_asset.fill((255, 255, 255))
 
         # boutons
         self.Button_exit = Button(
@@ -494,7 +494,7 @@ class Post_Game:
         #vitesse moyenne
         fig1 = pylab.figure(figsize = [8, 5], dpi = 100)
         ax1 = fig1.gca()
-        ax1.plot([i for i in range(1, self.current_day + 1)], [(sum(speeds) / len(speeds)) for speeds in ([obj.speed for sub in settings.creatures_list_dico[k] for obj in sub] for k in sorted(settings.creatures_list_dico))])
+        ax1.plot([i for i in range(1, self.current_day + 1)], [(sum(speeds) / len(speeds)) for speeds in ([obj.speed for sub in settings.creatures_list_dico[k] for obj in sub] for k in sorted(settings.creatures_list_dico))], 'b+-', linewidth = 1)
         ax1.set_ylabel('Vitesse moyenne')
         ax1.set_xlabel('Jours')
         self.graph_list.append(self._graph_to_surf(fig1))
@@ -517,7 +517,8 @@ class Post_Game:
         raw_data = renderer.tostring_argb()
         size = canvas.get_width_height()
         
-        surf = pg.image.fromstring(raw_data, size, "RGBA")
+        surf = pg.image.fromstring(raw_data, size, "ARGB")
+        surf = surf.convert_alpha()
         return surf
 
 
@@ -613,5 +614,5 @@ class Post_Game:
         ratio = (
             (self.scroll_thumb_y - self.scrollbar_rect.y) /
             (self.scrollbar_rect.height - self.scroll_thumb_height)
-        )
+        ) 
         self.scroll_y = ratio * (self.content_height - self.height)
