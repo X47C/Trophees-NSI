@@ -614,5 +614,12 @@ class Post_Game:
         ratio = (
             (self.scroll_thumb_y - self.scrollbar_rect.y) /
             (self.scrollbar_rect.height - self.scroll_thumb_height)
+<<<<<<< HEAD
         ) 
         self.scroll_y = ratio * (self.content_height - self.height)
+=======
+        )
+        self.scroll_y = ratio * (self.content_height - self.height)
+
+print('gros caca cyprien')
+>>>>>>> 15d317428d4096b7df51a11e54245760c3358bf9
