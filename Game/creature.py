@@ -113,8 +113,15 @@ class  Creature():
         """
         Se reproduit avec un pourcentage de proximité a ses parametres actuels
         """
-        Creature(self.speed * rd(100 - self.variation_speed, 100 + self.variation_speed), self.view * rd(100 - self.variation_size, 100 + self.variation_size), self.speed * rd(100 - self.variation_view, 100 + self.variation_view), self.variation_speed, self.variation_size, self.variation_view, self.days_max, self.color)
-
+        Baby = Creature(self.speed * (rd(100 - self.variation_speed, 100 + self.variation_speed)/100), self.view * (rd(100 - self.variation_size, 100 + self.variation_size)/100), self.speed * (rd(100 - self.variation_view, 100 + self.variation_view)/100), self.variation_speed, self.variation_size, self.variation_view, self.days_max, self.color)
+        Baby.ate = 1
+        for i in range(len(settings.POPULATIONS)):
+            for crea in settings.creatures_list[i]:
+                if crea == self:
+                    settings.creatures_list[i].append(Baby)
+                    print(len(settings.creatures_list))
+                    return
+                    
     def Eat(self):
         """
         on verifie si il a mangé haha enfait c'est simple j'etait parti super loins pour rien mdr
