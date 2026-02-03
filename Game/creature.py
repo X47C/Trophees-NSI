@@ -118,8 +118,8 @@ class  Creature():
                 self.ate += 1   
                 self.energy = 100
                 settings.food_list.pop(i)
-                return
-
+                return 
+            
 
     def New_Day(self):
         """
