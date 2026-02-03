@@ -8,7 +8,7 @@ class  Creature():
     """
     Entrée : Speed, Size, View (int, compris entre 1 et 10) 
     """
-    def __init__(self, Speed, Size, View, Variation_Speed, Variation_Size, Variation_View, Days_Max, Color, screen):
+    def __init__(self, Speed, Size, View, Variation_Speed, Variation_Size, Variation_View, Days_Max, Color):
         self.speed = Speed
         self.size = Size
         self.view = View
@@ -92,6 +92,7 @@ class  Creature():
         if bounced:
             self.ang_vel += uniform(-40, 40)
 
+        self.energy -= 1
         self.pos_x = min(max(self.pos_x, margin), w - margin)
         self.pos_y = min(max(self.pos_y, margin), h - margin)
         self.rect = self.image.get_rect(center=(int(self.pos_x), int(self.pos_y)))
@@ -104,8 +105,7 @@ class  Creature():
         """
         Se reproduit avec un pourcentage de proximité a ses parametres actuels
         """
-        Creature(self.speed * rd(100 - self.variation_speed, 100 + self.variation_speed), self.view * rd(100 - self.variation_size, 100 + self.variation_size), self.speed * rd(100 - self.variation_view, 100 + self.variation_view), self.color)
-
+        Creature(self.speed * rd(100 - self.variation_speed, 100 + self.variation_speed), self.view * rd(100 - self.variation_size, 100 + self.variation_size), self.speed * rd(100 - self.variation_view, 100 + self.variation_view), self.variation_speed, self.variation_size, self.variation_view, self.days_max, self.color)
 
     def Eat(self):
         """
@@ -115,44 +115,23 @@ class  Creature():
 
         for i, food in enumerate(settings.food_list):
             if creature_rect.colliderect(food.rect):
-                print(self, i)
                 self.ate += 1   
                 self.energy = 100
                 settings.food_list.pop(i)
                 return
 
 
-    def collidelist(self):
-        """
-        verifie si la creature entre en collision avec une liste de rectangles
-        """
-        for rect in settings.food_list:
-            if self.collide(rect.rect):
-                print('ok')
-        print('non')
-    
-    def collide(self, recte):
-        """
-        verifie si la creature entre en collision avec un rectangle
-        """
-        if pg.Rect.colliderect(self.rect, recte):
-           return True
-        return False
-    
-
     def New_Day(self):
         """
         Gere un nouveau jour
         """
-        if self.is_alive():
+        if self.is_alive:
             if self.ate >= 2:
                 self.Baby()
-            self.days += 1
-            if not self.is_alive():
-                return
-            else:
-                self.energy = 100
-                self.ate = 0
+            self.ate = 0
+            self.energy = 100
+            self.pos_x = 550
+            self.pos_y = 440
 
     def see_food(self):
         """
@@ -160,51 +139,11 @@ class  Creature():
         False sinon. Toute la bouffe est stockée dans settings.food_list, c'est une liste d'objet (les coordonées sont dans le init )
         Les creatures on un champs de vision qui va de 1 a 10 donc plus c'est elevé plus elles voient loin
         """
-        for food in settings.food_list:
-            pass
+        pass
 
     def is_alive(self):
         """
         Check si le mec est en vie renvois True ou false
         """
-        return self.energy > 0 and self.days <= self.days_max
+        return self.ate > 0 and self.days <= self.days_max   
 
-    def lives(self):
-        """
-        Consomme l'energie aussi ect
-        """
-        if self.is_alive():
-            self.energy -= 1
-        
-
-    def get_color(self):
-        """
-        renvoie la couleur de la creature
-        """
-        return self.color
-    
-    def get_energy(self):
-        """
-        renvoie l'energie de la creature
-        """
-        return self.energy
-    
-    def get_size(self):
-        """
-        renvoie la taille de la creature
-        """
-        return self.size
-    
-    def get_speed(self):
-        """
-        renvoie la vitesse de la creature
-        """
-        return self.speed
-    
-    def get_view(self):
-        """
-        renvoie la vue de la creature
-        """
-        return self.view
-    
-    

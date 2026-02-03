@@ -19,7 +19,6 @@ day_manager = Day_Manager(screen)
 running = True
 state = 'home'
 
-t = 0
 
 # --- MAIN LOOP ---
 while running:
@@ -49,7 +48,7 @@ while running:
             case 'in_game':
                 match Ing.handle_event(event):
                     case 'end': 
-                        Engd = Post_Game(screen)
+                        Engd = Post_Game(screen, day_manager.current_day)
                         state = 'post_game'   
                         day_manager.current_day = 0
 
@@ -68,24 +67,16 @@ while running:
 
     # --- UPDATE --- 
     if state == "in_game":
-        t += 1
-        match day_manager.is_over(t):
+        match day_manager.is_over():
             case "end":
-                Engd = Post_Game(screen)
+                Engd = Post_Game(screen, day_manager.current_day)
                 state = "post_game"
-                day_manager.current_day = 0
+                day_manager.current_day = 1
             case "continue":
                 day_manager.new_day()
-                t = 0
         day_manager.update() 
         
-        
-        
 
-
-
-        
-        
 
 
     # --- DRAW ---
@@ -101,37 +92,10 @@ while running:
             day_manager.draw_current_day()
         case 'post_game':
             Engd.draw()
+
         case 'credits':
             Befg.credits()
 
 
     pg.display.flip()
     clock.tick(settings.FPS)
-
-
-pg.Rect.collidelist()
-
-
-
-
-# Fonctionnement theorique du jeu ( en fonctionnement ) dans la boucle main :
-
-# toutes les creatures : listes de liste d'objets ( une liste d'objets par jours, le tout dans une liste globale utilisée pour les stats a la fin)
-# la bouffe : liste d'ojets
-
-
-# debut du jour :
-    # - verifier les creatures en vie
-    # -les afficher
-    # - les mettres a des cos logiques genre pas l'une sur l'autre
-    # - faire apparaitre la bouffe
-    # -lancer le mouvement des cratures
-
-# faut faire en sorte qu'un jour dure un temps donné
-# pendant ce temps faut faire :
-    # - a chaques tick faire avancer les creatures ( soit au hasard soit vers de la boufe si jamais y'en as pas loin)
-    # -verifier si les cratures ont mangée --> utiliser la methode dans ce cas la
-
-# le tout dans des fonctions avant la boucle principale, on fera des methodes dans une classe game pour certaines choses:
-    # - def day(dt --> temps passé depuis la derniere frame, )
-    # - def start_day
