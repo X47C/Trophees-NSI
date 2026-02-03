@@ -460,7 +460,7 @@ class Post_Game:
 
         # fond
         self.bg_asset = pg.Surface(settings.Display_size)
-        self.bg_asset.fill((128, 0, 128))
+        self.bg_asset.fill((255, 255, 255))
 
         # boutons
         self.Button_exit = Button(
@@ -520,7 +520,8 @@ class Post_Game:
         raw_data = renderer.tostring_argb()
         size = canvas.get_width_height()
         
-        surf = pg.image.fromstring(raw_data, size, "RGBA")
+        surf = pg.image.fromstring(raw_data, size, "ARGB")
+        surf = surf.convert_alpha()
         return surf
 
 
@@ -616,6 +617,5 @@ class Post_Game:
         ratio = (
             (self.scroll_thumb_y - self.scrollbar_rect.y) /
             (self.scrollbar_rect.height - self.scroll_thumb_height)
-        )
+        ) 
         self.scroll_y = ratio * (self.content_height - self.height)
-

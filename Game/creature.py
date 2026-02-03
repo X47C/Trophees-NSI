@@ -1,6 +1,7 @@
 # methodes pour gerer les creatures
+import math
 from random import randint as rd, uniform, random
-from math import radians, cos, sin
+from math import radians, cos, sin, hypot
 import pygame as pg
 import settings
 
@@ -25,6 +26,7 @@ class  Creature():
         self.image = pg.image.load("assets/creature.png")
         self.rect = self.image.get_rect(center=(int(self.pos_x), int(self.pos_y)))
         self.angle_deg = rd(0, 360)
+        self.radius = 10 * self.view
         
     def draw(self, screen):
         pg.draw.circle(screen, (40, 145, 40), (self.pos_x, self.pos_y), 10 * self.view)
@@ -32,6 +34,12 @@ class  Creature():
         screen.blit(self.image, rect)
         
     def moove(self):
+        """
+        deplace la creature en fonction de sa vitesse et de son angle
+        """
+        #if self.see_food()[0]: c'est pour faire en sorte qu'elle aille vers la bouffe mais j'ai pas reussi a le faire marcher
+         #   print('Cyprien est un gros caca')
+        #else:
         dt = 1.0 / settings.FPS
         w, h = settings.Display_size
 
@@ -105,8 +113,15 @@ class  Creature():
         """
         Se reproduit avec un pourcentage de proximité a ses parametres actuels
         """
-        Creature(self.speed * rd(100 - self.variation_speed, 100 + self.variation_speed), self.view * rd(100 - self.variation_size, 100 + self.variation_size), self.speed * rd(100 - self.variation_view, 100 + self.variation_view), self.variation_speed, self.variation_size, self.variation_view, self.days_max, self.color)
-
+        Baby = Creature(self.speed * (rd(100 - self.variation_speed, 100 + self.variation_speed)/100), self.size * (rd(100 - self.variation_size, 100 + self.variation_size)/100), self.view * (rd(100 - self.variation_view, 100 + self.variation_view)/100), self.variation_speed, self.variation_size, self.variation_view, self.days_max, self.color)
+        Baby.ate = 1
+        for i in range(len(settings.POPULATIONS)):
+            for crea in settings.creatures_list[i]:
+                if crea == self:
+                    settings.creatures_list[i].append(Baby)
+                    print(len(settings.creatures_list[0]))
+                    return
+                    
     def Eat(self):
         """
         on verifie si il a mangé haha enfait c'est simple j'etait parti super loins pour rien mdr
@@ -118,8 +133,8 @@ class  Creature():
                 self.ate += 1   
                 self.energy = 100
                 settings.food_list.pop(i)
-                return
-
+                return 
+            
 
     def New_Day(self):
         """
@@ -139,7 +154,10 @@ class  Creature():
         False sinon. Toute la bouffe est stockée dans settings.food_list, c'est une liste d'objet (les coordonées sont dans le init )
         Les creatures on un champs de vision qui va de 1 a 10 donc plus c'est elevé plus elles voient loin
         """
-        pass
+        for i, food in enumerate(settings.food_list):
+            if math.hypot(self.pos_x - food.pos_x, self.pos_y - food.pos_y) < self.radius * 2:
+                return True, i
+        return False
 
     def is_alive(self):
         """

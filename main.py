@@ -50,7 +50,7 @@ while running:
                     case 'end': 
                         Engd = Post_Game(screen, day_manager.current_day)
                         state = 'post_game'   
-                        day_manager.current_day = 0
+                        day_manager.current_day = 1
 
             case 'post_game':
                 match Engd.handle_event(event):
