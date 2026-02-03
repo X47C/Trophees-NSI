@@ -37,73 +37,73 @@ class  Creature():
         """
         deplace la creature en fonction de sa vitesse et de son angle
         """
-        if self.see_food()[0]:
-            print('Cyprien est un gros caca')
-        else:
-            dt = 1.0 / settings.FPS
-            w, h = settings.Display_size
+        #if self.see_food()[0]: c'est pour faire en sorte qu'elle aille vers la bouffe mais j'ai pas reussi a le faire marcher
+         #   print('Cyprien est un gros caca')
+        #else:
+        dt = 1.0 / settings.FPS
+        w, h = settings.Display_size
 
-            speed_px_s = float(self.speed) * 15.0
-            margin = 40 + int(self.size)
+        speed_px_s = float(self.speed) * 15.0
+        margin = 40 + int(self.size)
 
-            turn_noise = 450.0      
-            damping = 0.96         
-            burst_prob = 0.5        
-            burst_mag = 220.0       
+        turn_noise = 450.0      
+        damping = 0.96         
+        burst_prob = 0.5        
+        burst_mag = 220.0       
 
-            if not hasattr(self, "ang_vel"):
-                self.ang_vel = uniform(-120.0, 120.0)
+        if not hasattr(self, "ang_vel"):
+            self.ang_vel = uniform(-120.0, 120.0)
 
-            self.ang_vel += uniform(-turn_noise, turn_noise) * dt
+        self.ang_vel += uniform(-turn_noise, turn_noise) * dt
 
-            if random() < burst_prob * dt:
-                self.ang_vel += uniform(-burst_mag, burst_mag)
+        if random() < burst_prob * dt:
+            self.ang_vel += uniform(-burst_mag, burst_mag)
 
-            self.ang_vel *= damping
+        self.ang_vel *= damping
 
-            max_ang_vel = 550.0
-            if self.ang_vel > max_ang_vel:
-                self.ang_vel = max_ang_vel
-            elif self.ang_vel < -max_ang_vel:
-                self.ang_vel = -max_ang_vel
+        max_ang_vel = 550.0
+        if self.ang_vel > max_ang_vel:
+            self.ang_vel = max_ang_vel
+        elif self.ang_vel < -max_ang_vel:
+            self.ang_vel = -max_ang_vel
 
-            self.angle_deg = (self.angle_deg + self.ang_vel * dt) % 360.0
-            r = radians(self.angle_deg)
-            step = speed_px_s * dt
-            self.pos_x += cos(r) * step
-            self.pos_y += sin(r) * step
+        self.angle_deg = (self.angle_deg + self.ang_vel * dt) % 360.0
+        r = radians(self.angle_deg)
+        step = speed_px_s * dt
+        self.pos_x += cos(r) * step
+        self.pos_y += sin(r) * step
 
-            bounced = False
+        bounced = False
 
-            if self.pos_x < margin:
-                self.pos_x = margin
-                self.angle_deg = (180.0 - self.angle_deg) % 360.0
-                self.ang_vel = -self.ang_vel + uniform(-90, 90)
-                bounced = True
-            elif self.pos_x > w - margin:
-                self.pos_x = w - margin
-                self.angle_deg = (180.0 - self.angle_deg) % 360.0
-                self.ang_vel = -self.ang_vel + uniform(-90, 90)
-                bounced = True
+        if self.pos_x < margin:
+            self.pos_x = margin
+            self.angle_deg = (180.0 - self.angle_deg) % 360.0
+            self.ang_vel = -self.ang_vel + uniform(-90, 90)
+            bounced = True
+        elif self.pos_x > w - margin:
+            self.pos_x = w - margin
+            self.angle_deg = (180.0 - self.angle_deg) % 360.0
+            self.ang_vel = -self.ang_vel + uniform(-90, 90)
+            bounced = True
 
-            if self.pos_y < margin:
-                self.pos_y = margin
-                self.angle_deg = (-self.angle_deg) % 360.0
-                self.ang_vel = -self.ang_vel + uniform(-90, 90)
-                bounced = True
-            elif self.pos_y > h - margin:
-                self.pos_y = h - margin
-                self.angle_deg = (-self.angle_deg) % 360.0
-                self.ang_vel = -self.ang_vel + uniform(-90, 90)
-                bounced = True
+        if self.pos_y < margin:
+            self.pos_y = margin
+            self.angle_deg = (-self.angle_deg) % 360.0
+            self.ang_vel = -self.ang_vel + uniform(-90, 90)
+            bounced = True
+        elif self.pos_y > h - margin:
+            self.pos_y = h - margin
+            self.angle_deg = (-self.angle_deg) % 360.0
+            self.ang_vel = -self.ang_vel + uniform(-90, 90)
+            bounced = True
 
-            if bounced:
-                self.ang_vel += uniform(-40, 40)
+        if bounced:
+            self.ang_vel += uniform(-40, 40)
 
-            self.energy -= 1
-            self.pos_x = min(max(self.pos_x, margin), w - margin)
-            self.pos_y = min(max(self.pos_y, margin), h - margin)
-            self.rect = self.image.get_rect(center=(int(self.pos_x), int(self.pos_y)))
+        self.energy -= 1
+        self.pos_x = min(max(self.pos_x, margin), w - margin)
+        self.pos_y = min(max(self.pos_y, margin), h - margin)
+        self.rect = self.image.get_rect(center=(int(self.pos_x), int(self.pos_y)))
 
 
         
