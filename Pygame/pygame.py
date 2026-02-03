@@ -491,19 +491,35 @@ class Post_Game:
         """
         l'endroit ou on fout les graphes
         """
-        # premier graphe
+        #--- parametres ---
+        lw = 1 #eppaisseur des courbes
+
+        # --- premier graphe ---
         fig1 = pylab.figure(figsize = [8, 5], dpi = 100)
         ax1 = fig1.gca()
+
         jour = [i for i in range(1, self.current_day + 1)]
         average_speed = [(sum(speeds) / len(speeds)) for speeds in ([obj.speed for sub in settings.creatures_list_dico[k] for obj in sub] for k in sorted(settings.creatures_list_dico))]
-        average_size = [(sum(speeds) / len(speeds)) for speeds in ([obj.size for sub in settings.creatures_list_dico[k] for obj in sub] for k in sorted(settings.creatures_list_dico))]
-        ax1.plot(jour, average_speed, label = "Vitesse moyenne")
-        ax1.plot(jour, average_size, label = "Taille moyenne")
+        average_size = [(sum(sizes) / len(sizes)) for sizes in ([obj.size for sub in settings.creatures_list_dico[k] for obj in sub] for k in sorted(settings.creatures_list_dico))]
+        average_view = [(sum(views) / len(views)) for views in ([obj.view for sub in settings.creatures_list_dico[k] for obj in sub] for k in sorted(settings.creatures_list_dico))]
+        print(average_speed, average_size, average_view)
+
+        ax1.set_xticks(range(1, self.current_day + 1))
+        ax1.set_ylim(0, 10)
+        ax1.set_yticks(range(0, 11))
+
+        ax1.plot(jour, average_speed, label = "Vitesse", lw = lw, marker = '+')
+        ax1.plot(jour, average_size, label = "Taille", lw = lw, marker = "x")
+        ax1.plot(jour, average_view, label = "Vue", lw = lw, marker = "o")
+
         ax1.set_xlabel('Jours')
+        ax1.set_ylabel('Moyenne')
+        ax1.legend()
         self.graph_list.append(self._graph_to_surf(fig1))
 
 
-        #test
+
+        # --- graphe 2 ( test ) ---
         fig2 = pylab.figure(figsize = [8, 5], dpi = 100)
         ax2 = fig2.gca()
         ax2.plot([1, 2, 3])

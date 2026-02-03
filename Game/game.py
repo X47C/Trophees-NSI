@@ -58,7 +58,6 @@ class Day_Manager():
         ce que doit faire le jeu a chaques debuts de jours
         """
         self.current_day += 1
-        settings.creatures_list_dico[self.current_day] = settings.creatures_list.copy() #allez voir le commentaire dans settings mais PAS TOUCHE !!!
         self.time = 0
         for i in range(len(settings.creatures_list)):
             alive_creatures = []
@@ -70,6 +69,7 @@ class Day_Manager():
         settings.food_list = []
         for i in range(settings.Food_quantity):
              settings.food_list.append(Food(rd(280, 1000), rd(70, 650)))
+        settings.creatures_list_dico[self.current_day] = settings.creatures_list.copy() #allez voir le commentaire dans settings mais PAS TOUCHE !!!
 
         
 
