@@ -7,6 +7,7 @@ import matplotlib as plt
 plt.use("Agg")  # backend sans fenêtre
 import pylab
 import matplotlib.backends.backend_agg as agg
+from matplotlib.ticker import MaxNLocator
 
 class Before_Game:
     """
@@ -81,10 +82,10 @@ class Settings:
 
         # geometry
         settings.PostG_PADDING = 20
-        self.gap = 18
+        self.gap = 30
         self.btn_h = 44
         self.small_w = 48
-        self.label_gap = 6
+        self.label_gap = 12
 
         # couleur de fond pour le bouton numéroté sélectionné (modifiable)
         # ex : (120, 200, 140) = vert doux ; remplace par ce que tu veux
@@ -477,7 +478,7 @@ class Post_Game:
         # scrollbar
         self.scroll_y = 0
         self.scroll_speed = 30
-        self.content_height = 1200  # hauteur 
+        self.content_height = 1800  # hauteur 
 
         self.scrollbar_rect = Rect(self.width - 18, 20, 12, self.height - 40)
         self.scroll_thumb_height = 80
@@ -491,21 +492,69 @@ class Post_Game:
         """
         l'endroit ou on fout les graphes
         """
-        #vitesse moyenne
-        fig1 = pylab.figure(figsize = [8, 5], dpi = 100)
+        #--- parametres ---
+        lw = 1 #eppaisseur des courbes
+        jour = [i for i in range(1, self.current_day + 1)]
+        figsize = [8, 5]
+        dpi = 100
+
+
+        # --- premier graphe ( caracteristiques moyennes ) ---
+        fig1 = pylab.figure(figsize = figsize, dpi = dpi)
         ax1 = fig1.gca()
-        ax1.plot([i for i in range(1, self.current_day + 1)], [(sum(speeds) / len(speeds)) for speeds in ([obj.speed for sub in settings.creatures_list_dico[k] for obj in sub] for k in sorted(settings.creatures_list_dico))], 'b+-', linewidth = 1)
-        ax1.set_ylabel('Vitesse moyenne')
+
+        average_speed = [(sum(speeds) / len(speeds)) for speeds in ([obj.speed for sub in settings.creatures_list_dico[k] for obj in sub] for k in sorted(settings.creatures_list_dico))]
+        average_size = [(sum(sizes) / len(sizes)) for sizes in ([obj.size for sub in settings.creatures_list_dico[k] for obj in sub] for k in sorted(settings.creatures_list_dico))]
+        average_view = [(sum(views) / len(views)) for views in ([obj.view for sub in settings.creatures_list_dico[k] for obj in sub] for k in sorted(settings.creatures_list_dico))]
+
+        ax1.set_xticks(range(1, self.current_day + 1))
+        ax1.set_ylim(0, 10)
+        ax1.set_yticks(range(0, 11))
+
+        ax1.plot(jour, average_speed, label = "Vitesse", lw = lw, marker = '+')
+        ax1.plot(jour, average_size, label = "Taille", lw = lw, marker = "x")
+        ax1.plot(jour, average_view, label = "Vue", lw = lw, marker = "o")
+
         ax1.set_xlabel('Jours')
+        ax1.set_ylabel('Moyenne')
+        ax1.legend()
         self.graph_list.append(self._graph_to_surf(fig1))
 
 
-        #test
-        fig2 = pylab.figure(figsize = [8, 5], dpi = 100)
+        # --- graphe 2 ( population et nouriture) ---
+        fig2 = pylab.figure(figsize = figsize, dpi = dpi)
         ax2 = fig2.gca()
-        ax2.plot([1, 2, 3])
+
+        c_counts = [sum(len(sub) for sub in settings.creatures_list_dico[k]) for k in range(1, len(settings.creatures_list_dico) + 1)]
+        f_counts = [settings.food_list_dico[i] for i in range(1, len(settings.food_list_dico) + 1)]
+
+        ax2.set_xticks(range(1, self.current_day + 1))
+
+        ax2.plot(jour, c_counts, label = 'Créature', lw = lw, marker = "x")
+        ax2.plot(jour, f_counts, label = 'Nouriture', lw = lw, marker = "o")
+
+        ax2.set_xlabel('Jours')
+        ax2.set_ylabel('Quantitée')
+        ax2.legend()
         self.graph_list.append(self._graph_to_surf(fig2))
-    
+
+
+
+        #---graphe 3 ( quantité de chauque pop )---
+        fig3 = pylab.figure(figsize = figsize, dpi = dpi)
+        ax3 = fig3.gca()
+        
+        ax3.set_xticks(range(1, self.current_day + 1))
+
+        for i in range(len(settings.creatures_list_dico[1])):
+            c_p_conts = [len(p[i]) for p in settings.creatures_list_dico.values()]
+            ax3.plot(jour, c_p_conts, lw = lw)
+
+        ax3.set_xlabel('Jours')
+        ax3.set_ylabel('Quantité')
+        ax3.yaxis.set_major_locator(MaxNLocator(integer=True))
+        self.graph_list.append(self._graph_to_surf(fig3))
+
 
     def _graph_to_surf(self, fig):
         """

@@ -29,7 +29,7 @@ class  Creature():
         self.radius = 10 * self.view
         
     def draw(self, screen):
-        pg.draw.circle(screen, (40, 145, 40), (self.pos_x, self.pos_y), self.radius)
+        pg.draw.circle(screen, (40, 145, 40), (self.pos_x, self.pos_y), 10 * self.view)
         rect = self.image.get_rect(center=(int(self.pos_x), int(self.pos_y)))
         screen.blit(self.image, rect)
         
@@ -38,7 +38,7 @@ class  Creature():
         deplace la creature en fonction de sa vitesse et de son angle
         """
         #if self.see_food()[0]: c'est pour faire en sorte qu'elle aille vers la bouffe mais j'ai pas reussi a le faire marcher
-         #   print('Cyprien est un gros caca')
+        
         #else:
         dt = 1.0 / settings.FPS
         w, h = settings.Display_size
@@ -113,13 +113,12 @@ class  Creature():
         """
         Se reproduit avec un pourcentage de proximité a ses parametres actuels
         """
-        Baby = Creature(self.speed * (rd(100 - self.variation_speed, 100 + self.variation_speed)/100), self.view * (rd(100 - self.variation_size, 100 + self.variation_size)/100), self.speed * (rd(100 - self.variation_view, 100 + self.variation_view)/100), self.variation_speed, self.variation_size, self.variation_view, self.days_max, self.color)
+        Baby = Creature(min(10, self.speed * (rd(100 - self.variation_speed, 100 + self.variation_speed)/100)), min(10, self.size * (rd(100 - self.variation_size, 100 + self.variation_size)/100)), min(10, self.view * (rd(100 - self.variation_view, 100 + self.variation_view)/100)), self.variation_speed, self.variation_size, self.variation_view, self.days_max, self.color)
         Baby.ate = 1
         for i in range(len(settings.POPULATIONS)):
             for crea in settings.creatures_list[i]:
                 if crea == self:
                     settings.creatures_list[i].append(Baby)
-                    print(len(settings.creatures_list))
                     return
                     
     def Eat(self):
