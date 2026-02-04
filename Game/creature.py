@@ -1,7 +1,7 @@
 # methodes pour gerer les creatures
 import math
 from random import randint as rd, uniform, random
-from math import radians, cos, sin, hypot
+from math import radians, cos, sin, atan2, degrees
 import pygame as pg
 import settings
 
@@ -37,9 +37,6 @@ class  Creature():
         """
         deplace la creature en fonction de sa vitesse et de son angle
         """
-        #if self.see_food()[0]: c'est pour faire en sorte qu'elle aille vers la bouffe mais j'ai pas reussi a le faire marcher
-        
-        #else:
         dt = 1.0 / settings.FPS
         w, h = settings.Display_size
 
@@ -58,6 +55,18 @@ class  Creature():
 
         if random() < burst_prob * dt:
             self.ang_vel += uniform(-burst_mag, burst_mag)
+
+        seen, food_id = self.see_food()
+        if seen:
+            fx, fy = settings.food_list[food_id].pos_x, settings.food_list[food_id].pos_y
+            desired = degrees(atan2(fy - self.pos_y, fx - self.pos_x)) % 360.0
+            self.angle_deg = desired
+            self.ang_vel = 0.0
+            desired = degrees(atan2(fy - self.pos_y, fx - self.pos_x))
+
+            # diff = ((desired - self.angle_deg + 180.0) % 360.0) - 180.0  # -180..180
+            # add = diff * 800
+            # self.ang_vel += add * dt
 
         self.ang_vel *= damping
 
@@ -113,7 +122,7 @@ class  Creature():
         """
         Se reproduit avec un pourcentage de proximité a ses parametres actuels
         """
-        Baby = Creature(min(10, self.speed * (rd(100 - self.variation_speed, 100 + self.variation_speed)/100)), min(10, self.size * (rd(100 - self.variation_size, 100 + self.variation_size)/100)), min(10, self.view * (rd(100 - self.variation_view, 100 + self.variation_view)/100)), self.variation_speed, self.variation_size, self.variation_view, self.days_max, self.color)
+        Baby = Creature(max(0, min(10, self.speed * (rd(100 - self.variation_speed, 100 + self.variation_speed)/100))), max(0, min(10, self.size * (rd(100 - self.variation_size, 100 + self.variation_size)/100))), max(0, min(10, self.view * (rd(100 - self.variation_view, 100 + self.variation_view)/100))), self.variation_speed, self.variation_size, self.variation_view, self.days_max, self.color)
         Baby.ate = 1
         for i in range(len(settings.POPULATIONS)):
             for crea in settings.creatures_list[i]:
@@ -154,9 +163,9 @@ class  Creature():
         Les creatures on un champs de vision qui va de 1 a 10 donc plus c'est elevé plus elles voient loin
         """
         for i, food in enumerate(settings.food_list):
-            if math.hypot(self.pos_x - food.pos_x, self.pos_y - food.pos_y) < self.radius * 2:
+            if math.hypot(self.pos_x - food.pos_x, self.pos_y - food.pos_y) < self.radius:
                 return True, i
-        return False
+        return False, None
 
     def is_alive(self):
         """

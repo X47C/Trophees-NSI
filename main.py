@@ -80,8 +80,8 @@ while running:
 
 
     # --- DRAW ---
-    screen.fill((0,0,0))
-    
+        screen.fill((0,0,0))
+        
     match state:
         case 'home':
             Befg.draw()

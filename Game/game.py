@@ -58,6 +58,8 @@ class Day_Manager():
         """
         ce que doit faire le jeu a chaques debuts de jours
         """
+        if not settings.creatures_list:
+            return 
         self.current_day += 1
         self.time = 0
         for i in range(len(settings.creatures_list)):

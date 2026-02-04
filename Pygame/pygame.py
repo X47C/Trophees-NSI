@@ -85,10 +85,9 @@ class Settings:
         self.gap = 30
         self.btn_h = 44
         self.small_w = 48
-        self.label_gap = 12
+        self.label_gap = 12 
 
-        # couleur de fond pour le bouton numéroté sélectionné (modifiable)
-        # ex : (120, 200, 140) = vert doux ; remplace par ce que tu veux
+        # couleur de fond pour le bouton numéroté sélectionné 
         self.pop_selected_bg = (120, 200, 140)
 
         # Espaces ajustables
