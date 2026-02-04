@@ -17,7 +17,7 @@ pop_to_graph_colors = {
 
 # Affichage
 Display_size = (1280, 720)  # largeur, hauteur
-FPS = 30
+FPS = 60
 
 # texte des crédits
 Credits_Text = ['Dévellopé par : ','Cyprien Cros', 'Jules Graffan', 'Sarah Vignaud-Quantin', 'Remerciement à : ', 'Mme Rebinguet-Martres'] 
@@ -37,7 +37,6 @@ Food_quantity = 40         # Quantité de nourriture initiale
 Max_foood_quantity = 1000
 Days_max = 5               # Nombre de jours de la simulation 
 Max_days_max = 100
-day_duration = 5
 
 # limites populations 
 POPULATION_MIN = 1

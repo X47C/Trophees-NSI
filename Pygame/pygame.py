@@ -502,15 +502,25 @@ class Post_Game:
         fig1 = pylab.figure(figsize = figsize, dpi = dpi)
         ax1 = fig1.gca()
 
-        average_speed = [(sum(speeds) / len(speeds)) for speeds in ([obj.speed for sub in settings.creatures_list_dico[k] for obj in sub] for k in sorted(settings.creatures_list_dico))]
-        average_size = [(sum(sizes) / len(sizes)) for sizes in ([obj.size for sub in settings.creatures_list_dico[k] for obj in sub] for k in sorted(settings.creatures_list_dico))]
-        average_view = [(sum(views) / len(views)) for views in ([obj.view for sub in settings.creatures_list_dico[k] for obj in sub] for k in sorted(settings.creatures_list_dico))]
+        days = sorted(settings.creatures_list_dico)
+        avrage_speed = [
+            (sum(vals) / len(vals)) if vals else 0
+            for vals in ([obj.speed for sub in settings.creatures_list_dico[d] for obj in sub] for d in days)
+        ]
+        average_size = [
+            (sum(vals) / len(vals)) if vals else 0
+            for vals in ([obj.size for sub in settings.creatures_list_dico[d] for obj in sub] for d in days)
+        ]
+        average_view = [
+            (sum(vals) / len(vals)) if vals else 0
+            for vals in ([obj.view for sub in settings.creatures_list_dico[d] for obj in sub] for d in days)
+        ]
 
         ax1.set_xticks(range(1, self.current_day + 1))
         ax1.set_ylim(0, 10)
         ax1.set_yticks(range(0, 11))
 
-        ax1.plot(jour, average_speed, label = "Vitesse", lw = lw, marker = '+')
+        ax1.plot(jour, avrage_speed, label = "Vitesse", lw = lw, marker = '+')
         ax1.plot(jour, average_size, label = "Taille", lw = lw, marker = "x")
         ax1.plot(jour, average_view, label = "Vue", lw = lw, marker = "o")
 
