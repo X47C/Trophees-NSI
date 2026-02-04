@@ -62,7 +62,7 @@ class  Creature():
             desired = degrees(atan2(fy - self.pos_y, fx - self.pos_x)) % 360.0
             self.angle_deg = desired
             self.ang_vel = 0.0
-            desired = degrees(atan2(fy - self.pos_y, fx - self.pos_x))
+            # desired = degrees(atan2(fy - self.pos_y, fx - self.pos_x))
 
             # diff = ((desired - self.angle_deg + 180.0) % 360.0) - 180.0  # -180..180
             # add = diff * 800

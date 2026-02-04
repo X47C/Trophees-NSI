@@ -525,6 +525,7 @@ class Post_Game:
         ax2 = fig2.gca()
 
         c_counts = [sum(len(sub) for sub in settings.creatures_list_dico[k]) for k in range(1, len(settings.creatures_list_dico) + 1)]
+        print(c_counts)
         f_counts = [settings.food_list_dico[i] for i in range(1, len(settings.food_list_dico) + 1)]
 
         ax2.set_xticks(range(1, self.current_day + 1))
