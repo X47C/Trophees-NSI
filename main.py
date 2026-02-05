@@ -46,6 +46,8 @@ while running:
                         state = 'home'
 
             case 'in_game':
+                if len(settings.creatures_list) == 0:
+                    state = 'post_game'
                 match Ing.handle_event(event):
                     case 'end': 
                         Engd = Post_Game(screen, day_manager.current_day)
