@@ -85,10 +85,9 @@ class Settings:
         self.gap = 30
         self.btn_h = 44
         self.small_w = 48
-        self.label_gap = 12
+        self.label_gap = 12 
 
-        # couleur de fond pour le bouton numéroté sélectionné (modifiable)
-        # ex : (120, 200, 140) = vert doux ; remplace par ce que tu veux
+        # couleur de fond pour le bouton numéroté sélectionné 
         self.pop_selected_bg = (120, 200, 140)
 
         # Espaces ajustables
@@ -503,15 +502,25 @@ class Post_Game:
         fig1 = pylab.figure(figsize = figsize, dpi = dpi)
         ax1 = fig1.gca()
 
-        average_speed = [(sum(speeds) / len(speeds)) for speeds in ([obj.speed for sub in settings.creatures_list_dico[k] for obj in sub] for k in sorted(settings.creatures_list_dico))]
-        average_size = [(sum(sizes) / len(sizes)) for sizes in ([obj.size for sub in settings.creatures_list_dico[k] for obj in sub] for k in sorted(settings.creatures_list_dico))]
-        average_view = [(sum(views) / len(views)) for views in ([obj.view for sub in settings.creatures_list_dico[k] for obj in sub] for k in sorted(settings.creatures_list_dico))]
+        days = sorted(settings.creatures_list_dico)
+        avrage_speed = [
+            (sum(vals) / len(vals)) if vals else 0
+            for vals in ([obj.speed for sub in settings.creatures_list_dico[d] for obj in sub] for d in days)
+        ]
+        average_size = [
+            (sum(vals) / len(vals)) if vals else 0
+            for vals in ([obj.size for sub in settings.creatures_list_dico[d] for obj in sub] for d in days)
+        ]
+        average_view = [
+            (sum(vals) / len(vals)) if vals else 0
+            for vals in ([obj.view for sub in settings.creatures_list_dico[d] for obj in sub] for d in days)
+        ]
 
         ax1.set_xticks(range(1, self.current_day + 1))
         ax1.set_ylim(0, 10)
         ax1.set_yticks(range(0, 11))
 
-        ax1.plot(jour, average_speed, label = "Vitesse", lw = lw, marker = '+')
+        ax1.plot(jour, avrage_speed, label = "Vitesse", lw = lw, marker = '+')
         ax1.plot(jour, average_size, label = "Taille", lw = lw, marker = "x")
         ax1.plot(jour, average_view, label = "Vue", lw = lw, marker = "o")
 
@@ -526,6 +535,7 @@ class Post_Game:
         ax2 = fig2.gca()
 
         c_counts = [sum(len(sub) for sub in settings.creatures_list_dico[k]) for k in range(1, len(settings.creatures_list_dico) + 1)]
+        print(c_counts)
         f_counts = [settings.food_list_dico[i] for i in range(1, len(settings.food_list_dico) + 1)]
 
         ax2.set_xticks(range(1, self.current_day + 1))

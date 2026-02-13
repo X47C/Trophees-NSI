@@ -1,14 +1,16 @@
 # methodes pour gerer les creatures
 import math
 from random import randint as rd, uniform, random
-from math import radians, cos, sin, hypot
+from math import radians, cos, sin, atan2, degrees
 import pygame as pg
 import settings
 
-class  Creature():
+
+class Creature():
     """
-    Entrée : Speed, Size, View (int, compris entre 1 et 10) 
+    Entrée : Speed, Size, View (int, compris entre 1 et 10)
     """
+
     def __init__(self, Speed, Size, View, Variation_Speed, Variation_Size, Variation_View, Days_Max, Color):
         self.speed = Speed
         self.size = Size
@@ -27,29 +29,26 @@ class  Creature():
         self.rect = self.image.get_rect(center=(int(self.pos_x), int(self.pos_y)))
         self.angle_deg = rd(0, 360)
         self.radius = 10 * self.view
-        
+
     def draw(self, screen):
         pg.draw.circle(screen, (40, 145, 40), (self.pos_x, self.pos_y), 10 * self.view)
         rect = self.image.get_rect(center=(int(self.pos_x), int(self.pos_y)))
         screen.blit(self.image, rect)
-        
+
     def moove(self):
         """
         deplace la creature en fonction de sa vitesse et de son angle
         """
-        #if self.see_food()[0]: c'est pour faire en sorte qu'elle aille vers la bouffe mais j'ai pas reussi a le faire marcher
-        
-        #else:
         dt = 1.0 / settings.FPS
         w, h = settings.Display_size
 
         speed_px_s = float(self.speed) * 15.0
         margin = 40 + int(self.size)
 
-        turn_noise = 450.0      
-        damping = 0.96         
-        burst_prob = 0.5        
-        burst_mag = 220.0       
+        turn_noise = 450.0
+        damping = 0.96
+        burst_prob = 0.5
+        burst_mag = 220.0
 
         if not hasattr(self, "ang_vel"):
             self.ang_vel = uniform(-120.0, 120.0)
@@ -58,6 +57,13 @@ class  Creature():
 
         if random() < burst_prob * dt:
             self.ang_vel += uniform(-burst_mag, burst_mag)
+
+        seen, food_id = self.see_food()
+        if seen:
+            fx, fy = settings.food_list[food_id].pos_x, settings.food_list[food_id].pos_y
+            desired = degrees(atan2(fy - self.pos_y, fx - self.pos_x)) % 360.0
+            self.angle_deg = desired
+            self.ang_vel = 0.0
 
         self.ang_vel *= damping
 
@@ -100,40 +106,62 @@ class  Creature():
         if bounced:
             self.ang_vel += uniform(-40, 40)
 
-        self.energy -= 1
+        # ----------------------
+        # Consommation d'énergie 
+        # ----------------------
+        # Coefficients calibrés pour durée az peu pres 10s pour une créature moyenne noramlement (speed=5,size=5,view=5)
+        base_cost = 0.06
+        coeff_speed = 0.008  
+        coeff_size = 0.006 
+        coeff_view = 0.005
+
+        speed_cost = coeff_speed * (self.speed ** 2)
+        size_cost = coeff_size * self.size
+        view_cost = coeff_view * self.view
+
+        # consommation opar frame
+        self.energy -= (base_cost + speed_cost + size_cost + view_cost)
+
+        if self.energy < 0:
+            self.energy = 0
+
         self.pos_x = min(max(self.pos_x, margin), w - margin)
         self.pos_y = min(max(self.pos_y, margin), h - margin)
         self.rect = self.image.get_rect(center=(int(self.pos_x), int(self.pos_y)))
-
-
-        
-
 
     def Baby(self):
         """
         Se reproduit avec un pourcentage de proximité a ses parametres actuels
         """
-        Baby = Creature(min(10, self.speed * (rd(100 - self.variation_speed, 100 + self.variation_speed)/100)), min(10, self.size * (rd(100 - self.variation_size, 100 + self.variation_size)/100)), min(10, self.view * (rd(100 - self.variation_view, 100 + self.variation_view)/100)), self.variation_speed, self.variation_size, self.variation_view, self.days_max, self.color)
+        Baby = Creature(
+            max(0, min(10, self.speed * (rd(100 - self.variation_speed, 100 + self.variation_speed)/100))),
+            max(0, min(10, self.size * (rd(100 - self.variation_size, 100 + self.variation_size)/100))),
+            max(0, min(10, self.view * (rd(100 - self.variation_view, 100 + self.variation_view)/100))),
+            self.variation_speed,
+            self.variation_size,
+            self.variation_view,
+            self.days_max,
+            self.color
+        )
         Baby.ate = 1
         for i in range(len(settings.POPULATIONS)):
             for crea in settings.creatures_list[i]:
                 if crea == self:
                     settings.creatures_list[i].append(Baby)
                     return
-                    
+
     def Eat(self):
         """
         on verifie si il a mangé haha enfait c'est simple j'etait parti super loins pour rien mdr
         """
-        creature_rect = self.rect 
+        creature_rect = self.rect
 
         for i, food in enumerate(settings.food_list):
             if creature_rect.colliderect(food.rect):
-                self.ate += 1   
-                self.energy = 100
+                self.ate += 1
+                self.energy  = 100
                 settings.food_list.pop(i)
-                return 
-            
+                return
 
     def New_Day(self):
         """
@@ -154,13 +182,12 @@ class  Creature():
         Les creatures on un champs de vision qui va de 1 a 10 donc plus c'est elevé plus elles voient loin
         """
         for i, food in enumerate(settings.food_list):
-            if math.hypot(self.pos_x - food.pos_x, self.pos_y - food.pos_y) < self.radius * 2:
+            if math.hypot(self.pos_x - food.pos_x, self.pos_y - food.pos_y) < self.radius:
                 return True, i
-        return False
+        return False, None
 
     def is_alive(self):
         """
         Check si le mec est en vie renvois True ou false
         """
-        return self.ate > 0 and self.days <= self.days_max   
-
+        return self.ate > 0 and self.days <= self.days_max

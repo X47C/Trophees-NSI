@@ -5,10 +5,19 @@ creatures_list = [] #liste de liste d'objets ( de creatures ) [[creature 1, ...,
 food_list = []
 creatures_list_dico = {} #a la fin de chaques jours on va mettre le liste de liste de creature acutelle dans le dictionnaire avec comme cle le numero du jour pour faire les graphes de fin le commentaire est trop long ptndrrr
 food_list_dico = {}
+pop_to_graph_colors = {
+    'pink' : 'tab:pink', 
+    'red' : 'tab:red',
+    'green' : 'tab:green',
+    'blue' : 'tab:blue',
+    'yellow' : 'tab:cian',
+    'purple' : 'tab:purple',
+    'gray' : 'tab:gray'
+}
 
 # Affichage
 Display_size = (1280, 720)  # largeur, hauteur
-FPS = 30
+FPS = 60
 
 # texte des crédits
 Credits_Text = ['Dévellopé par : ','Cyprien Cros', 'Jules Graffan', 'Sarah Vignaud-Quantin', 'Remerciement à : ', 'Mme Rebinguet-Martres'] 
@@ -28,13 +37,12 @@ Food_quantity = 40         # Quantité de nourriture initiale
 Max_foood_quantity = 1000
 Days_max = 5               # Nombre de jours de la simulation 
 Max_days_max = 100
-day_duration = 5
 
 # limites populations 
 POPULATION_MIN = 1
 POPULATION_MAX = 6
 
-Color_options = ["white", "red", "green", "blue", "yellow", "purple", "black"]
+Color_options = ["pink", "red", "green", "cian", "yellow", "purple", "gray"]
 
 # Valeurs par défaut pour une population
 

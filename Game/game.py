@@ -33,7 +33,7 @@ class Day_Manager():
             settings.creatures_list.append(a)
         for i in range(settings.Food_quantity):
              settings.food_list.append(Food(rd(280, 1000), rd(70, 650)))
-        settings.creatures_list_dico[self.current_day] = settings.creatures_list.copy() # pas touche
+        settings.creatures_list_dico[self.current_day] = [pop.copy() for pop in settings.creatures_list]# pas touche
         settings.food_list_dico[self.current_day] = len(settings.food_list)
 
 
@@ -70,7 +70,7 @@ class Day_Manager():
         settings.food_list = []
         for i in range(settings.Food_quantity):
              settings.food_list.append(Food(rd(280, 1000), rd(70, 650)))
-        settings.creatures_list_dico[self.current_day] = settings.creatures_list.copy() #allez voir le commentaire dans settings mais PAS TOUCHE !!!
+        settings.creatures_list_dico[self.current_day] = [pop.copy() for pop in settings.creatures_list] #allez voir le commentaire dans settings mais PAS TOUCHE !!!
         settings.food_list_dico[self.current_day] = len(settings.food_list)
 
         
