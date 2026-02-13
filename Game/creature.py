@@ -25,7 +25,9 @@ class Creature():
         self.days_max = Days_Max
         self.pos_x = settings.Display_size[0] // 2
         self.pos_y = settings.Display_size[1] // 2
-        self.image = pg.image.load("assets/creature.png")
+        img = pg.image.load("assets/creature.png")
+        img_size = img.get_size()
+        self.image = pg.transform.smoothscale(img, (img_size[0] + self.size * 2, img_size[1] + self.size * 2))
         self.rect = self.image.get_rect(center=(int(self.pos_x), int(self.pos_y)))
         self.angle_deg = rd(0, 360)
         self.radius = 10 * self.view
@@ -39,6 +41,7 @@ class Creature():
         """
         deplace la creature en fonction de sa vitesse et de son angle
         """
+        self.collide()
         dt = 1.0 / settings.FPS
         w, h = settings.Display_size
 
@@ -60,10 +63,17 @@ class Creature():
 
         seen, food_id = self.see_food()
         if seen:
-            fx, fy = settings.food_list[food_id].pos_x, settings.food_list[food_id].pos_y
-            desired = degrees(atan2(fy - self.pos_y, fx - self.pos_x)) % 360.0
-            self.angle_deg = desired
-            self.ang_vel = 0.0
+            if food_id[1] == None:
+                fx, fy = settings.food_list[food_id[0]].pos_x, settings.food_list[food_id[0]].pos_y
+                desired = degrees(atan2(fy - self.pos_y, fx - self.pos_x)) % 360.0
+                self.angle_deg = desired
+                self.ang_vel = 0.0
+            # else:
+            #     fx, fy = settings.creatures_list[food_id[0]][food_id[1]].pos_x, settings.creatures_list[food_id[0]][food_id[1]].pos_y
+            #     desired = degrees(atan2(fy - self.pos_y, fx - self.pos_x)) % 360.0
+            #     self.angle_deg = desired
+            #     self.ang_vel = 0.0
+
 
         self.ang_vel *= damping
 
@@ -109,7 +119,7 @@ class Creature():
         # ----------------------
         # Consommation d'énergie 
         # ----------------------
-        # Coefficients calibrés pour durée az peu pres 10s pour une créature moyenne noramlement (speed=5,size=5,view=5)
+        # Coefficients calibrés pour durée a peu pres 10s pour une créature moyenne noramlement (speed=5,size=5,view=5)
         base_cost = 0.06
         coeff_speed = 0.008  
         coeff_size = 0.006 
@@ -183,11 +193,31 @@ class Creature():
         """
         for i, food in enumerate(settings.food_list):
             if math.hypot(self.pos_x - food.pos_x, self.pos_y - food.pos_y) < self.radius:
-                return True, i
-        return False, None
+                return True, (i, None)
+        for i, l in enumerate(settings.creatures_list):
+            for j, c in enumerate(l):
+                if math.hypot(self.pos_x - c.pos_x, self.pos_y - c.pos_y) < self.radius:
+                    return True, (i, j)
+        return False, (None, None)
 
     def is_alive(self):
         """
         Check si le mec est en vie renvois True ou false
         """
         return self.ate > 0 and self.days <= self.days_max
+    
+
+    def collide(self):
+        creature_rect = self.rect
+
+        for i, l in enumerate(settings.creatures_list):
+            for j, c in enumerate(l):
+                if creature_rect.colliderect(c.rect):
+                    if id(c) != id(self):
+                        self.canibalism(c, i, j)
+                        return True, (i, j)
+    
+    def canibalism(self, c, i, j):
+        if self.size - 4 >= c.size:
+            settings.creatures_list[i].pop(j)
+            return
