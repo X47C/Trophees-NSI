@@ -1,7 +1,7 @@
 # methodes pour gerer les creatures
 import math
 from random import randint as rd, uniform, random
-from math import radians, cos, sin, atan2, degrees
+from math import radians, cos, sin, atan2, degrees, sqrt
 import pygame as pg
 import settings
 
@@ -23,8 +23,8 @@ class Creature():
         self.variation_view = Variation_View
         self.days = 0
         self.days_max = Days_Max
-        self.pos_x = settings.Display_size[0] // 2
-        self.pos_y = settings.Display_size[1] // 2
+        self.pos_x = 0
+        self.pos_y = 0
         img = pg.image.load("assets/creature.png")
         img_size = img.get_size()
         self.image = pg.transform.smoothscale(img, (img_size[0] + self.size * 2, img_size[1] + self.size * 2))
@@ -41,7 +41,7 @@ class Creature():
         """
         deplace la creature en fonction de sa vitesse et de son angle
         """
-        self.collide()
+        collide, other_c = self.collide()
         dt = 1.0 / settings.FPS
         w, h = settings.Display_size
 
@@ -68,11 +68,11 @@ class Creature():
                 desired = degrees(atan2(fy - self.pos_y, fx - self.pos_x)) % 360.0
                 self.angle_deg = desired
                 self.ang_vel = 0.0
-            # else:
-            #     fx, fy = settings.creatures_list[food_id[0]][food_id[1]].pos_x, settings.creatures_list[food_id[0]][food_id[1]].pos_y
-            #     desired = degrees(atan2(fy - self.pos_y, fx - self.pos_x)) % 360.0
-            #     self.angle_deg = desired
-            #     self.ang_vel = 0.0
+            else:
+                fx, fy = settings.creatures_list[food_id[0]][food_id[1]].pos_x, settings.creatures_list[food_id[0]][food_id[1]].pos_y
+                desired = degrees(atan2(fy - self.pos_y, fx - self.pos_x)) % 360.0
+                self.angle_deg = desired
+                self.ang_vel = 0.0
 
 
         self.ang_vel *= damping
@@ -113,8 +113,91 @@ class Creature():
             self.ang_vel = -self.ang_vel + uniform(-90, 90)
             bounced = True
 
-        if bounced:
-            self.ang_vel += uniform(-40, 40)
+            if bounced:
+                self.ang_vel += uniform(-40, 40)
+
+        if collide:
+            i, j = other_c
+            other = settings.creatures_list[i][j]
+
+            blend = 0.65        
+            ang_vel_damp = 0.5
+            jitter = 12.0
+
+            r1 = max(1.0, float(self.image.get_width()) / 2.0)
+            r2 = max(1.0, float(other.image.get_width()) / 2.0)
+
+            dx = other.pos_x - self.pos_x
+            dy = other.pos_y - self.pos_y
+            dist = sqrt(dx * dx + dy * dy)
+            if dist == 0.0:
+                dx = uniform(-0.01, 0.01)
+                dy = uniform(-0.01, 0.01)
+                dist = sqrt(dx * dx + dy * dy)
+            overlap = (r1 + r2) - dist
+            if overlap > 0:
+                nx = dx / dist
+                ny = dy / dist
+
+                total_r = r1 + r2
+                if total_r == 0:
+                    w1 = w2 = 0.5
+                else:
+                    w1 = r2 / total_r
+                    w2 = r1 / total_r
+
+                self.pos_x -= nx * overlap * w1
+                self.pos_y -= ny * overlap * w1
+                other.pos_x += nx * overlap * w2
+                other.pos_y += ny * overlap * w2
+
+                if self.speed > 0:
+                    v1x = cos(radians(self.angle_deg))
+                    v1y = sin(radians(self.angle_deg))
+                    dot1 = v1x * nx + v1y * ny
+                    refl1x = v1x - 2.0 * dot1 * nx
+                    refl1y = v1y - 2.0 * dot1 * ny
+                    mag_refl1 = sqrt(refl1x * refl1x + refl1y * refl1y)
+                    if mag_refl1 > 1e-6:
+                        refl1x /= mag_refl1
+                        refl1y /= mag_refl1
+                    else:
+                        refl1x, refl1y = v1x, v1y
+
+                    nx1 = (1.0 - blend) * v1x + blend * refl1x
+                    ny1 = (1.0 - blend) * v1y + blend * refl1y
+                    mag_n1 = sqrt(nx1 * nx1 + ny1 * ny1)
+                    if mag_n1 > 1e-6:
+                        nx1 /= mag_n1
+                        ny1 /= mag_n1
+                        self.angle_deg = degrees(atan2(ny1, nx1)) % 360.0
+
+                if other.speed > 0:
+                    v2x = cos(radians(other.angle_deg))
+                    v2y = sin(radians(other.angle_deg))
+                    dot2 = v2x * nx + v2y * ny
+                    refl2x = v2x - 2.0 * dot2 * nx
+                    refl2y = v2y - 2.0 * dot2 * ny
+
+                    mag_refl2 = sqrt(refl2x * refl2x + refl2y * refl2y)
+                    if mag_refl2 > 1e-6:
+                        refl2x /= mag_refl2
+                        refl2y /= mag_refl2
+                    else:
+                        refl2x, refl2y = v2x, v2y
+
+                    nx2 = (1.0 - blend) * v2x + blend * refl2x
+                    ny2 = (1.0 - blend) * v2y + blend * refl2y
+                    mag_n2 = sqrt(nx2 * nx2 + ny2 * ny2)
+                    if mag_n2 > 1e-6:
+                        nx2 /= mag_n2
+                        ny2 /= mag_n2
+                        other.angle_deg = degrees(atan2(ny2, nx2)) % 360.0
+
+                if id(self) < id(other):
+                    self.ang_vel = getattr(self, "ang_vel", 0.0) * ang_vel_damp + uniform(-jitter, jitter)
+                    other.ang_vel = getattr(other, "ang_vel", 0.0) * ang_vel_damp + uniform(-jitter, jitter)
+
 
         # ----------------------
         # Consommation d'énergie 
@@ -197,7 +280,8 @@ class Creature():
         for i, l in enumerate(settings.creatures_list):
             for j, c in enumerate(l):
                 if math.hypot(self.pos_x - c.pos_x, self.pos_y - c.pos_y) < self.radius:
-                    return True, (i, j)
+                    if self.size - 4 >= c.size:
+                        return True, (i, j)
         return False, (None, None)
 
     def is_alive(self):
@@ -216,6 +300,7 @@ class Creature():
                     if id(c) != id(self):
                         self.canibalism(c, i, j)
                         return True, (i, j)
+        return False, (None, None)
     
     def canibalism(self, c, i, j):
         if self.size - 4 >= c.size:
