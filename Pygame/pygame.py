@@ -21,9 +21,9 @@ class Before_Game:
         self.width, self.height = settings.Display_size
         self.screen = screen
 
-        self.Button_exit = Button(Rect(self.width // 2 - 110, self.height // 2 - 40, 220, 80),'Exit', self.screen)
-        self.Button_Start = Button(Rect(self.width // 2 - 110, self.height // 2 - 130, 220, 80),'Start', self.screen)
-        self.Button_credits = Button(Rect(self.width // 2 - 110, self.height // 2 + 50, 220, 80),'Credits', self.screen) 
+        self.Button_exit = Button(Rect(self.width // 2 - 110, self.height // 2 - 40, 220, 80),'', self.screen)
+        self.Button_Start = Button(Rect(self.width // 2 - 110, self.height // 2 - 130, 220, 80),'', self.screen)
+        self.Button_credits = Button(Rect(self.width // 2 - 110, self.height // 2 + 50, 220, 80),'', self.screen) 
         self.Button_credits_exit = Button(Rect(self.width // 2 - 65, self.height // 2 + 130, 130, 50),'Back', self.screen)
         
         self.bg_asset = pg.image.load('assets/before-game-background.png')
@@ -103,6 +103,8 @@ class Settings:
         self._build_pop_controls()
         self._build_bottom_buttons()
 
+        #boutons éditables
+
     def update_layout(self):
         sel = self.selected_pop
         self._build_general_controls()
@@ -110,7 +112,7 @@ class Settings:
         self._build_pop_controls()
         self._build_bottom_buttons()
         self.selected_pop = sel
-        self._refresh_general_display()
+        self.editable_button_set_value()
         self._refresh_pop_display()
 
     def _build_general_controls(self):
@@ -124,10 +126,11 @@ class Settings:
         x0 = settings.PostG_PADDING
         lbl_y = top_y
         btn_y = lbl_y + self.font_lbl.get_height() + self.label_gap
+        settings.editable_butons['food_qtt'] = Button(Rect(x0 + self.small_w + 6, btn_y, val_w, self.btn_h), str(settings.Food_quantity), self.screen, editable=True, max_length=100)
         self.general_food = {
             "label": "Quantité de nourriture",
             "minus": Button(Rect(x0, btn_y, self.small_w, self.btn_h), "-", self.screen),
-            "value": Button(Rect(x0 + self.small_w + 6, btn_y, val_w, self.btn_h), str(settings.Food_quantity), self.screen),
+            "value": settings.editable_butons['food_qtt'],
             "plus": Button(Rect(x0 + self.small_w + 6 + val_w + 6, btn_y, self.small_w, self.btn_h), "+", self.screen),
             "lbl_pos": (x0 + (col_w // 2), lbl_y)
         }
@@ -136,10 +139,11 @@ class Settings:
         x1 = settings.PostG_PADDING + col_w + self.gap
         lbl_y = top_y
         btn_y = lbl_y + self.font_lbl.get_height() + self.label_gap
+        settings.editable_butons['day_qtt'] = Button(Rect(x1 + self.small_w + 6, btn_y, val_w, self.btn_h), str(settings.Days_max), self.screen, editable=True, max_length=100)
         self.general_days = {
             "label": "Nombre de jours de la simulation",
             "minus": Button(Rect(x1, btn_y, self.small_w, self.btn_h), "-", self.screen),
-            "value": Button(Rect(x1 + self.small_w + 6, btn_y, val_w, self.btn_h), str(settings.Days_max), self.screen),
+            "value": settings.editable_butons['day_qtt'],
             "plus": Button(Rect(x1 + self.small_w + 6 + val_w + 6, btn_y, self.small_w, self.btn_h), "+", self.screen),
             "lbl_pos": (x1 + (col_w // 2), lbl_y)
         }
@@ -169,7 +173,7 @@ class Settings:
                 settings.POPULATIONS.append(settings.DEFAULT_POP.copy())
             else:
                 settings.POPULATIONS.append({
-                    "name": "Population 1", "life": 50, "color": "white", "quantity": 10,
+                    "name": "Population 1", "life": 50, "color": "blue", "quantity": 10,
                     "speed_variation": 15, "size_variation": 15, "view_variation": 15,
                     "view": 15, "speed": 3, "size": 3
                 })
@@ -208,7 +212,10 @@ class Settings:
                 display = str(cur_val)
 
             minus = Button(Rect(x, y_btn, self.small_w, self.btn_h), "-", self.screen)
-            value = Button(Rect(x + self.small_w + 6, y_btn, val_w, self.btn_h), display, self.screen)
+            if isinstance(cur_val, int):
+                value = Button(Rect(x + self.small_w + 6, y_btn, val_w, self.btn_h), display, self.screen, editable=True)
+            else:
+                value = Button(Rect(x + self.small_w + 6, y_btn, val_w, self.btn_h), display, self.screen)
             plus = Button(Rect(x + self.small_w + 6 + val_w + 6, y_btn, self.small_w, self.btn_h), "+", self.screen)
 
             center_x = x + (col_w // 2)
@@ -273,20 +280,7 @@ class Settings:
         self.btn_start.draw(self.screen, self.font_btn)
         self.btn_back.draw(self.screen, self.font_btn)
 
-    def _refresh_general_display(self):
-        self.general_food["value"].text = str(settings.Food_quantity)
-        self.general_days["value"].text = str(settings.Days_max)
 
-    def _refresh_pop_display(self):
-        if len(settings.POPULATIONS) == 0:
-            return
-        pop = settings.POPULATIONS[self.selected_pop]
-        for key, c in self.pop_controls.items():
-            v = pop.get(key, "")
-            if isinstance(v, bool):
-                c["value"].text = '1' if v else '0'
-            else:
-                c["value"].text = str(v)
 
     def handle_event(self, event):
         if event.type == pg.MOUSEBUTTONDOWN and event.button == 1:
@@ -305,14 +299,14 @@ class Settings:
                         settings.Food_quantity = max(0, settings.Food_quantity - 1)
                     else:
                         settings.Days_max = max(1, settings.Days_max - 1)
-                    self._refresh_general_display()
+                    self.editable_button_set_value()
                     return None
                 if g["plus"].rect.collidepoint((mx,my)):
                     if name == "Food_quantity":
                         settings.Food_quantity = min(settings.Max_foood_quantity, settings.Food_quantity + 1)
                     else:
                         settings.Days_max = min(settings.Max_days_max, settings.Days_max + 1)
-                    self._refresh_general_display()
+                    self.editable_button_set_value()
                     return None
 
             # add / remove pop
@@ -321,7 +315,7 @@ class Settings:
                     new_idx = len(settings.POPULATIONS) + 1
                     base = settings.DEFAULT_POP.copy() if hasattr(settings, 'DEFAULT_POP') else {
                         "name": f"Population {new_idx}",
-                        "life": 50, "color": "white", "quantity": 10,
+                        "life": 50, "color": "blue", "quantity": 10,
                         "speed_variation": 15, "size_variation": 15, "view_variation": 15,
                         "view": 15, "speed": 3, "size": 3
                     }
@@ -330,7 +324,7 @@ class Settings:
                     self.selected_pop = len(settings.POPULATIONS) - 1
                     self._build_pop_management_buttons()
                     self._build_pop_controls()
-                    self._refresh_pop_display()
+                    self.editable_button_set_value()
                 return None
 
             if self.btn_rem_pop.rect.collidepoint((mx,my)):
@@ -339,14 +333,14 @@ class Settings:
                     self.selected_pop = max(0, min(self.selected_pop, len(settings.POPULATIONS)-1))
                     self._build_pop_management_buttons()
                     self._build_pop_controls()
-                    self._refresh_pop_display()
+                    self.editable_button_set_value()
                 return None
 
             for rect, idx in self.pop_number_buttons:
                 if rect.collidepoint((mx,my)):
                     self.selected_pop = idx
                     self._build_pop_controls()
-                    self._refresh_pop_display()
+                    self.editable_button_set_value()
                     return None
 
             # per-population controls yea yea I'm english c'est une catastrophe la motié des commentaires sont dans une langue et l'autre motiée dasn une autre
@@ -366,7 +360,7 @@ class Settings:
                             pop["color"] = opts[(i - 1) % len(opts)]
                     elif isinstance(cur, int):
                         pop[key] = max(0, cur - 1)
-                    self._refresh_pop_display()
+                    self.editable_button_set_value()
                     return None
                 
                 if c["plus"].rect.collidepoint((mx,my)):
@@ -396,12 +390,47 @@ class Settings:
                             pop[key] = min(cur + 1, 100) #c'est des pourcent donc max 100 je crois je sais meme pas si ca a un sens 100
                         case 'speed_variation':
                             pop[key] = min(cur + 1, 100) #c'est des pourcent donc max 100 je crois je sais meme pas si ca a un sens 100
-                    self._refresh_pop_display()
+                    self.editable_button_set_value()
                     return None
-
-        return None
-
         
+        self.editable_button_save_value()
+        return None
+    
+
+    def editable_button_refresh(self, event):
+        for b in settings.editable_butons.values():
+            b.handle_event(event)
+        for b in self.pop_controls.values():
+            b['value'].handle_event(event)
+    
+
+    def editable_button_set_value(self):
+
+        settings.editable_butons['food_qtt'].set_value(settings.Food_quantity)
+        settings.editable_butons['day_qtt'].set_value(settings.Days_max)
+
+        pop = settings.POPULATIONS[self.selected_pop]
+        for key, c in self.pop_controls.items():
+            if key != "color":
+                c['value'].set_value(pop[key])
+            else:
+                v = pop.get(key, "") 
+                c["value"].text = str(v)
+
+    def editable_button_save_value(self):
+
+        settings.Days_max = settings.editable_butons['day_qtt'].get_number()
+        settings.Food_quantity = settings.editable_butons['food_qtt'].get_number()
+
+        pop = settings.POPULATIONS[self.selected_pop]
+        for key, c in self.pop_controls.items():
+            if key != "color":
+                pop[key] = c['value'].get_number()
+            else:
+                v = pop.get(key, "") 
+                c["value"].text = str(v)
+
+            
             
 
 class In_Game:
@@ -477,7 +506,7 @@ class Post_Game:
         # scrollbar
         self.scroll_y = 0
         self.scroll_speed = 30
-        self.content_height = 1800  # hauteur 
+        self.content_height = 2800  # hauteur 
 
         self.scrollbar_rect = Rect(self.width - 18, 20, 12, self.height - 40)
         self.scroll_thumb_height = 80
@@ -535,7 +564,6 @@ class Post_Game:
         ax2 = fig2.gca()
 
         c_counts = [sum(len(sub) for sub in settings.creatures_list_dico[k]) for k in range(1, len(settings.creatures_list_dico) + 1)]
-        print(c_counts)
         f_counts = [settings.food_list_dico[i] for i in range(1, len(settings.food_list_dico) + 1)]
 
         ax2.set_xticks(range(1, self.current_day + 1))
@@ -550,7 +578,7 @@ class Post_Game:
 
 
 
-        #---graphe 3 ( quantité de chauque pop )---
+        #---graphe 3 ( quantité de chaque pop )---
         fig3 = pylab.figure(figsize = figsize, dpi = dpi)
         ax3 = fig3.gca()
         
@@ -558,12 +586,35 @@ class Post_Game:
 
         for i in range(len(settings.creatures_list_dico[1])):
             c_p_conts = [len(p[i]) for p in settings.creatures_list_dico.values()]
-            ax3.plot(jour, c_p_conts, lw = lw)
+            ax3.plot(jour, c_p_conts, lw = lw, color = settings.creatures_list_dico[1][i][0].color)
 
         ax3.set_xlabel('Jours')
         ax3.set_ylabel('Quantité')
         ax3.yaxis.set_major_locator(MaxNLocator(integer=True))
         self.graph_list.append(self._graph_to_surf(fig3))
+
+        #--- graphes 4 ( et plus ducoup, caracteristique par populations )---
+        for i in range(len(settings.creatures_list)):
+            fig4 = pylab.figure(figsize = figsize, dpi = dpi)
+            ax4 = fig4.gca()
+
+            ax4.set_xticks(range( 1, self.current_day)) 
+            ax4.set_ylim(0, 10)
+            ax4.set_yticks(range(0, 11))
+
+            m_speed = [sum(vals) / len(vals) if len(vals) != 0 else 0 for vals in ([c.speed for c in settings.creatures_list_dico[d][i]] for d in days)]
+            m_size = [sum(vals) / len(vals) if len(vals) != 0 else 0 for vals in ([c.size for c in settings.creatures_list_dico[d][i]] for d in days)]
+            m_view = [sum(vals) / len(vals) if len(vals) != 0 else 0 for vals in ([c.view for c in settings.creatures_list_dico[d][i]] for d in days)]
+
+            
+            ax4.plot(jour, m_speed, label = "Vitesse", lw = lw, marker = '+', color = settings.creatures_list_dico[1][i][0].color)
+            ax4.plot(jour, m_size, label = "Taille", lw = lw, marker = "x", color = settings.creatures_list_dico[1][i][0].color)
+            ax4.plot(jour, m_view, label = "Vue", lw = lw, marker = "o", color = settings.creatures_list_dico[1][i][0].color)
+
+            ax4.set_xlabel('Jours')
+            ax4.set_ylabel('Moyenne')
+            ax4.legend()
+            self.graph_list.append(self._graph_to_surf(fig4))
 
 
     def _graph_to_surf(self, fig):

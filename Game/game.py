@@ -5,7 +5,7 @@ from .food import Food
 from random import randint as rd, shuffle
 
 class Day_Manager():
-    def __init__(self, surf):
+    def __init__(self, surf:pg.surface):
         self.surf = surf
         self.current_day = 1
         self.time = 0
@@ -18,6 +18,7 @@ class Day_Manager():
                 if not c.energy == 0:
                     c.moove()
                     c.Eat()
+
 
     def first_day(self):
         """
@@ -81,10 +82,16 @@ class Day_Manager():
         """
         Affiche le jour actuel en haut a gauche de l'écran quand le jeu est lancé
         """
-        self.surf.blit(pg.font.SysFont(settings.Days_font, settings.Days_font_size).render(f'Day : {self.current_day} / {settings.Days_max}', True, (255, 255, 255)), (10, 10))
+        self.surf.blit(pg.font.SysFont(settings.Days_font, settings.Days_font_size).render(f'Jour : {self.current_day} / {settings.Days_max}', True, (255, 255, 255)), (10, 10))
+
+    def draw_creature_number(self):
+        """
+        Affiche Le nombre de créature actuelle
+        """
+        self.surf.blit(pg.font.SysFont(settings.Days_font, settings.Days_font_size).render(f'Nombre de créatures : {sum([len(l) for l in settings.creatures_list])}', True, (255, 255, 255)), (10, 20 + settings.Days_font_size))
 
 
-    def distribute_on_border(self, lists, screen_size, margin = 0):
+    def distribute_on_border(self, lists:list, screen_size:tuple, margin:int = 0):
         """
         Distribue les objets (dans lists) uniformément sur le bord de l'écran.
 
@@ -122,3 +129,4 @@ class Day_Manager():
 
             obj.pos_x = int(round(x))
             obj.pos_y = int(round(y))
+

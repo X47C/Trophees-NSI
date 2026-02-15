@@ -11,7 +11,7 @@ class Creature():
     Entrée : Speed, Size, View (int, compris entre 1 et 10)
     """
 
-    def __init__(self, Speed, Size, View, Variation_Speed, Variation_Size, Variation_View, Days_Max, Color):
+    def __init__(self, Speed:int, Size:int, View:int, Variation_Speed:int, Variation_Size:int, Variation_View:int, Days_Max:int, Color:tuple):
         self.speed = Speed
         self.size = Size
         self.view = View
@@ -32,7 +32,7 @@ class Creature():
         self.angle_deg = rd(0, 360)
         self.radius = 10 * self.view
 
-    def draw(self, screen):
+    def draw(self, screen:pg.surface):
         pg.draw.circle(screen, (40, 145, 40), (self.pos_x, self.pos_y), 10 * self.view)
         rect = self.image.get_rect(center=(int(self.pos_x), int(self.pos_y)))
         screen.blit(self.image, rect)
@@ -302,7 +302,7 @@ class Creature():
                         return True, (i, j)
         return False, (None, None)
     
-    def canibalism(self, c, i, j):
+    def canibalism(self, c:object, i:int, j:int):
         if self.size - 4 >= c.size:
             settings.creatures_list[i].pop(j)
             return

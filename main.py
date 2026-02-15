@@ -32,12 +32,14 @@ while running:
                 match Befg.handle_event(event):
                     case 'start':
                         state = 'settings'
+                        Sett.editable_button_set_value()
                     case 'exit':
                         running = False
                     case 'credits':
                         state = 'credits'
 
             case 'settings':
+                Sett.editable_button_refresh(event)
                 match Sett.handle_event(event):
                     case'start':
                         day_manager.first_day()
@@ -76,7 +78,9 @@ while running:
                 day_manager.current_day = 1
             case "continue":
                 day_manager.new_day()
-        day_manager.update() 
+        day_manager.update()
+
+
         
 
 
@@ -92,6 +96,7 @@ while running:
         case 'in_game':
             Ing.draw(settings.creatures_list, screen)
             day_manager.draw_current_day()
+            day_manager.draw_creature_number()
         case 'post_game':
             Engd.draw()
 

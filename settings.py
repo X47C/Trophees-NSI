@@ -5,15 +5,7 @@ creatures_list = [] #liste de liste d'objets ( de creatures ) [[creature 1, ...,
 food_list = []
 creatures_list_dico = {} #a la fin de chaques jours on va mettre le liste de liste de creature acutelle dans le dictionnaire avec comme cle le numero du jour pour faire les graphes de fin le commentaire est trop long ptndrrr
 food_list_dico = {}
-pop_to_graph_colors = {
-    'pink' : 'tab:pink', 
-    'red' : 'tab:red',
-    'green' : 'tab:green',
-    'blue' : 'tab:blue',
-    'yellow' : 'tab:cian',
-    'purple' : 'tab:purple',
-    'gray' : 'tab:gray'
-}
+editable_butons = {}
 
 # Affichage
 Display_size = (1280, 720)  # largeur, hauteur
@@ -42,14 +34,14 @@ Max_days_max = 100
 POPULATION_MIN = 1
 POPULATION_MAX = 6
 
-Color_options = ["pink", "red", "green", "cian", "yellow", "purple", "gray"]
+Color_options = ["pink", "red", "green", "blue", "yellow", "purple", "gray"]
 
 # Valeurs par défaut pour une population
 
 DEFAULT_POP = {
     "name": "Population 1",
     "life": 50,         #durée de vie mdr je viens de me rendre compte que c'est pas clair mais flemme de changer ( oui c'est un commentaire constructif ET trop long je sais merci )
-    "color": "white",
+    "color": "blue",
     "quantity": 10,
     "speed_variation": 15,
     "size_variation": 15,
