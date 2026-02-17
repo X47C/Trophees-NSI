@@ -2,10 +2,10 @@ import settings
 from .creature import Creature
 import pygame as pg
 from .food import Food
-from random import randint as rd
+from random import randint as rd, shuffle
 
 class Day_Manager():
-    def __init__(self, surf):
+    def __init__(self, surf:pg.surface):
         self.surf = surf
         self.current_day = 1
         self.time = 0
@@ -18,6 +18,7 @@ class Day_Manager():
                 if not c.energy == 0:
                     c.moove()
                     c.Eat()
+
 
     def first_day(self):
         """
@@ -33,6 +34,7 @@ class Day_Manager():
             settings.creatures_list.append(a)
         for i in range(settings.Food_quantity):
              settings.food_list.append(Food(rd(280, 1000), rd(70, 650)))
+        self.distribute_on_border(settings.creatures_list, settings.Display_size)
         settings.creatures_list_dico[self.current_day] = [pop.copy() for pop in settings.creatures_list]# pas touche
         settings.food_list_dico[self.current_day] = len(settings.food_list)
 
@@ -70,6 +72,7 @@ class Day_Manager():
         settings.food_list = []
         for i in range(settings.Food_quantity):
              settings.food_list.append(Food(rd(280, 1000), rd(70, 650)))
+        self.distribute_on_border(settings.creatures_list, settings.Display_size)
         settings.creatures_list_dico[self.current_day] = [pop.copy() for pop in settings.creatures_list] #allez voir le commentaire dans settings mais PAS TOUCHE !!!
         settings.food_list_dico[self.current_day] = len(settings.food_list)
 
@@ -79,4 +82,51 @@ class Day_Manager():
         """
         Affiche le jour actuel en haut a gauche de l'écran quand le jeu est lancé
         """
-        self.surf.blit(pg.font.SysFont(settings.Days_font, settings.Days_font_size).render(f'Day : {self.current_day} / {settings.Days_max}', True, (255, 255, 255)), (10, 10))
+        self.surf.blit(pg.font.SysFont(settings.Days_font, settings.Days_font_size).render(f'Jour : {self.current_day} / {settings.Days_max}', True, (255, 255, 255)), (10, 10))
+
+    def draw_creature_number(self):
+        """
+        Affiche Le nombre de créature actuelle
+        """
+        self.surf.blit(pg.font.SysFont(settings.Days_font, settings.Days_font_size).render(f'Nombre de créatures : {sum([len(l) for l in settings.creatures_list])}', True, (255, 255, 255)), (10, 20 + settings.Days_font_size))
+
+
+    def distribute_on_border(self, lists:list, screen_size:tuple, margin:int = 0):
+        """
+        Distribue les objets (dans lists) uniformément sur le bord de l'écran.
+
+        - lists : liste de listes contenant des objets avec attributs pos_x et pos_y
+        - screen_size : (width, height)
+        - margin : marge intérieure depuis le bord (pixels)
+        """
+        w, h = screen_size
+        eff_w = max(0, w - 2 * margin)
+        eff_h = max(0, h - 2 * margin)
+        flat = []
+        for sub in lists:
+            for obj in sub:
+                flat.append(obj)
+        shuffle(flat)
+        N = len(flat)
+        if N == 0:
+            return
+        perimeter = 2 * (eff_w + eff_h)
+        spacing = perimeter / N
+        for i, obj in enumerate(flat):
+            d = i * spacing
+            if d < eff_w:
+                x = margin + d
+                y = margin
+            elif d < eff_w + eff_h:
+                x = margin + eff_w
+                y = margin + (d - eff_w)
+            elif d < eff_w + eff_h + eff_w:
+                x = margin + (eff_w - (d - (eff_w + eff_h)))
+                y = margin + eff_h
+            else:
+                x = margin
+                y = margin + (eff_h - (d - (2 * eff_w + eff_h)))
+
+            obj.pos_x = int(round(x))
+            obj.pos_y = int(round(y))
+
