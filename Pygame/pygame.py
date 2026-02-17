@@ -71,7 +71,7 @@ class Settings:
     """
     """
 
-    def __init__(self, screen):
+    def __init__(self, screen:pg.surface):
         self.screen = screen
         self.width, self.height = settings.Display_size
 
@@ -369,10 +369,6 @@ class Settings:
                         case 'color':
                             opts = getattr(settings, 'Color_options', [])
                             if opts:
-                                try:
-                                    i = opts.index(cur)
-                                except ValueError:
-                                    i = 0
                                 pop["color"] = opts[(i + 1) % len(opts)]
                         case 'life':
                             pop[key] = min(cur + 1, settings.Max_life)
@@ -419,16 +415,54 @@ class Settings:
 
     def editable_button_save_value(self):
 
-        settings.Days_max = settings.editable_butons['day_qtt'].get_number()
-        settings.Food_quantity = settings.editable_butons['food_qtt'].get_number()
+        if isinstance(settings.editable_butons['day_qtt'].get_number(), int):
+            settings.Days_max = min(settings.Max_days_max, settings.editable_butons['day_qtt'].get_number())
+            settings.editable_butons['day_qtt'].set_value(settings.Days_max)
+        else:
+            settings.Days_max = int(settings.editable_butons['day_qtt'].text)
+        if isinstance(settings.editable_butons['food_qtt'].get_number(), int):
+            settings.Food_quantity = min(settings.Max_foood_quantity, settings.editable_butons['food_qtt'].get_number())
+            settings.editable_butons['food_qtt'].set_value(settings.Food_quantity)
+        else:
+            settings.Food_quantity = int(settings.editable_butons['food_qtt'].text)
+
+        
 
         pop = settings.POPULATIONS[self.selected_pop]
         for key, c in self.pop_controls.items():
             if key != "color":
-                pop[key] = c['value'].get_number()
+                if isinstance(c['value'].get_number(), int):
+                    match key:
+                        case 'life':
+                            pop[key] = min(c['value'].get_number(), settings.Max_life)
+                            c['value'].set_value(pop[key])
+                        case 'quantity':
+                            pop[key] = min(c['value'].get_number(), settings.Max_quantity)
+                            c['value'].set_value(pop[key])
+                        case 'size':
+                            pop[key] = min(c['value'].get_number(), settings.Max_caracteristic)
+                            c['value'].set_value(pop[key])
+                        case 'speed':
+                            pop[key] = min(c['value'].get_number(), settings.Max_caracteristic)
+                            c['value'].set_value(pop[key])
+                        case 'view':
+                            pop[key] = min(c['value'].get_number(), settings.Max_caracteristic)
+                            c['value'].set_value(pop[key])
+                        case 'size_variation':
+                            pop[key] = min(c['value'].get_number(), 100)
+                            c['value'].set_value(pop[key])
+                        case 'view_variation':
+                            pop[key] = min(c['value'].get_number(), 100)
+                            c['value'].set_value(pop[key])
+                        case 'speed_variation':
+                            pop[key] = min(c['value'].get_number(), 100)
+                            c['value'].set_value(pop[key])
+                else:
+                    pop[key] = int(c['value'].text)
             else:
                 v = pop.get(key, "") 
                 c["value"].text = str(v)
+
 
             
             

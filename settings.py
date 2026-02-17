@@ -24,9 +24,9 @@ Button_label_font_size = 14
 Credits_font = 'arial'
 Credits_font_size = 18
 
-#  Boutons généraux ( et leurs max)
+#  Boutons généraux (et leurs max)
 Food_quantity = 40         # Quantité de nourriture initiale
-Max_foood_quantity = 1000
+Max_foood_quantity = 100
 Days_max = 5               # Nombre de jours de la simulation 
 Max_days_max = 100
 

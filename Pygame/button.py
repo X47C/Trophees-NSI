@@ -83,9 +83,6 @@ class Button:
 
         return False
 
-    def get_text(self):
-        return self.value if self.editable else self.text
-
     def get_number(self):
         if self.value == "":
             return None
@@ -96,7 +93,3 @@ class Button:
     def set_value(self, v):
         if self.editable:
             self.value = str(v)[:self.max_length]
-
-    def clear_value(self):
-        self.value = ""
-        self.active = False
