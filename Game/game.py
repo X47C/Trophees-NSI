@@ -25,6 +25,7 @@ class Day_Manager():
         gere le premier jour de la simulation
         """
         settings.creatures_list_dico = {}
+        settings.food_list_dico = {}
         settings.food_list = []
         settings.creatures_list = []
         for pop in settings.POPULATIONS:

@@ -103,6 +103,6 @@ while running:
         case 'credits':
             Befg.credits()
 
-
+    
     pg.display.flip()
     clock.tick(settings.FPS)

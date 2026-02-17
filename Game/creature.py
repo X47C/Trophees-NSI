@@ -117,9 +117,7 @@ class Creature():
                 self.ang_vel += uniform(-40, 40)
 
         if collide:
-            i, j = other_c
-            other = settings.creatures_list[i][j]
-
+            other = other_c
             blend = 0.65        
             ang_vel_damp = 0.5
             jitter = 12.0
@@ -299,8 +297,8 @@ class Creature():
                 if creature_rect.colliderect(c.rect):
                     if id(c) != id(self):
                         self.canibalism(c, i, j)
-                        return True, (i, j)
-        return False, (None, None)
+                        return True, c
+        return False, None
     
     def canibalism(self, c:object, i:int, j:int):
         if self.size - 4 >= c.size:
