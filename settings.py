@@ -7,6 +7,7 @@ creatures_list_dico = {} #a la fin de chaques jours on va mettre le liste de lis
 food_list_dico = {}
 editable_butons = {}
 
+
 # Affichage
 Display_size = (1280, 720)  # largeur, hauteur
 FPS = 60
@@ -25,10 +26,25 @@ Credits_font = 'arial'
 Credits_font_size = 18
 
 #  Boutons généraux (et leurs max)
-Food_quantity = 40         # Quantité de nourriture initiale
 Max_foood_quantity = 100
 Days_max = 5               # Nombre de jours de la simulation 
 Max_days_max = 100
+Food_quantity_default = 40
+Food_quantity = [Food_quantity_default] * Days_max  # liste : quantité par jour
+
+def food_for_day(day_index:int) -> int:
+    """Retourne la quantité pour un jour (1-based)."""
+    i = max(0, min(len(Food_quantity)-1, day_index-1))
+    return Food_quantity[i]
+def sync_food_quantity():
+    """Assure que la liste Food_quantity a exactement Days_max éléments."""
+    global Food_quantity
+    if len(Food_quantity) < Days_max:
+        Food_quantity.extend([Food_quantity_default] * (Days_max - len(Food_quantity)))
+    elif len(Food_quantity) > Days_max:
+        Food_quantity = Food_quantity[:Days_max]
+
+
 
 # limites populations 
 POPULATION_MIN = 1

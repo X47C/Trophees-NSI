@@ -33,7 +33,7 @@ class Day_Manager():
             for i in range(pop['quantity']):
                 a.append(Creature(pop['speed'], pop['size'], pop['view'], pop['speed_variation'],pop['size_variation'], pop['view_variation'], pop['life'], pop['color']))
             settings.creatures_list.append(a)
-        for i in range(settings.Food_quantity):
+        for i in range(settings.Food_quantity[0]):
              settings.food_list.append(Food(rd(280, 1000), rd(70, 650)))
         self.distribute_on_border(settings.creatures_list, settings.Display_size)
         settings.creatures_list_dico[self.current_day] = [pop.copy() for pop in settings.creatures_list]# pas touche
@@ -71,7 +71,7 @@ class Day_Manager():
                     alive_creatures.append(c)
             settings.creatures_list[i] = alive_creatures
         settings.food_list = []
-        for i in range(settings.Food_quantity):
+        for i in range(settings.Food_quantity[self.current_day - 1]):
              settings.food_list.append(Food(rd(280, 1000), rd(70, 650)))
         self.distribute_on_border(settings.creatures_list, settings.Display_size)
         settings.creatures_list_dico[self.current_day] = [pop.copy() for pop in settings.creatures_list] #allez voir le commentaire dans settings mais PAS TOUCHE !!!

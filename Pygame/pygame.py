@@ -126,12 +126,14 @@ class Settings:
         x0 = settings.PostG_PADDING
         lbl_y = top_y
         btn_y = lbl_y + self.font_lbl.get_height() + self.label_gap
-        settings.editable_butons['food_qtt'] = Button(Rect(x0 + self.small_w + 6, btn_y, val_w, self.btn_h), str(settings.Food_quantity), self.screen, editable=True, max_length=100)
+
+        col_w = (total_w - self.gap) // 2
+
+        settings.editable_butons['food_qtt'] = Button(Rect(x0, btn_y, col_w, self.btn_h),"Modifier qtt nourriture",self.screen)
+
         self.general_food = {
             "label": "Quantité de nourriture",
-            "minus": Button(Rect(x0, btn_y, self.small_w, self.btn_h), "-", self.screen),
             "value": settings.editable_butons['food_qtt'],
-            "plus": Button(Rect(x0 + self.small_w + 6 + val_w + 6, btn_y, self.small_w, self.btn_h), "+", self.screen),
             "lbl_pos": (x0 + (col_w // 2), lbl_y)
         }
 
@@ -240,15 +242,24 @@ class Settings:
         pg.draw.rect(self.screen, settings.UI_PANEL_COLOR if hasattr(settings, 'UI_PANEL_COLOR') else (240,240,240),
                      (0, 0, self.width, self.height))
 
-        # general labels + buttons
-        for g in (self.general_food, self.general_days):
-            label_surf = self.font_lbl.render(g["label"], True, (0, 0, 0))
-            cx, ly = g["lbl_pos"]
-            lx = int(cx - label_surf.get_width() // 2)
-            self.screen.blit(label_surf, (lx, ly))
-            g["minus"].draw(self.screen, self.font_btn)
-            g["value"].draw(self.screen, self.font_btn)
-            g["plus"].draw(self.screen, self.font_btn)
+        # nourriture
+        g = self.general_food
+        label_surf = self.font_lbl.render(g["label"], True, (0, 0, 0))
+        cx, ly = g["lbl_pos"]
+        lx = int(cx - label_surf.get_width() // 2)
+        self.screen.blit(label_surf, (lx, ly))
+        g["value"].draw(self.screen, self.font_btn)
+
+        # durée simulation 
+        g = self.general_days
+        label_surf = self.font_lbl.render(g["label"], True, (0, 0, 0))
+        cx, ly = g["lbl_pos"]
+        lx = int(cx - label_surf.get_width() // 2)
+        self.screen.blit(label_surf, (lx, ly))
+        g["minus"].draw(self.screen, self.font_btn)
+        g["value"].draw(self.screen, self.font_btn)
+        g["plus"].draw(self.screen, self.font_btn)
+
 
         # draw pop manage line (add/remove + numbers)
         self.btn_add_pop.draw(self.screen, self.font_btn)
@@ -284,7 +295,8 @@ class Settings:
 
     def handle_event(self, event):
         if event.type == pg.MOUSEBUTTONDOWN and event.button == 1:
-            # bottom
+            if self.general_food["value"].rect.collidepoint(event.pos):
+                return 'edit_food_curve'
             if self.btn_start.rect.collidepoint(event.pos):
                 return 'start'
             if self.btn_back.rect.collidepoint(event.pos):
@@ -293,21 +305,17 @@ class Settings:
             mx, my = event.pos
 
             # general controls
-            for name, g in (("Food_quantity", self.general_food), ("Simulation_duration", self.general_days)):
-                if g["minus"].rect.collidepoint((mx,my)):
-                    if name == "Food_quantity":
-                        settings.Food_quantity = max(0, settings.Food_quantity - 1)
-                    else:
-                        settings.Days_max = max(1, settings.Days_max - 1)
-                    self.editable_button_set_value()
-                    return None
-                if g["plus"].rect.collidepoint((mx,my)):
-                    if name == "Food_quantity":
-                        settings.Food_quantity = min(settings.Max_foood_quantity, settings.Food_quantity + 1)
-                    else:
-                        settings.Days_max = min(settings.Max_days_max, settings.Days_max + 1)
-                    self.editable_button_set_value()
-                    return None
+            if self.general_days["minus"].rect.collidepoint((mx,my)):
+                settings.Days_max = max(1, settings.Days_max - 1)
+                settings.sync_food_quantity() 
+                self.editable_button_set_value()
+                return None
+            if self.general_days["plus"].rect.collidepoint((mx,my)):
+                settings.Days_max = min(settings.Max_days_max, settings.Days_max + 1)
+                settings.sync_food_quantity() 
+                self.editable_button_set_value()
+                return None
+
 
             # add / remove pop
             if self.btn_add_pop.rect.collidepoint((mx,my)):
@@ -401,8 +409,6 @@ class Settings:
     
 
     def editable_button_set_value(self):
-
-        settings.editable_butons['food_qtt'].set_value(settings.Food_quantity)
         settings.editable_butons['day_qtt'].set_value(settings.Days_max)
 
         pop = settings.POPULATIONS[self.selected_pop]
@@ -417,14 +423,11 @@ class Settings:
 
         if isinstance(settings.editable_butons['day_qtt'].get_number(), int):
             settings.Days_max = min(settings.Max_days_max, settings.editable_butons['day_qtt'].get_number())
+            settings.sync_food_quantity()
             settings.editable_butons['day_qtt'].set_value(settings.Days_max)
         else:
             settings.Days_max = int(settings.editable_butons['day_qtt'].text)
-        if isinstance(settings.editable_butons['food_qtt'].get_number(), int):
-            settings.Food_quantity = min(settings.Max_foood_quantity, settings.editable_butons['food_qtt'].get_number())
-            settings.editable_butons['food_qtt'].set_value(settings.Food_quantity)
-        else:
-            settings.Food_quantity = int(settings.editable_butons['food_qtt'].text)
+            settings.sync_food_quantity()
 
         
 
