@@ -320,6 +320,11 @@ class Settings:
                         "view": 15, "speed": 3, "size": 3
                     }
                     base["name"] = f"Population {new_idx}"
+                    c = 0
+                    for pop in settings.POPULATIONS:
+                        while pop['color'] == settings.Color_options[c]:
+                            c += 1
+                    base['color'] = settings.Color_options[c]
                     settings.POPULATIONS.append(base)
                     self.selected_pop = len(settings.POPULATIONS) - 1
                     self._build_pop_management_buttons()
@@ -370,7 +375,11 @@ class Settings:
                             opts = getattr(settings, 'Color_options', [])
                             if opts:
                                 pop["color"] = opts[(i + 1) % len(opts)]
+<<<<<<< HEAD
 
+=======
+                                
+>>>>>>> ec26f7a1028d042520b946cd4395abef8418606b
                         case 'life':
                             pop[key] = min(cur + 1, settings.Max_life)
                         case 'quantity':
