@@ -34,7 +34,7 @@ Max_days_max = 100
 POPULATION_MIN = 1
 POPULATION_MAX = 6
 
-Color_options = ["pink", "red", "green", "blue", "yellow", "purple", "gray"]
+Color_options = ["blue", "pink", "red", "green", "yellow", "purple", "gray"]
 
 # Valeurs par défaut pour une population
 
