@@ -383,11 +383,6 @@ class Settings:
                             opts = getattr(settings, 'Color_options', [])
                             if opts:
                                 pop["color"] = opts[(i + 1) % len(opts)]
-<<<<<<< HEAD
-
-=======
-                                
->>>>>>> ec26f7a1028d042520b946cd4395abef8418606b
                         case 'life':
                             pop[key] = min(cur + 1, settings.Max_life)
                         case 'quantity':

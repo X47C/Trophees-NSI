@@ -59,9 +59,9 @@ DEFAULT_POP = {
     "life": 50,         #durée de vie mdr je viens de me rendre compte que c'est pas clair mais flemme de changer ( oui c'est un commentaire constructif ET trop long je sais merci )
     "color": "blue",
     "quantity": 10,
-    "speed_variation": 15,
-    "size_variation": 15,
-    "view_variation": 15,
+    "speed_variation": 30,
+    "size_variation": 30,
+    "view_variation": 30,
     "view": 4,
     "speed": 4,
     "size": 4
