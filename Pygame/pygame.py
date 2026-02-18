@@ -370,6 +370,7 @@ class Settings:
                             opts = getattr(settings, 'Color_options', [])
                             if opts:
                                 pop["color"] = opts[(i + 1) % len(opts)]
+
                         case 'life':
                             pop[key] = min(cur + 1, settings.Max_life)
                         case 'quantity':
@@ -760,3 +761,10 @@ class Post_Game:
             (self.scrollbar_rect.height - self.scroll_thumb_height)
         ) 
         self.scroll_y = ratio * (self.content_height - self.height)
+
+    def Color_verification(self, color):
+        for co in settings.Color_options:
+            if color == co:
+                return True
+        return False
+                
