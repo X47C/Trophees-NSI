@@ -129,7 +129,7 @@ class Settings:
 
         col_w = (total_w - self.gap) // 2
 
-        settings.editable_butons['food_qtt'] = Button(Rect(x0, btn_y, col_w, self.btn_h),"Modifier qtt nourriture",self.screen)
+        settings.editable_butons['food_qtt'] = Button(Rect(x0, btn_y, col_w, self.btn_h),"Modifier",self.screen, description="Permet d'acceder à une fenetre permettant de gérer la quantité de nouriture de la simulation au cours du temps")
 
         self.general_food = {
             "label": "Quantité de nourriture",
@@ -290,6 +290,9 @@ class Settings:
         # bottom buttons
         self.btn_start.draw(self.screen, self.font_btn)
         self.btn_back.draw(self.screen, self.font_btn)
+
+        #description des boutons ( a la fin pour que ça soit au dessus de tout)
+        settings.editable_butons['food_qtt'].description()
 
 
 
