@@ -107,6 +107,7 @@ while running:
             Ing.draw(settings.creatures_list, screen)
             day_manager.draw_current_day()
             day_manager.draw_creature_number()
+            day_manager.draw_food_number()
         case 'post_game':
             Engd.draw()
         case 'credits':

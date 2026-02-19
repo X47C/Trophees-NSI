@@ -14,7 +14,7 @@ class Button:
         self.value = ""
         self.active = False
 
-        #box de desciption
+        #box de description
         self.description_font = pg.font.SysFont('Arial', 13)
         self.description_slices = self.description_slice(description)
         self.description_text = self.description_slices[0]
@@ -22,7 +22,7 @@ class Button:
         self.description_box_color = (255, 255, 255)
 
 
-    def draw(self, surf:pg.surface, font:pg.font, asset:str = None, bg:tuple = (30,144,255)):
+    def draw(self, surf:pg.surface, font:pg.font, asset:str = None, bg:tuple = (30,144,255)) -> None:
         display_text = self.value if self.editable else self.text
 
         if asset:
@@ -54,14 +54,14 @@ class Button:
                 caret_y = self.rect.y + (self.rect.h - ts.get_height()) // 2
                 pg.draw.rect(surf, (255,255,255), (caret_x, caret_y, 2, ts.get_height()))
 
-    def collide(self, pos:tuple):
+    def collide(self, pos: tuple) -> bool:  
         return self.rect.collidepoint(pos)
 
-    def is_clicked(self, mouse_pos:tuple, button_pos:tuple):
+    def is_clicked(self, mouse_pos: tuple, button_pos: tuple) -> bool:
         relative_pos = (mouse_pos[0] - button_pos[0], mouse_pos[1] - button_pos[1])
         return self.collide(relative_pos)
 
-    def handle_event(self, event, offset=(0,0)):
+    def handle_event(self, event: pg.event, offset: tuple = (0,0)) -> bool: 
         if event.type == pg.MOUSEBUTTONDOWN and event.button == 1:
             mx, my = event.pos
             rel = (mx - offset[0], my - offset[1])
@@ -90,25 +90,26 @@ class Button:
 
         return False
 
-    def get_number(self):
+    def get_number(self) -> None | int | float:
         if self.value == "":
             return None
         if self.allow_decimal:
             return float(self.value)
         return int(self.value)
 
-    def set_value(self, v):
+    def set_value(self, v: int) -> None:
         if self.editable:
             self.value = str(v)[:self.max_length]
+            return
 
 
-    def description_slice(self, text):
+    def description_slice(self, text:str) -> str:
         step = 45
         lines = [text[i:i+step] for i in range(0, len(text), step)]
         return "\n".join(lines), len(lines)
 
 
-    def description(self):
+    def description(self) -> None:
         pos = pg.mouse.get_pos()
         if self.rect.collidepoint(pos) and self.description_text != '':
             desc_rect = pg.Rect((pos[0], pos[1] - self.description_box_size[1]), self.description_box_size)

@@ -5,13 +5,18 @@ from .food import Food
 from random import randint as rd, shuffle
 
 class Day_Manager():
-    def __init__(self, surf:pg.surface):
+    def __init__(self, surf: pg.surface) -> None:
+        #écran
         self.surf = surf
+
+        #utilitaire
         self.current_day = 1
         self.time = 0
 
-    def update(self):
+
+    def update(self) -> None:
         """
+        Permet de faire bouger les créature et de verifier si elles ont mangé tant qu'elles ont de l'energie
         """
         for a in settings.creatures_list:
             for c in a:
@@ -20,28 +25,38 @@ class Day_Manager():
                     c.Eat()
 
 
-    def first_day(self):
+    def first_day(self) -> None:
         """
-        gere le premier jour de la simulation
+        Gere le premier jour de la simulation
         """
+        #reinitialise les graphes
         settings.creatures_list_dico = {}
         settings.food_list_dico = {}
+
+        #reinitialise les creatures et la nouriture
         settings.food_list = []
         settings.creatures_list = []
+
+        #créée les créatures
         for pop in settings.POPULATIONS:
             a = []
             for i in range(pop['quantity']):
                 a.append(Creature(pop['speed'], pop['size'], pop['view'], pop['speed_variation'],pop['size_variation'], pop['view_variation'], pop['life'], pop['color']))
             settings.creatures_list.append(a)
+
+        #crée la nouriture
         for i in range(settings.Food_quantity[0]):
              settings.food_list.append(Food(rd(280, 1000), rd(70, 650)))
         self.distribute_on_border(settings.creatures_list, settings.Display_size)
+
+        #implemente les premier jour pour les graphes
         settings.creatures_list_dico[self.current_day] = [pop.copy() for pop in settings.creatures_list]# pas touche
         settings.food_list_dico[self.current_day] = len(settings.food_list)
 
 
-    def is_over(self):
+    def is_over(self) -> str:
         """
+        Renvoie 'end' si le jour actuel est fini, 'continue' dans l'autre cas
         """
         a = True 
         for elt in settings.creatures_list:
@@ -57,12 +72,15 @@ class Day_Manager():
                 return 'continue'
   
 
-    def new_day(self):
+    def new_day(self) -> None:
         """
         ce que doit faire le jeu a chaques debuts de jours
         """
+        #modifications utilitaires
         self.current_day += 1
         self.time = 0
+
+        #verifie quelles creatures doivent mourir et quelles creatures survivent
         for i in range(len(settings.creatures_list)):
             alive_creatures = []
             for c in settings.creatures_list[i]:
@@ -70,29 +88,41 @@ class Day_Manager():
                     c.New_Day()
                     alive_creatures.append(c)
             settings.creatures_list[i] = alive_creatures
+        
+        #réinitialise et recréé la nouriture
         settings.food_list = []
         for i in range(settings.Food_quantity[self.current_day - 1]):
              settings.food_list.append(Food(rd(280, 1000), rd(70, 650)))
         self.distribute_on_border(settings.creatures_list, settings.Display_size)
-        settings.creatures_list_dico[self.current_day] = [pop.copy() for pop in settings.creatures_list] #allez voir le commentaire dans settings mais PAS TOUCHE !!!
+
+        #Implemente le jour actuel dans les graphes
+        settings.creatures_list_dico[self.current_day] = [pop.copy() for pop in settings.creatures_list]
         settings.food_list_dico[self.current_day] = len(settings.food_list)
 
         
 
-    def draw_current_day(self):
+    def draw_current_day(self) -> None:
         """
         Affiche le jour actuel en haut a gauche de l'écran quand le jeu est lancé
         """
         self.surf.blit(pg.font.SysFont(settings.Days_font, settings.Days_font_size).render(f'Jour : {self.current_day} / {settings.Days_max}', True, (255, 255, 255)), (10, 10))
 
-    def draw_creature_number(self):
+
+    def draw_creature_number(self) -> None:
         """
-        Affiche Le nombre de créature actuelle
+        Affiche le nombre de créature actuelle en haut a gauche de l'ecran quand le jeu est lancé
         """
         self.surf.blit(pg.font.SysFont(settings.Days_font, settings.Days_font_size).render(f'Nombre de créatures : {sum([len(l) for l in settings.creatures_list])}', True, (255, 255, 255)), (10, 20 + settings.Days_font_size))
 
 
-    def distribute_on_border(self, lists:list, screen_size:tuple, margin:int = 0):
+    def draw_food_number(self) -> None:
+        """
+        Affiche la quantité de nourriture actuelle en haut a gauche de l'ecran quand le jeu est lancé
+        """
+        self.surf.blit(pg.font.SysFont(settings.Days_font, settings.Days_font_size).render(f'Quantité de nouriture : {len(settings.food_list)}', True, (255, 255, 255)), (10, 30 + settings.Days_font_size * 2))
+
+
+    def distribute_on_border(self, lists: list, screen_size: tuple, margin: int = 0) -> None:
         """
         Distribue les objets (dans lists) uniformément sur le bord de l'écran.
 
@@ -113,6 +143,8 @@ class Day_Manager():
             return
         perimeter = 2 * (eff_w + eff_h)
         spacing = perimeter / N
+
+        #positionnement
         for i, obj in enumerate(flat):
             d = i * spacing
             if d < eff_w:
