@@ -3,6 +3,7 @@ import pygame as pg
 from Pygame.pygame import Before_Game, Settings, In_Game, Post_Game
 import settings
 from Game.game import Day_Manager
+from Pygame.food_editor import food_editor
 
 # --- INIT ---
 pg.init()
@@ -47,6 +48,14 @@ while running:
                         state = 'in_game'
                     case 'back':
                         state = 'home'
+                    case 'edit_food_curve':
+                        editor = food_editor(screen)
+                        state = 'edit_food_curve'
+
+            case 'edit_food_curve':
+                match editor.handle_event(event):
+                    case 'settings':
+                        state = 'settings'
 
             case 'in_game':
                 if len(settings.creatures_list) == 0:
@@ -98,11 +107,14 @@ while running:
             Ing.draw(settings.creatures_list, screen)
             day_manager.draw_current_day()
             day_manager.draw_creature_number()
+            day_manager.draw_food_number()
         case 'post_game':
             Engd.draw()
-
         case 'credits':
             Befg.credits()
+        case 'edit_food_curve':
+            editor.draw()
+
 
     
     pg.display.flip()
