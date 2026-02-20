@@ -54,7 +54,7 @@ class Creature():
         deplace la creature en fonction de sa vitesse et de son angle
         """
         collide, other_c = self.collide()
-        dt = 1.0 / settings.FPS
+        dt = 1.0 / 60
         w, h = settings.Display_size
 
         speed_px_s = float(self.speed) * 15.0

@@ -390,10 +390,6 @@ class Settings:
                                 except ValueError:
                                     i = 0
                                 pop["color"] = opts[(i + 1) % len(opts)]
-<<<<<<< HEAD
-=======
-
->>>>>>> 3c8dec0ace48b08825d95de9901c5d58a6674c74
                         case 'life':
                             pop[key] = min(cur + 1, settings.Max_life)
                         case 'quantity':
