@@ -5,7 +5,9 @@ import settings
 from Game.game import Day_Manager
 from Pygame.food_editor import food_editor
 
+
 # --- INIT ---
+
 pg.init()
 pg.display.set_caption('Darwined')
 
@@ -119,3 +121,4 @@ while running:
     
     pg.display.flip()
     clock.tick(settings.FPS)
+
