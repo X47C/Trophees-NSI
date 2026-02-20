@@ -359,7 +359,7 @@ class Settings:
                     self.editable_button_set_value()
                     return None
 
-            # per-population controls yea yea I'm english c'est une catastrophe la motié des commentaires sont dans une langue et l'autre motiée dasn une autre
+            # per-population controls yea yea I'm english c'est une catastrophe la moitié des commentaires sont dans une langue et l'autre motiée dasn une autre
             if len(settings.POPULATIONS) == 0:
                 return None
             pop = settings.POPULATIONS[self.selected_pop]
@@ -385,8 +385,15 @@ class Settings:
                         case 'color':
                             opts = getattr(settings, 'Color_options', [])
                             if opts:
+                                try:
+                                    i = opts.index(cur)
+                                except ValueError:
+                                    i = 0
                                 pop["color"] = opts[(i + 1) % len(opts)]
+<<<<<<< HEAD
+=======
 
+>>>>>>> 3c8dec0ace48b08825d95de9901c5d58a6674c74
                         case 'life':
                             pop[key] = min(cur + 1, settings.Max_life)
                         case 'quantity':
@@ -778,9 +785,4 @@ class Post_Game:
         ) 
         self.scroll_y = ratio * (self.content_height - self.height)
 
-    def Color_verification(self, color):
-        for co in settings.Color_options:
-            if color == co:
-                return True
-        return False
-                
+    
