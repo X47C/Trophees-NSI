@@ -1,4 +1,3 @@
-# methodes pour gerer les creatures
 import math
 from random import randint as rd, uniform, random
 from math import radians, cos, sin, atan2, degrees, sqrt
@@ -11,20 +10,28 @@ class Creature():
     Entrée : Speed, Size, View (int, compris entre 1 et 10)
     """
 
-    def __init__(self, Speed:int, Size:int, View:int, Variation_Speed:int, Variation_Size:int, Variation_View:int, Days_Max:int, Color:tuple):
+    def __init__(self, Speed:int, Size:int, View:int, Variation_Speed:int, Variation_Size:int, Variation_View:int, Days_Max:int, Color:tuple) -> None:
+        #caracteristiques
         self.speed = Speed
         self.size = Size
         self.view = View
         self.color = Color
-        self.ate = 0
-        self.energy = 100
         self.variation_speed = Variation_Speed
         self.variation_size = Variation_Size
         self.variation_view = Variation_View
-        self.days = 0
         self.days_max = Days_Max
+
+        #position / déplacement
+        self.angle_deg = rd(0, 360)
+        self.radius = 10 * self.view
         self.pos_x = 0
         self.pos_y = 0
+
+        self.days = 0
+        self.ate = 0
+        self.energy = 100
+
+        #affichage
         img = pg.image.load("assets/creature.png")
         img_size = img.get_size()
         self.image = pg.transform.smoothscale(img, (img_size[0] + self.size * 2, img_size[1] + self.size * 2))
@@ -32,12 +39,17 @@ class Creature():
         self.angle_deg = rd(0, 360)
         self.radius = 10 * self.view
 
-    def draw(self, screen:pg.surface):
+
+    def draw(self, screen: pg.surface) -> None:
+        """
+        Dessine la créature sur l'écran 'screen'
+        """
         pg.draw.circle(screen, (40, 145, 40), (self.pos_x, self.pos_y), 10 * self.view)
         rect = self.image.get_rect(center=(int(self.pos_x), int(self.pos_y)))
         screen.blit(self.image, rect)
+        return
 
-    def moove(self):
+    def moove(self) -> None:
         """
         deplace la creature en fonction de sa vitesse et de son angle
         """
@@ -197,10 +209,8 @@ class Creature():
                     other.ang_vel = getattr(other, "ang_vel", 0.0) * ang_vel_damp + uniform(-jitter, jitter)
 
 
-        # ----------------------
+        
         # Consommation d'énergie 
-        # ----------------------
-        # Coefficients calibrés pour durée a peu pres 10s pour une créature moyenne noramlement (speed=5,size=5,view=5)
         base_cost = 0.06
         coeff_speed = 0.008  
         coeff_size = 0.006 
@@ -210,7 +220,7 @@ class Creature():
         size_cost = coeff_size * self.size
         view_cost = coeff_view * self.view
 
-        # consommation opar frame
+        # consommation par frame
         self.energy -= (base_cost + speed_cost + size_cost + view_cost)
 
         if self.energy < 0:
@@ -220,9 +230,10 @@ class Creature():
         self.pos_y = min(max(self.pos_y, margin), h - margin)
         self.rect = self.image.get_rect(center=(int(self.pos_x), int(self.pos_y)))
 
-    def Baby(self):
+
+    def Baby(self) -> None:
         """
-        Se reproduit avec un pourcentage de proximité a ses parametres actuels
+        Crée un bébé avec des caracteristiques identiques a self, sauf pour speed, size et view qui sont modifiés d'un certain pourcentage defini par varitaion_'caracteristique'
         """
         Baby = Creature(
             max(0, min(10, self.speed * (rd(100 - self.variation_speed, 100 + self.variation_speed)/100))),
@@ -241,9 +252,10 @@ class Creature():
                     settings.creatures_list[i].append(Baby)
                     return
 
-    def Eat(self):
+
+    def Eat(self) -> None:
         """
-        on verifie si il a mangé haha enfait c'est simple j'etait parti super loins pour rien mdr
+        Vérifie si la créature à mangée
         """
         creature_rect = self.rect
 
@@ -254,9 +266,10 @@ class Creature():
                 settings.food_list.pop(i)
                 return
 
-    def New_Day(self):
+
+    def New_Day(self) -> None:
         """
-        Gere un nouveau jour
+        Permet de verifier si la créature a survecue au jour precedent -> apppele la methode baby si besoin et reinitialise les parametres importants pour un jour
         """
         if self.is_alive:
             if self.ate >= 2:
@@ -266,11 +279,11 @@ class Creature():
             self.pos_x = 550
             self.pos_y = 440
 
-    def see_food(self):
+
+    def see_food(self) -> tuple:
         """
-        return True si la creature a de la nourriture dans son champs de vision
-        False sinon. Toute la bouffe est stockée dans settings.food_list, c'est une liste d'objet (les coordonées sont dans le init )
-        Les creatures on un champs de vision qui va de 1 a 10 donc plus c'est elevé plus elles voient loin
+        return True si la creature a de la nourriture dans son champs de vision, False sinon
+        return egalement un tuple contenant les coordonnées (x, y) de la nouriture vue. Dans le cas ou  aucune noiuriture n'est vue ce tuple est de (None, None)
         """
         for i, food in enumerate(settings.food_list):
             if math.hypot(self.pos_x - food.pos_x, self.pos_y - food.pos_y) < self.radius:
@@ -282,14 +295,19 @@ class Creature():
                         return True, (i, j)
         return False, (None, None)
 
-    def is_alive(self):
+
+    def is_alive(self) -> bool:
         """
-        Check si le mec est en vie renvois True ou false
+        Renvoie True si la créature est en vie, False sinon
         """
         return self.ate > 0 and self.days <= self.days_max
     
 
-    def collide(self):
+    def collide(self) -> tuple:
+        """
+        Renvoie True si une autre créature est percutée, False sinon
+        Renvoie la créature percutée, False sinon 
+        """
         creature_rect = self.rect
 
         for i, l in enumerate(settings.creatures_list):
@@ -300,7 +318,15 @@ class Creature():
                         return True, c
         return False, None
     
-    def canibalism(self, c:object, i:int, j:int):
+
+    def canibalism(self, c: object, i: int, j: int) -> None:
+        """
+        Entrée : 
+            - c un objet de type créature
+            - i est l'indice de la population de cette créature dans settings.creature_list
+            - j est l'indice de la creature dans settings.creature_list[1]
+        La fonction permet a la créature self de manger l'autre créature si celle si est plus petite d'au moins 4
+        """
         if self.size - 4 >= c.size:
             settings.creatures_list[i].pop(j)
             return
