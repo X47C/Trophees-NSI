@@ -162,4 +162,3 @@ class Day_Manager():
 
             obj.pos_x = int(round(x))
             obj.pos_y = int(round(y))
-
