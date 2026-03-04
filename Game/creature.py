@@ -44,10 +44,16 @@ class Creature():
         """
         Dessine la créature sur l'écran 'screen'
         """
-        pg.draw.circle(screen, (40, 145, 40), (self.pos_x, self.pos_y), 10 * self.view)
+        if getattr(settings, 'toolbox_show_vision', True):
+            r = 10 * self.view
+            vision_surf = pg.Surface((r * 2, r * 2), pg.SRCALPHA)
+            pg.draw.circle(vision_surf, (255, 255, 255, 30), (r, r), r)
+            pg.draw.circle(vision_surf, (255, 255, 255, 120), (r, r), r, 2)
+            screen.blit(vision_surf, (self.pos_x - r, self.pos_y - r))
         rect = self.image.get_rect(center=(int(self.pos_x), int(self.pos_y)))
         screen.blit(self.image, rect)
         return
+
 
     def moove(self) -> None:
         """

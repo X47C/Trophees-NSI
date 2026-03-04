@@ -81,4 +81,9 @@ POPULATIONS = [
 UI_BG_COLOR = (200, 200, 200)
 UI_PANEL_COLOR = (240, 240, 240)
 
-
+# Toolbox
+toolbox_show_day = True
+toolbox_show_creatures = True
+toolbox_show_food = True
+toolbox_show_vision = True
+toolbox_simulation_speed = 1  # multiplicateur : 0.5, 1, 2, 4, 8, 16

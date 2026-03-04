@@ -1,6 +1,7 @@
 # Ensemble des methodes servant a faire marcher pygame, on a before game avec les menu et les dispositions pour créer une partie
 import pygame as pg
 from Pygame.button import Button
+from Pygame.toolbox import Toolbox
 from pygame import Rect
 import settings
 import matplotlib as plt
@@ -486,7 +487,7 @@ class In_Game:
     """
     permet de gérer l'écran pendant la partie
     """
-    def __init__(self, screen):
+    def __init__(self, screen: pg.surface):
         """
         screen = tuple(largueur, hauteur)
         Initialise l'écran pendant la partie
@@ -498,29 +499,28 @@ class In_Game:
         self.bg_asset = pg.Surface(settings.Display_size)
         self.bg_asset.fill((34, 139, 34))
 
-        self.continue_button = Button(Rect(self.width - self.width // 17, self.height // 60, 90, 40), 'End', self.screen)
-        self.Button_font = pg.font.SysFont(settings.Button_font, settings.Button_font_size)
+        self.toolbox = Toolbox(screen)
 
-    def draw(self, l_creatures, screen):
+    def draw(self, l_creatures: list, screen: pg.surface) -> None:
         """
         Dessine l'écran pendant la partie
         """
         self.screen.blit(self.bg_asset, (0, 0))
-        self.continue_button.draw(self.screen, self.Button_font)
         #affiche les cratures
         for a in l_creatures:
             for c in a:
                 c.draw(screen)
         for f in settings.food_list:
             f.draw(screen)
+        self.toolbox.draw()
 
-    def handle_event(self, event):
+    def handle_event(self, event: pg.event) -> str:
         """
         Gère les événements de l'écran pendant la partie
         """
-        if event.type == pg.MOUSEBUTTONUP and event.button == 1 :        
-            if self.continue_button.rect.collidepoint(event.pos):
-                return 'end'
+        result = self.toolbox.handle_event(event)
+        if result == 'end':
+            return 'end'
                 
 
 

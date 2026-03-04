@@ -103,24 +103,33 @@ class Day_Manager():
 
     def draw_current_day(self) -> None:
         """
-        Affiche le jour actuel en haut a gauche de l'écran quand le jeu est lancé
+        Affiche le jour actuel ( toujours en première position si visible ).
         """
-        self.surf.blit(pg.font.SysFont(settings.Days_font, settings.Days_font_size).render(f'Jour : {self.current_day} / {settings.Days_max}', True, (255, 255, 255)), (10, 10))
-
+        if not getattr(settings, 'toolbox_show_day', True):
+            return
+        self.surf.blit(pg.font.SysFont(settings.Days_font, settings.Days_font_size).render(f'Jour : {self.current_day} / {settings.Days_max}', True, (255, 255, 255)),(10, 10))
 
     def draw_creature_number(self) -> None:
         """
-        Affiche le nombre de créature actuelle en haut a gauche de l'ecran quand le jeu est lancé
+        Affiche le nombre de créatures.
         """
-        self.surf.blit(pg.font.SysFont(settings.Days_font, settings.Days_font_size).render(f'Nombre de créatures : {sum([len(l) for l in settings.creatures_list])}', True, (255, 255, 255)), (10, 20 + settings.Days_font_size))
-
+        if not getattr(settings, 'toolbox_show_creatures', True):
+            return
+        # Compte combien d'infos sont affichées au-dessus
+        offset = sum([getattr(settings, 'toolbox_show_day', True),])
+        y = 10 + offset * (settings.Days_font_size + 8)
+        self.surf.blit(pg.font.SysFont(settings.Days_font, settings.Days_font_size).render(f'Nombre de créatures : {sum([len(l) for l in settings.creatures_list])}',True, (255, 255, 255)),(10, y))
 
     def draw_food_number(self) -> None:
         """
-        Affiche la quantité de nourriture actuelle en haut a gauche de l'ecran quand le jeu est lancé
+        Affiche la quantité de nourriture.
         """
-        self.surf.blit(pg.font.SysFont(settings.Days_font, settings.Days_font_size).render(f'Quantité de nouriture : {len(settings.food_list)}', True, (255, 255, 255)), (10, 30 + settings.Days_font_size * 2))
-
+        if not getattr(settings, 'toolbox_show_food', True):
+            return
+        # Compte combien d'infos sont affichées au-dessus
+        offset = sum([getattr(settings, 'toolbox_show_day', True),getattr(settings, 'toolbox_show_creatures',  True),])
+        y = 10 + offset * (settings.Days_font_size + 8)
+        self.surf.blit(pg.font.SysFont(settings.Days_font, settings.Days_font_size).render(f'Quantité de nouriture : {len(settings.food_list)}',True, (255, 255, 255)),(10, y))
 
     def distribute_on_border(self, lists: list, screen_size: tuple, margin: int = 0) -> None:
         """

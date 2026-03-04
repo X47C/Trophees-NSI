@@ -47,6 +47,12 @@ while running:
                 match Sett.handle_event(event):
                     case'start':
                         day_manager.first_day()
+                        settings.toolbox_show_day = True
+                        settings.toolbox_show_creatures = True
+                        settings.toolbox_show_food = True
+                        settings.toolbox_show_vision = True
+                        settings.toolbox_simulation_speed = 1
+                        Ing.toolbox.open = False
                         state = 'in_game'
                     case 'back':
                         state = 'home'
@@ -90,7 +96,17 @@ while running:
                 day_manager.current_day = 1
             case "continue":
                 day_manager.new_day()
-        day_manager.update()
+        speed = getattr(settings, 'toolbox_simulation_speed', 1)
+        if speed == 0.5:
+            if not hasattr(day_manager, '_slow_tick'):
+                day_manager._slow_tick = 0
+            day_manager._slow_tick += 1
+            if day_manager._slow_tick % 2 == 0:
+                day_manager.update()
+        else:
+            updates = int(speed) 
+            for _ in range(updates):
+                    day_manager.update()
 
 
         
