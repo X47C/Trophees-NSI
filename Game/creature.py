@@ -38,6 +38,29 @@ class  Creature():
         deplace la creature en fonction de sa vitesse et de son angle
         """
         dt = 1.0 / settings.FPS
+
+
+    def draw(self, screen: pg.surface) -> None:
+        """
+        Dessine la créature sur l'écran 'screen'
+        """
+        if getattr(settings, 'toolbox_show_vision', True):
+            r = 10 * self.view
+            vision_surf = pg.Surface((r * 2, r * 2), pg.SRCALPHA)
+            pg.draw.circle(vision_surf, (255, 255, 255, 30), (r, r), r)
+            pg.draw.circle(vision_surf, (255, 255, 255, 120), (r, r), r, 2)
+            screen.blit(vision_surf, (self.pos_x - r, self.pos_y - r))
+        rect = self.image.get_rect(center=(int(self.pos_x), int(self.pos_y)))
+        screen.blit(self.image, rect)
+        return
+
+
+    def moove(self) -> None:
+        """
+        deplace la creature en fonction de sa vitesse et de son angle
+        """
+        collide, other_c = self.collide()
+        dt = 1.0 / 60
         w, h = settings.Display_size
 
         speed_px_s = float(self.speed) * 15.0
