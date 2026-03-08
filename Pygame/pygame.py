@@ -227,30 +227,28 @@ class Settings:
             else:
                 display = str(cur_val)
             if key == "life": #je savais pas quoi mettre, et quand j'ai mis autre chose que "key", ca marchait pas, donc j'ai supposé que ca marchait
-                la_description = "Permet de modifier la durée de vie des créatures sur une journée"
+                description = "Permet de modifier la durée de vie des créatures sur une journée"
             if key == "color":
-                la_description = "Permet de choisir la couleur de chaque population, les couleurs defilent lorsque l'on appuie sur + ou -"
+                description = "Permet de choisir la couleur de chaque population, les couleurs defilent lorsque l'on appuie sur + ou -"
             if key == "quantity":
-                la_description = "Permet de definir le nombre de créatures au début de la simulation"
+                description = "Permet de definir le nombre de créatures au début de la simulation"
             if key == "speed_variation":
-                la_description = "Permet de definir à quel point la vitesse des créatures varie au fur et à mesure de leur évolution, chaque jour de la simulation"
+                description = "Permet de definir à quel point la vitesse des créatures varie au fur et à mesure de leur évolution, chaque jour de la simulation"
             if key == "size_variation":
-                la_description = "Permet de definir à quel point la taille des créatures varie au fur et à mesure de leur évolution, chaque jour de la simulation"
+                description = "Permet de definir à quel point la taille des créatures varie au fur et à mesure de leur évolution, chaque jour de la simulation"
             if key == "view_variation":
-                la_description = "Permet de definir à quel point le champ de vision des créatures varie au fur et à mesure de leur évolution, chaque jour de la simulation"
+                description = "Permet de definir à quel point le champ de vision des créatures varie au fur et à mesure de leur évolution, chaque jour de la simulation"
             if key == "view":
-                la_description = "Permet de definir le champ de vision des créatures au début de la simulation"
+                description = "Permet de definir le champ de vision des créatures au début de la simulation"
             if key == "speed":
-                la_description = "Permet de definir la vitesse des créatures au début de la simulation"
+                description = "Permet de definir la vitesse des créatures au début de la simulation"
             if key == "size":
-                la_description = "Permet de definir la taille des créatures au début de la simulation"
+                description = "Permet de definir la taille des créatures au début de la simulation"
             minus = Button(Rect(x, y_btn, self.small_w, self.btn_h), "-", self.screen)
             if isinstance(cur_val, int):
-                value = Button(Rect(x + self.small_w + 6, y_btn, val_w, self.btn_h), display, self.screen, editable=True)
-                value.description() #je savais pas ou le mettre donc j'ai essayé ici mais ca a pas marché
+                value = Button(Rect(x + self.small_w + 6, y_btn, val_w, self.btn_h), display, self.screen, editable=True, description=description)
             else:
-                value = Button(Rect(x + self.small_w + 6, y_btn, val_w, self.btn_h), display, self.screen, description=la_description)
-                value.description()
+                value = Button(Rect(x + self.small_w + 6, y_btn, val_w, self.btn_h), display, self.screen, description=description)
             plus = Button(Rect(x + self.small_w + 6 + val_w + 6, y_btn, self.small_w, self.btn_h), "+", self.screen)
 
             center_x = x + (col_w // 2)
@@ -329,6 +327,10 @@ class Settings:
         settings.editable_butons['day_qtt'].description()
         self.btn_add_pop.description()
         self.btn_rem_pop.description()
+
+        for key, c in self.pop_controls.items():
+            c['value'].description()   # Description du champ de valeur
+
         self.btn_start.description()
         self.btn_back.description()
         
