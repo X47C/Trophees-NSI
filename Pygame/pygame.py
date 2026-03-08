@@ -25,7 +25,9 @@ class Before_Game:
         self.Button_Start = Button(Rect(self.width // 2 - 110, self.height // 2 - 130, 220, 80),'', self.screen)
         self.Button_credits = Button(Rect(self.width // 2 - 110, self.height // 2 + 50, 220, 80),'', self.screen) 
         self.Button_credits_exit = Button(Rect(self.width // 2 - 65, self.height // 2 + 130, 130, 50),'Back', self.screen)
-        
+        self.Button_tutorial = Button(Rect(self.width // 2 - 110, self.height // 2 + 140, 220, 80),'', self.screen) 
+        self.Button_tutorial_pass = Button(Rect(self.width // 2 - 65, self.height // 2 + 50, 130, 50),'', self.screen)
+
         self.bg_asset = pg.image.load('assets/before-game-background.png')
 
         self.Button_font = pg.font.SysFont(settings.Button_font, settings.Button_font_size)
@@ -39,6 +41,9 @@ class Before_Game:
         self.Button_exit.draw(self.screen, self.Button_font, 'assets/button-exit.png')
         self.Button_Start.draw(self.screen, self.Button_font, 'assets/button-start.png')
         self.Button_credits.draw(self.screen, self.Button_font, 'assets/button-credits.png')
+        self.Button_tutorial.draw(self.screen, self.Button_font, 'assets/button-credits.png') #pour tester parce que j'ai pas d'image pour le bouton
+        #self.Button_tutorial.draw(self.screen, self.Button_font, 'assets/button-tutorial.png') #pour quand il y aura une image
+        
 
     def handle_event(self, event):
         """
@@ -53,6 +58,13 @@ class Before_Game:
                     return 'credits'
                 if self.Button_credits_exit.rect.collidepoint(event.pos):
                     return 'home'
+                #if self.Button_tutorial.rect.collidepoint(event.pos):
+                    #return 'tutorial'
+    def tutoriel(self):
+        """
+        """
+        self.Button_tutorial_pass.draw(self.screen, self.Button_font)
+        pass
                 
     def credits(self):
         """
@@ -130,10 +142,11 @@ class Settings:
         col_w = (total_w - self.gap) // 2
 
         settings.editable_butons['food_qtt'] = Button(Rect(x0, btn_y, col_w, self.btn_h),"Modifier",self.screen, description="Permet d'acceder à une fenetre permettant de gérer la quantité de nouriture de la simulation au cours du temps")
+        
 
         self.general_food = {
             "label": "Quantité de nourriture",
-            "value": settings.editable_butons['food_qtt'],
+            "value": settings.editable_butons['food_qtt'], 
             "lbl_pos": (x0 + (col_w // 2), lbl_y)
         }
 
@@ -141,7 +154,7 @@ class Settings:
         x1 = settings.PostG_PADDING + col_w + self.gap
         lbl_y = top_y
         btn_y = lbl_y + self.font_lbl.get_height() + self.label_gap
-        settings.editable_butons['day_qtt'] = Button(Rect(x1 + self.small_w + 6, btn_y, val_w, self.btn_h), str(settings.Days_max), self.screen, editable=True, max_length=100)
+        settings.editable_butons['day_qtt'] = Button(Rect(x1 + self.small_w + 6, btn_y, val_w, self.btn_h), str(settings.Days_max), self.screen, editable=True, max_length=100, description="Permet de modifier le nombre de jours de la simulation, avec au minimum 1 jour et au maximum 100 jours.")
         self.general_days = {
             "label": "Nombre de jours de la simulation",
             "minus": Button(Rect(x1, btn_y, self.small_w, self.btn_h), "-", self.screen),
@@ -158,8 +171,8 @@ class Settings:
         y = self.pop_manage_y
 
         # boutons + / -
-        self.btn_add_pop = Button(Rect(settings.PostG_PADDING, y, 110, 36), "+ Pop", self.screen)
-        self.btn_rem_pop = Button(Rect(settings.PostG_PADDING + 120, y, 110, 36), "- Pop", self.screen)
+        self.btn_add_pop = Button(Rect(settings.PostG_PADDING, y, 110, 36), "+ Pop", self.screen, description="Permet de d'augmenter le nombre de populations de la simulation, avec un minimum de 1")
+        self.btn_rem_pop = Button(Rect(settings.PostG_PADDING + 120, y, 110, 36), "- Pop", self.screen, description="Permet diminuer le nombre de populations de la simulation, avec un maximum de 6")
 
         # petits boutons numérotés alignés sur la même ligne
         self.pop_number_buttons = []
@@ -212,12 +225,31 @@ class Settings:
                 display = '1' if cur_val else '0'
             else:
                 display = str(cur_val)
-
+            if key == "life": #je savais pas quoi mettre, et quand j'ai mis autre chose que "key", ca marchait pas, donc j'ai supposé que ca marchait
+                la_description = "Permet de modifier la durée de vie des créatures sur une journée"
+            if key == "color":
+                la_description = "Permet de choisir la couleur de chaque population, les couleurs defilent lorsque l'on appuie sur + ou -"
+            if key == "quantity":
+                la_description = "Permet de definir le nombre de créatures au début de la simulation"
+            if key == "speed_variation":
+                la_description = "Permet de definir à quel point la vitesse des créatures varie au fur et à mesure de leur évolution, chaque jour de la simulation"
+            if key == "size_variation":
+                la_description = "Permet de definir à quel point la taille des créatures varie au fur et à mesure de leur évolution, chaque jour de la simulation"
+            if key == "view_variation":
+                la_description = "Permet de definir à quel point le champ de vision des créatures varie au fur et à mesure de leur évolution, chaque jour de la simulation"
+            if key == "view":
+                la_description = "Permet de definir le champ de vision des créatures au début de la simulation"
+            if key == "speed":
+                la_description = "Permet de definir la vitesse des créatures au début de la simulation"
+            if key == "size":
+                la_description = "Permet de definir la taille des créatures au début de la simulation"
             minus = Button(Rect(x, y_btn, self.small_w, self.btn_h), "-", self.screen)
             if isinstance(cur_val, int):
                 value = Button(Rect(x + self.small_w + 6, y_btn, val_w, self.btn_h), display, self.screen, editable=True)
+                value.description() #je savais pas ou le mettre donc j'ai essayé ici mais ca a pas marché
             else:
-                value = Button(Rect(x + self.small_w + 6, y_btn, val_w, self.btn_h), display, self.screen)
+                value = Button(Rect(x + self.small_w + 6, y_btn, val_w, self.btn_h), display, self.screen, description=la_description)
+                value.description()
             plus = Button(Rect(x + self.small_w + 6 + val_w + 6, y_btn, self.small_w, self.btn_h), "+", self.screen)
 
             center_x = x + (col_w // 2)
@@ -234,8 +266,8 @@ class Settings:
         w = 220
         gap = 24
         x = (self.width - (2 * w + gap)) // 2
-        self.btn_start = Button(Rect(x, y, w, self.btn_h), "Start", self.screen)
-        self.btn_back = Button(Rect(x + w + gap, y, w, self.btn_h), "Back", self.screen)
+        self.btn_start = Button(Rect(x, y, w, self.btn_h), "Start", self.screen, description = "Commencer la simulation")
+        self.btn_back = Button(Rect(x + w + gap, y, w, self.btn_h), "Back", self.screen, description = "Retour à l'écran d'acceuil")
 
     def draw(self):
         self.screen.fill(settings.UI_BG_COLOR if hasattr(settings, 'UI_BG_COLOR') else (200, 200, 200))
@@ -293,7 +325,14 @@ class Settings:
 
         #description des boutons ( a la fin pour que ça soit au dessus de tout)
         settings.editable_butons['food_qtt'].description()
-
+        settings.editable_butons['day_qtt'].description()
+        self.btn_add_pop.description()
+        self.btn_rem_pop.description()
+        self.btn_start.description()
+        self.btn_back.description()
+        
+        
+    
 
 
     def handle_event(self, event):
