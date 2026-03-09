@@ -26,6 +26,8 @@ class Before_Game:
         self.Button_Start = Button(Rect(self.width // 2 - 110, self.height // 2 - 130, 220, 80),'', self.screen)
         self.Button_credits = Button(Rect(self.width // 2 - 110, self.height // 2 + 50, 220, 80),'', self.screen) 
         self.Button_credits_exit = Button(Rect(self.width // 2 - 65, self.height // 2 + 130, 130, 50),'Back', self.screen)
+        self.Button_tutorial = Button(Rect(self.width // 2 - 110, self.height // 2 + 140, 220, 80),'', self.screen) 
+        self.Button_tutorial_pass = Button(Rect(self.width // 2 - 65, self.height // 2 + 50, 130, 50),'', self.screen)
         
         self.bg_asset = pg.image.load('assets/before-game-background.png')
 
@@ -40,6 +42,8 @@ class Before_Game:
         self.Button_exit.draw(self.screen, self.Button_font, 'assets/button-exit.png')
         self.Button_Start.draw(self.screen, self.Button_font, 'assets/button-start.png')
         self.Button_credits.draw(self.screen, self.Button_font, 'assets/button-credits.png')
+        self.Button_tutorial.draw(self.screen, self.Button_font, 'assets/button-credits.png') #pour tester parce que j'ai pas d'image pour le bouton
+        #self.Button_tutorial.draw(self.screen, self.Button_font, 'assets/button-tutorial.png') #pour quand il y aura une image
 
     def handle_event(self, event):
         """
@@ -54,7 +58,17 @@ class Before_Game:
                     return 'credits'
                 if self.Button_credits_exit.rect.collidepoint(event.pos):
                     return 'home'
-                
+                #if self.Button_tutorial.rect.collidepoint(event.pos):
+                    #return 'tutorial'
+
+
+    def tutorial(self):
+        """
+        """
+        self.Button_tutorial_pass.draw(self.screen, self.Button_font)
+        pass                
+
+
     def credits(self):
         """
         Affiche les crédits du jeu
@@ -311,6 +325,12 @@ class Settings:
 
         #description des boutons ( a la fin pour que ça soit au dessus de tout)
         settings.editable_butons['food_qtt'].description()
+        self.btn_add_pop.description()
+        self.btn_rem_pop.description()
+        for key, c in self.pop_controls.items():
+            c['value'].description()   # Description du champ de valeur
+        self.btn_start.description()
+        self.btn_back.description()
 
 
     def handle_event(self, event):
