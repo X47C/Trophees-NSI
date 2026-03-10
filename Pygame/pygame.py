@@ -369,11 +369,8 @@ class Settings:
                         "view": 15, "speed": 3, "size": 3
                     }
                     base["name"] = f"Population {new_idx}"
-                    c = 0
-                    for pop in settings.POPULATIONS:
-                        while pop['color'] == settings.Color_options[c]:
-                            c += 1
-                    base['color'] = settings.Color_options[c]
+                    available = settings.get_available_colors()
+                    base['color'] = available[0] if available else settings.Color_options[0]
                     settings.POPULATIONS.append(base)
                     self.selected_pop = len(settings.POPULATIONS) - 1
                     self._build_pop_management_buttons()
@@ -406,12 +403,16 @@ class Settings:
                     cur = pop.get(key)
                     if key == "color":
                         opts = getattr(settings, 'Color_options', [])
-                        if opts:
+                        opts = settings.get_available_colors(exclude_pop_index=self.selected_pop)
+                        opts_all = getattr(settings, 'Color_options', [])
+                        cur_color = pop.get("color")
+                        cycle = [c for c in opts_all if c in opts or c == cur_color]
+                        if cycle:
                             try:
-                                i = opts.index(cur)
+                                i = cycle.index(cur_color)
                             except ValueError:
                                 i = 0
-                            pop["color"] = opts[(i - 1) % len(opts)]
+                            pop["color"] = cycle[(i - 1) % len(cycle)]
                     elif isinstance(cur, int):
                         pop[key] = max(0, cur - 1)
                     self.editable_button_set_value()
@@ -422,12 +423,16 @@ class Settings:
                     match key:
                         case 'color':
                             opts = getattr(settings, 'Color_options', [])
-                            if opts:
+                            opts = settings.get_available_colors(exclude_pop_index=self.selected_pop)
+                            opts_all = getattr(settings, 'Color_options', [])
+                            cur_color = pop.get("color")
+                            cycle = [c for c in opts_all if c in opts or c == cur_color]
+                            if cycle:
                                 try:
-                                    i = opts.index(cur)
+                                    i = cycle.index(cur_color)
                                 except ValueError:
                                     i = 0
-                                pop["color"] = opts[(i + 1) % len(opts)]
+                                pop["color"] = cycle[(i + 1) % len(cycle)]
                         case 'life':
                             pop[key] = min(cur + 1, settings.Max_life)
                         case 'quantity':

@@ -52,6 +52,24 @@ POPULATION_MAX = 6
 
 Color_options = ["blue", "pink", "red", "green", "yellow", "purple", "gray"]
 
+def get_used_colors(exclude_pop_index=None):
+    """Retourne l'ensemble des couleurs déjà utilisées par les populations,
+    en excluant optionnellement une population (par son index)."""
+    used = set()
+    for i, pop in enumerate(POPULATIONS):
+        if i != exclude_pop_index:
+            used.add(pop["color"])
+    return used
+
+def is_color_available(color, exclude_pop_index=None):
+    """Renvoie True si la couleur n'est pas déjà utilisée par une autre population."""
+    return color not in get_used_colors(exclude_pop_index)
+
+def get_available_colors(exclude_pop_index=None):
+    """Renvoie la liste des couleurs encore disponibles."""
+    used = get_used_colors(exclude_pop_index)
+    return [c for c in Color_options if c not in used]
+
 # Valeurs par défaut pour une population
 
 DEFAULT_POP = {
