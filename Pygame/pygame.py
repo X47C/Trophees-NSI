@@ -156,7 +156,7 @@ class Settings:
         x1 = settings.PostG_PADDING + col_w + self.gap
         lbl_y = top_y
         btn_y = lbl_y + self.font_lbl.get_height() + self.label_gap
-        settings.editable_butons['day_qtt'] = Button(Rect(x1 + self.small_w + 6, btn_y, val_w, self.btn_h), str(settings.Days_max), self.screen, editable=True, max_length=100)
+        settings.editable_butons['day_qtt'] = Button(Rect(x1 + self.small_w + 6, btn_y, val_w, self.btn_h), str(settings.Days_max), self.screen, editable=True, max_length=100, description="Permet de modifier le nombre de jours de la simulation, avec au minimum 1 jour et au maximum 100 jours.")
         self.general_days = {
             "label": "Nombre de jours de la simulation",
             "minus": Button(Rect(x1, btn_y, self.small_w, self.btn_h), "-", self.screen),
@@ -173,8 +173,8 @@ class Settings:
         y = self.pop_manage_y
 
         # boutons + / -
-        self.btn_add_pop = Button(Rect(settings.PostG_PADDING, y, 110, 36), "+ Pop", self.screen)
-        self.btn_rem_pop = Button(Rect(settings.PostG_PADDING + 120, y, 110, 36), "- Pop", self.screen)
+        self.btn_add_pop = Button(Rect(settings.PostG_PADDING, y, 110, 36), "+ Pop", self.screen, description="Permet de d'augmenter le nombre de populations de la simulation, avec un minimum de 1")
+        self.btn_rem_pop = Button(Rect(settings.PostG_PADDING + 120, y, 110, 36), "- Pop", self.screen, description="Permet diminuer le nombre de populations de la simulation, avec un maximum de 6")
 
         # petits boutons numérotés alignés sur la même ligne
         self.pop_number_buttons = []
@@ -266,8 +266,8 @@ class Settings:
         w = 220
         gap = 24
         x = (self.width - (2 * w + gap)) // 2
-        self.btn_start = Button(Rect(x, y, w, self.btn_h), "Start", self.screen)
-        self.btn_back = Button(Rect(x + w + gap, y, w, self.btn_h), "Back", self.screen)
+        self.btn_start = Button(Rect(x, y, w, self.btn_h), "Start", self.screen, description = "Commencer la simulation")
+        self.btn_back = Button(Rect(x + w + gap, y, w, self.btn_h), "Back", self.screen, description = "Retour à l'écran d'acceuil")
 
     def draw(self):
         self.screen.fill(settings.UI_BG_COLOR if hasattr(settings, 'UI_BG_COLOR') else (200, 200, 200))
@@ -325,6 +325,7 @@ class Settings:
 
         #description des boutons ( a la fin pour que ça soit au dessus de tout)
         settings.editable_butons['food_qtt'].description()
+        settings.editable_butons['day_qtt'].description()
         self.btn_add_pop.description()
         self.btn_rem_pop.description()
         for key, c in self.pop_controls.items():
