@@ -64,9 +64,14 @@ class Before_Game:
 
     def tutorial(self):
         """
+        Affiche le tutoriel
+        Version non définitive
         """
         self.Button_tutorial_pass.draw(self.screen, self.Button_font)
-        pass                
+        video = pg.video.Movie("a remplacer par le nom de fichier de la video")
+        clo_obj=pg.time.Clock() #ca apparemment c'est pour que la video se joue a la vitesse qu'on veut
+        video_screen=pg.Surface(video.get_size()).convert()
+        pass
 
 
     def credits(self):
@@ -227,7 +232,7 @@ class Settings:
                 display = '1' if cur_val else '0'
             else:
                 display = str(cur_val)
-            if key == "life": #je savais pas quoi mettre, et quand j'ai mis autre chose que "key", ca marchait pas, donc j'ai supposé que ca marchait
+            if key == "life": 
                 description = "Permet de modifier la durée de vie des créatures sur une journée"
             if key == "color":
                 description = "Permet de choisir la couleur de chaque population, les couleurs defilent lorsque l'on appuie sur + ou -"
