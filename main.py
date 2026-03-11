@@ -1,4 +1,4 @@
-#  boucle principale 
+# boucle principale
 import pygame as pg
 from Pygame.pygame import Before_Game, Settings, In_Game, Post_Game
 import settings
@@ -6,14 +6,14 @@ from Game.game import Day_Manager
 from Pygame.food_editor import food_editor
 
 
-# --- INIT ---
-
+# initialisation de pygame
 pg.init()
 pg.display.set_caption('Darwined')
 
 screen = pg.display.set_mode(settings.Display_size)
 clock = pg.time.Clock()
 
+# création des écrans
 Befg = Before_Game(screen)
 Sett = Settings(screen)
 Ing = In_Game(screen)
@@ -24,10 +24,10 @@ running = True
 state = 'home'
 
 
-# --- MAIN LOOP ---
+# boucle principale
 while running:
 
-    # --- EVENT HANDLING ---
+    # gestion des événements
     for event in pg.event.get():
         if event.type == pg.QUIT:
             running = False
@@ -45,7 +45,7 @@ while running:
             case 'settings':
                 Sett.editable_button_refresh(event)
                 match Sett.handle_event(event):
-                    case'start':
+                    case 'start':
                         day_manager.first_day()
                         settings.toolbox_show_day = True
                         settings.toolbox_show_creatures = True
@@ -69,9 +69,9 @@ while running:
                 if len(settings.creatures_list) == 0:
                     state = 'post_game'
                 match Ing.handle_event(event):
-                    case 'end': 
+                    case 'end':
                         Engd = Post_Game(screen, day_manager.current_day)
-                        state = 'post_game'   
+                        state = 'post_game'
                         day_manager.current_day = 1
 
             case 'post_game':
@@ -87,7 +87,7 @@ while running:
                         state = 'home'
 
 
-    # --- UPDATE --- 
+    # mise à jour de la simulation
     if state == "in_game":
         match day_manager.is_over():
             case "end":
@@ -96,26 +96,24 @@ while running:
                 day_manager.current_day = 1
             case "continue":
                 day_manager.new_day()
+
+        # gestion de la vitesse de simulation
         speed = getattr(settings, 'toolbox_simulation_speed', 1)
         if speed == 0.5:
-            if not hasattr(day_manager, '_slow_tick'):
-                day_manager._slow_tick = 0
-            day_manager._slow_tick += 1
-            if day_manager._slow_tick % 2 == 0:
+            if not hasattr(day_manager, 'slow_tick'):
+                day_manager.slow_tick = 0
+            day_manager.slow_tick += 1
+            if day_manager.slow_tick % 2 == 0:
                 day_manager.update()
         else:
-            updates = int(speed) 
+            updates = int(speed)
             for _ in range(updates):
-                    day_manager.update()
+                day_manager.update()
 
 
-        
+    # affichage
+    screen.fill((0, 0, 0))
 
-
-
-    # --- DRAW ---
-    screen.fill((0,0,0))
-    
     match state:
         case 'home':
             Befg.draw()
@@ -134,7 +132,5 @@ while running:
             editor.draw()
 
 
-    
     pg.display.flip()
     clock.tick(settings.FPS)
-
