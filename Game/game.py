@@ -23,6 +23,10 @@ class Day_Manager():
                 if not c.energy == 0:
                     c.moove()
                     c.Eat()
+                else:
+                    if c.sleep == False:
+                        c.sleep = True
+                        c.image.set_alpha(125)
 
 
     def first_day(self) -> None:
