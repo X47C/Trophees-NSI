@@ -36,37 +36,21 @@ class Creature():
         img_size = img.get_size()
         self.image = pg.transform.smoothscale(img, (img_size[0] + self.size * 2, img_size[1] + self.size * 2))
         self.rect = self.image.get_rect(center=(int(self.pos_x), int(self.pos_y)))
-        self.angle_deg = rd(0, 360)
-        self.radius = 10 * self.view
 
 
     def draw(self, screen: pg.surface) -> None:
         """
         Dessine la créature sur l'écran 'screen'
         """
-        pg.draw.circle(screen, (40, 145, 40), (self.pos_x, self.pos_y), 10 * self.view)
-        rect = self.image.get_rect(center=(int(self.pos_x), int(self.pos_y)))
-        screen.blit(self.image, rect)
-        return
-
-    def moove(self) -> None:
-        """
-        deplace la creature en fonction de sa vitesse et de son angle
-        """
-        collide, other_c = self.collide()
-        dt = 1.0 / settings.FPS
-
-
-    def draw(self, screen: pg.surface) -> None:
-        """
-        Dessine la créature sur l'écran 'screen'
-        """
+        # cercle de vision si l'option est activée
         if getattr(settings, 'toolbox_show_vision', True):
             r = 10 * self.view
             vision_surf = pg.Surface((r * 2, r * 2), pg.SRCALPHA)
             pg.draw.circle(vision_surf, (255, 255, 255, 30), (r, r), r)
             pg.draw.circle(vision_surf, (255, 255, 255, 120), (r, r), r, 2)
             screen.blit(vision_surf, (self.pos_x - r, self.pos_y - r))
+
+        # dessin de la créature
         rect = self.image.get_rect(center=(int(self.pos_x), int(self.pos_y)))
         screen.blit(self.image, rect)
         return
@@ -83,6 +67,7 @@ class Creature():
         speed_px_s = float(self.speed) * 15.0
         margin = 40 + int(self.size)
 
+        # paramètres du mouvement aléatoire
         turn_noise = 450.0
         damping = 0.96
         burst_prob = 0.5
@@ -91,11 +76,13 @@ class Creature():
         if not hasattr(self, "ang_vel"):
             self.ang_vel = uniform(-120.0, 120.0)
 
+        # variation aléatoire de la direction
         self.ang_vel += uniform(-turn_noise, turn_noise) * dt
 
         if random() < burst_prob * dt:
             self.ang_vel += uniform(-burst_mag, burst_mag)
 
+        # déplacement vers la nourriture si visible
         seen, food_id = self.see_food()
         if seen:
             if food_id[1] == None:
@@ -109,21 +96,23 @@ class Creature():
                 self.angle_deg = desired
                 self.ang_vel = 0.0
 
-
         self.ang_vel *= damping
 
+        # limite la vitesse angulaire maximale
         max_ang_vel = 550.0
         if self.ang_vel > max_ang_vel:
             self.ang_vel = max_ang_vel
         elif self.ang_vel < -max_ang_vel:
             self.ang_vel = -max_ang_vel
 
+        # calcul de la nouvelle position
         self.angle_deg = (self.angle_deg + self.ang_vel * dt) % 360.0
         r = radians(self.angle_deg)
         step = speed_px_s * dt
         self.pos_x += cos(r) * step
         self.pos_y += sin(r) * step
 
+        # rebond sur les bords
         bounced = False
 
         if self.pos_x < margin:
@@ -148,12 +137,13 @@ class Creature():
             self.ang_vel = -self.ang_vel + uniform(-90, 90)
             bounced = True
 
-            if bounced:
-                self.ang_vel += uniform(-40, 40)
+        if bounced:
+            self.ang_vel += uniform(-40, 40)
 
+        # gestion de la collision avec une autre créature
         if collide:
             other = other_c
-            blend = 0.65        
+            blend = 0.65
             ang_vel_damp = 0.5
             jitter = 12.0
 
@@ -163,15 +153,19 @@ class Creature():
             dx = other.pos_x - self.pos_x
             dy = other.pos_y - self.pos_y
             dist = sqrt(dx * dx + dy * dy)
+
+            # évite la division par zéro
             if dist == 0.0:
                 dx = uniform(-0.01, 0.01)
                 dy = uniform(-0.01, 0.01)
                 dist = sqrt(dx * dx + dy * dy)
+
             overlap = (r1 + r2) - dist
             if overlap > 0:
                 nx = dx / dist
                 ny = dy / dist
 
+                # calcul des poids pour séparer les deux créatures
                 total_r = r1 + r2
                 if total_r == 0:
                     w1 = w2 = 0.5
@@ -184,6 +178,7 @@ class Creature():
                 other.pos_x += nx * overlap * w2
                 other.pos_y += ny * overlap * w2
 
+                # réflexion de l'angle pour self
                 if self.speed > 0:
                     v1x = cos(radians(self.angle_deg))
                     v1y = sin(radians(self.angle_deg))
@@ -205,6 +200,7 @@ class Creature():
                         ny1 /= mag_n1
                         self.angle_deg = degrees(atan2(ny1, nx1)) % 360.0
 
+                # réflexion de l'angle pour l'autre créature
                 if other.speed > 0:
                     v2x = cos(radians(other.angle_deg))
                     v2y = sin(radians(other.angle_deg))
@@ -227,28 +223,27 @@ class Creature():
                         ny2 /= mag_n2
                         other.angle_deg = degrees(atan2(ny2, nx2)) % 360.0
 
+                # applique un jitter angulaire une seule fois entre les deux
                 if id(self) < id(other):
                     self.ang_vel = getattr(self, "ang_vel", 0.0) * ang_vel_damp + uniform(-jitter, jitter)
                     other.ang_vel = getattr(other, "ang_vel", 0.0) * ang_vel_damp + uniform(-jitter, jitter)
 
-
-        
-        # Consommation d'énergie 
+        # consommation d'énergie par frame
         base_cost = 0.06
-        coeff_speed = 0.008  
-        coeff_size = 0.006 
+        coeff_speed = 0.008
+        coeff_size = 0.006
         coeff_view = 0.005
 
         speed_cost = coeff_speed * (self.speed ** 2)
         size_cost = coeff_size * self.size
         view_cost = coeff_view * self.view
 
-        # consommation par frame
         self.energy -= (base_cost + speed_cost + size_cost + view_cost)
 
         if self.energy < 0:
             self.energy = 0
 
+        # s'assure que la créature reste dans les limites
         self.pos_x = min(max(self.pos_x, margin), w - margin)
         self.pos_y = min(max(self.pos_y, margin), h - margin)
         self.rect = self.image.get_rect(center=(int(self.pos_x), int(self.pos_y)))
@@ -258,7 +253,7 @@ class Creature():
         """
         Crée un bébé avec des caracteristiques identiques a self, sauf pour speed, size et view qui sont modifiés d'un certain pourcentage defini par varitaion_'caracteristique'
         """
-        Baby = Creature(
+        baby = Creature(
             max(0, min(10, self.speed * (rd(100 - self.variation_speed, 100 + self.variation_speed)/100))),
             max(0, min(10, self.size * (rd(100 - self.variation_size, 100 + self.variation_size)/100))),
             max(0, min(10, self.view * (rd(100 - self.variation_view, 100 + self.variation_view)/100))),
@@ -268,11 +263,13 @@ class Creature():
             self.days_max,
             self.color
         )
-        Baby.ate = 1
+        baby.ate = 1
+
+        # cherche la population de self et y ajoute le bébé
         for i in range(len(settings.POPULATIONS)):
             for crea in settings.creatures_list[i]:
                 if crea == self:
-                    settings.creatures_list[i].append(Baby)
+                    settings.creatures_list[i].append(baby)
                     return
 
 
@@ -285,7 +282,7 @@ class Creature():
         for i, food in enumerate(settings.food_list):
             if creature_rect.colliderect(food.rect):
                 self.ate += 1
-                self.energy  = 100
+                self.energy = 100
                 settings.food_list.pop(i)
                 return
 
@@ -294,7 +291,7 @@ class Creature():
         """
         Permet de verifier si la créature a survecue au jour precedent -> apppele la methode baby si besoin et reinitialise les parametres importants pour un jour
         """
-        if self.is_alive:
+        if self.is_alive():
             if self.ate >= 2:
                 self.Baby()
             self.ate = 0
@@ -308,14 +305,18 @@ class Creature():
         return True si la creature a de la nourriture dans son champs de vision, False sinon
         return egalement un tuple contenant les coordonnées (x, y) de la nouriture vue. Dans le cas ou  aucune noiuriture n'est vue ce tuple est de (None, None)
         """
+        # cherche d'abord dans la liste de nourriture
         for i, food in enumerate(settings.food_list):
             if math.hypot(self.pos_x - food.pos_x, self.pos_y - food.pos_y) < self.radius:
                 return True, (i, None)
+
+        # cherche ensuite une créature plus petite à manger
         for i, l in enumerate(settings.creatures_list):
             for j, c in enumerate(l):
                 if math.hypot(self.pos_x - c.pos_x, self.pos_y - c.pos_y) < self.radius:
                     if self.size - 4 >= c.size:
                         return True, (i, j)
+
         return False, (None, None)
 
 
@@ -324,7 +325,7 @@ class Creature():
         Renvoie True si la créature est en vie, False sinon
         """
         return self.ate > 0 and self.days <= self.days_max
-    
+
 
     def collide(self) -> tuple:
         """
@@ -340,7 +341,7 @@ class Creature():
                         self.canibalism(c, i, j)
                         return True, c
         return False, None
-    
+
 
     def canibalism(self, c: object, i: int, j: int) -> None:
         """
