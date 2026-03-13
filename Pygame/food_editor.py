@@ -412,7 +412,10 @@ class food_editor():
 
         # gestion du clavier dans le champ de saisie
         if event.type == pg.KEYDOWN and self.input_active:
-            if event.key in (pg.K_RETURN, pg.K_KP_ENTER):
+            if event.key == pg.K_BACKSPACE:
+                self.input_text = self.input_text[:-1]
+                self.input_error = ""
+            elif event.key in (pg.K_RETURN, pg.K_KP_ENTER):
                 if self.input_text.strip():
                     self.apply_formula(self.input_text.strip())
                 self.input_active = False
@@ -423,4 +426,5 @@ class food_editor():
                 if ch and ch.isprintable():
                     self.input_text += ch
                     self.input_error = ""
+                    
         return None
