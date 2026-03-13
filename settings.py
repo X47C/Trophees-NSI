@@ -1,41 +1,44 @@
-# Paramètres globaux et valeurs par défaut
+# paramètres globaux et valeurs par défaut
 
 
-creatures_list = [] #liste de liste d'objets ( de creatures ) [[creature 1, ..., ... ], [...], ...]
+creatures_list = [] # liste de liste de créatures : [[creature, ...], [...], ...]
 food_list = []
-creatures_list_dico = {} #a la fin de chaques jours on va mettre le liste de liste de creature acutelle dans le dictionnaire avec comme cle le numero du jour pour faire les graphes de fin le commentaire est trop long ptndrrr
+creatures_list_dico = {} # à la fin de chaque jour on stocke la liste de créatures avec le numéro du jour comme clé, pour les graphes de fin
 food_list_dico = {}
 editable_butons = {}
 
 
-# Affichage
+# affichage
 Display_size = (1280, 720)  # largeur, hauteur
 FPS = 60
 
 # texte des crédits
-Credits_Text = ['Dévellopé par : ','Cyprien Cros', 'Jules Graffan', 'Sarah Vignaud-Quantin', 'Remerciement à : ', 'Mme Rebinguet-Martres'] 
+Credits_Text = ['Dévellopé par : ', 'Cyprien Cros', 'Jules Graffan', 'Sarah Vignaud-Quantin', 'Remerciement à : ', 'Mme Rebinguet-Martres']
 
-# Police 
+# polices
 Days_font = "arial"
 Days_font_size = 18
-Button_font = "arial" 
+Button_font = "arial"
 Button_font_size = 18
 Button_label_font = "arial"
 Button_label_font_size = 14
 Credits_font = 'arial'
 Credits_font_size = 18
 
-#  Boutons généraux (et leurs max)
+# boutons généraux et leurs limites
 Max_foood_quantity = 100
-Days_max = 5               # Nombre de jours de la simulation 
+Days_max = 5               # nombre de jours de la simulation
 Max_days_max = 100
 Food_quantity_default = 40
 Food_quantity = [Food_quantity_default] * Days_max  # liste : quantité par jour
 
-def food_for_day(day_index:int) -> int:
+
+def food_for_day(day_index: int) -> int:
     """Retourne la quantité pour un jour (1-based)."""
-    i = max(0, min(len(Food_quantity)-1, day_index-1))
+    i = max(0, min(len(Food_quantity) - 1, day_index - 1))
     return Food_quantity[i]
+
+
 def sync_food_quantity():
     """Assure que la liste Food_quantity a exactement Days_max éléments."""
     global Food_quantity
@@ -45,18 +48,38 @@ def sync_food_quantity():
         Food_quantity = Food_quantity[:Days_max]
 
 
-
-# limites populations 
+# limites des populations
 POPULATION_MIN = 1
 POPULATION_MAX = 6
 
 Color_options = ["blue", "pink", "red", "green", "yellow", "purple", "gray"]
 
-# Valeurs par défaut pour une population
 
+def get_used_colors(exclude_pop_index=None):
+    """Retourne l'ensemble des couleurs déjà utilisées par les populations,
+    en excluant optionnellement une population (par son index)."""
+    used = set()
+    for i, pop in enumerate(POPULATIONS):
+        if i != exclude_pop_index:
+            used.add(pop["color"])
+    return used
+
+
+def is_color_available(color, exclude_pop_index=None):
+    """Renvoie True si la couleur n'est pas déjà utilisée par une autre population."""
+    return color not in get_used_colors(exclude_pop_index)
+
+
+def get_available_colors(exclude_pop_index=None):
+    """Renvoie la liste des couleurs encore disponibles."""
+    used = get_used_colors(exclude_pop_index)
+    return [c for c in Color_options if c not in used]
+
+
+# valeurs par défaut pour une population
 DEFAULT_POP = {
     "name": "Population 1",
-    "life": 50,         #durée de vie mdr je viens de me rendre compte que c'est pas clair mais flemme de changer ( oui c'est un commentaire constructif ET trop long je sais merci )
+    "life": 50,         # durée de vie de la créature sur une journée
     "color": "blue",
     "quantity": 10,
     "speed_variation": 30,
@@ -67,21 +90,19 @@ DEFAULT_POP = {
     "size": 4
 }
 
-# Valeurs par défaut pour une population : MAX
+# valeurs maximales des caractéristiques
 Max_life = 53
 Max_quantity = 100
-Max_caracteristic = 10 # size, view et speed ( mais je sais meme pas si c'est un mot anglais mais chilll ) 
+Max_caracteristic = 10  # s'applique à size, view et speed
 
-# Liste des populations ( au moins 1 )
-POPULATIONS = [
-    DEFAULT_POP.copy()
-]
+# liste des populations (au moins 1)
+POPULATIONS = [DEFAULT_POP.copy()]
 
-# UI colors
+# couleurs de l'interface
 UI_BG_COLOR = (200, 200, 200)
 UI_PANEL_COLOR = (240, 240, 240)
 
-# Toolbox
+# toolbox
 toolbox_show_day = True
 toolbox_show_creatures = True
 toolbox_show_food = True
