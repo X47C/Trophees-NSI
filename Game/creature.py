@@ -31,6 +31,8 @@ class Creature():
         self.ate = 0
         self.energy = 100
 
+        self.sleep = False
+
         #affichage
         img = pg.image.load("assets/creature.png")
         img_size = img.get_size()
@@ -82,19 +84,28 @@ class Creature():
         if random() < burst_prob * dt:
             self.ang_vel += uniform(-burst_mag, burst_mag)
 
+        # deplacement en fonction de l'environnement dans l'odre de priorité suivant : fuite d'un predateur, deplacement vers de la nouriture, deplacement vers une proie
+        seen, object_id = self.see()
+        # fuite d'un potientiel predateur
+        if seen == 'predator':
+            fx, fy = settings.creatures_list[object_id[0]][object_id[1]].pos_x, settings.creatures_list[object_id[0]][object_id[1]].pos_y
+            desired = degrees(atan2(fy - self.pos_y, fx - self.pos_x) + 180) % 360.0
+            self.angle_deg = desired
+            self.ang_vel = 0.0
+
         # déplacement vers la nourriture si visible
-        seen, food_id = self.see_food()
-        if seen:
-            if food_id[1] == None:
-                fx, fy = settings.food_list[food_id[0]].pos_x, settings.food_list[food_id[0]].pos_y
-                desired = degrees(atan2(fy - self.pos_y, fx - self.pos_x)) % 360.0
-                self.angle_deg = desired
-                self.ang_vel = 0.0
-            else:
-                fx, fy = settings.creatures_list[food_id[0]][food_id[1]].pos_x, settings.creatures_list[food_id[0]][food_id[1]].pos_y
-                desired = degrees(atan2(fy - self.pos_y, fx - self.pos_x)) % 360.0
-                self.angle_deg = desired
-                self.ang_vel = 0.0
+        elif seen == 'food':
+            fx, fy = settings.food_list[object_id[0]].pos_x, settings.food_list[object_id[0]].pos_y
+            desired = degrees(atan2(fy - self.pos_y, fx - self.pos_x)) % 360.0
+            self.angle_deg = desired
+            self.ang_vel = 0.0
+        
+        # deplacement vers une proie si visible
+        elif seen == 'prey':
+            fx, fy = settings.creatures_list[object_id[0]][object_id[1]].pos_x, settings.creatures_list[object_id[0]][object_id[1]].pos_y
+            desired = degrees(atan2(fy - self.pos_y, fx - self.pos_x)) % 360.0
+            self.angle_deg = desired
+            self.ang_vel = 0.0
 
         self.ang_vel *= damping
 
@@ -296,28 +307,35 @@ class Creature():
                 self.Baby()
             self.ate = 0
             self.energy = 100
-            self.pos_x = 550
-            self.pos_y = 440
+            self.sleep = False
+            self.image.set_alpha(255)
 
 
-    def see_food(self) -> tuple:
+    def see(self) -> tuple:
         """
-        return True si la creature a de la nourriture dans son champs de vision, False sinon
-        return egalement un tuple contenant les coordonnées (x, y) de la nouriture vue. Dans le cas ou  aucune noiuriture n'est vue ce tuple est de (None, None)
+        return le type d'objet vu : 'predator', 'food' ou 'prey', None si rien n'est vu
+        return egalement un tuple contenant la position dans la liste (i, j) de la nouriture vue. Dans le cas ou  aucune noiuriture n'est vue ce tuple est de (None, None)
         """
-        # cherche d'abord dans la liste de nourriture
+        # cherche un predateur 
+        for i, l in enumerate(settings.creatures_list):
+            for j, c in enumerate(l):
+                if math.hypot(self.pos_x - c.pos_x, self.pos_y - c.pos_y) < self.radius:
+                    if self.size + 4 <= c.size:
+                        return 'predator', (i, j)
+                    
+        # cherche de le nourriture
         for i, food in enumerate(settings.food_list):
             if math.hypot(self.pos_x - food.pos_x, self.pos_y - food.pos_y) < self.radius:
-                return True, (i, None)
+                return 'food', (i, None)
 
         # cherche ensuite une créature plus petite à manger
         for i, l in enumerate(settings.creatures_list):
             for j, c in enumerate(l):
                 if math.hypot(self.pos_x - c.pos_x, self.pos_y - c.pos_y) < self.radius:
                     if self.size - 4 >= c.size:
-                        return True, (i, j)
+                        return 'prey', (i, j)
 
-        return False, (None, None)
+        return None, (None, None)
 
 
     def is_alive(self) -> bool:
@@ -351,6 +369,6 @@ class Creature():
             - j est l'indice de la creature dans settings.creature_list[1]
         La fonction permet a la créature self de manger l'autre créature si celle si est plus petite d'au moins 4
         """
-        if self.size - 4 >= c.size:
+        if self.size - 4 >= c.size and c.sleep == False:
             settings.creatures_list[i].pop(j)
             return
