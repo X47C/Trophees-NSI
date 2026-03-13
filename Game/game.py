@@ -50,7 +50,7 @@ class Day_Manager():
 
         #crée la nouriture
         for i in range(settings.Food_quantity[0]):
-            settings.food_list.append(Food(rd(280, 1000), rd(70, 650)))
+            settings.food_list.append(Food(rd(100, 1180), rd(50, 700)))
         self.distribute_on_border(settings.creatures_list, settings.Display_size)
 
         #implemente les premier jour pour les graphes
@@ -98,7 +98,7 @@ class Day_Manager():
         #réinitialise et recréé la nouriture
         settings.food_list = []
         for i in range(settings.Food_quantity[self.current_day - 1]):
-            settings.food_list.append(Food(rd(280, 1000), rd(70, 650)))
+            settings.food_list.append(Food(rd(100, 1180), rd(50, 700)))
         self.distribute_on_border(settings.creatures_list, settings.Display_size)
 
         #implemente le jour actuel dans les graphes
