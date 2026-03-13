@@ -170,8 +170,8 @@ class Settings:
         """
         y = self.pop_manage_y
 
-        self.btn_add_pop = Button(Rect(settings.PostG_PADDING, y, 110, 36), "+ Pop", self.screen, description="Permet de d'augmenter le nombre de populations de la simulation, avec un minimum de 1")
-        self.btn_rem_pop = Button(Rect(settings.PostG_PADDING + 120, y, 110, 36), "- Pop", self.screen, description="Permet diminuer le nombre de populations de la simulation, avec un maximum de 6")
+        self.btn_add_pop = Button(Rect(settings.PostG_PADDING, y, 110, 36), "+ Pop", self.screen, description="Permet de d'augmenter le nombre de populations de la simulation, avec un maximum de 6")
+        self.btn_rem_pop = Button(Rect(settings.PostG_PADDING + 120, y, 110, 36), "- Pop", self.screen, description="Permet diminuer le nombre de populations de la simulation, avec un minimum de 1")
 
         # petits boutons numérotés pour chaque population
         self.pop_number_buttons = []
@@ -210,15 +210,15 @@ class Settings:
 
         # descriptions pour chaque champ
         descriptions = {
-            "life": "Permet de modifier la durée de vie des créatures sur une journée",
-            "color": "Permet de choisir la couleur de chaque population, les couleurs defilent lorsque l'on appuie sur + ou -",
-            "quantity": "Permet de definir le nombre de créatures au début de la simulation",
-            "speed_variation": "Permet de definir à quel point la vitesse des créatures varie au fur et à mesure de leur évolution, chaque jour de la simulation",
-            "size_variation": "Permet de definir à quel point la taille des créatures varie au fur et à mesure de leur évolution, chaque jour de la simulation",
-            "view_variation": "Permet de definir à quel point le champ de vision des créatures varie au fur et à mesure de leur évolution, chaque jour de la simulation",
-            "view": "Permet de definir le champ de vision des créatures au début de la simulation",
-            "speed": "Permet de definir la vitesse des créatures au début de la simulation",
-            "size": "Permet de definir la taille des créatures au début de la simulation",
+            "life": "Permet de modifier la durée de vie des créautres",
+            "color": "Défini la couleur de chaque population",
+            "quantity": "Permet de definir le nombre de créatures de cette population au début de la simulation",
+            "speed_variation": "Permet de definir le teux de transmission de la taille aux enfants des créatures",
+            "size_variation": "Permet de definir le teux de transmission de la taille aux enfants des créatures",
+            "view_variation": "Permet de definir le taux de transmission du champ de vision aux enfants de ces créatures",
+            "view": "Permet de definir le champ de vision des créatures de cette population au début de la simulation",
+            "speed": "Permet de definir la vitesse des créatures de cette population au début de la simulation",
+            "size": "Permet de definir la taille des créatures de cette population au début de la simulation",
         }
 
         total_w = self.width - 2 * settings.PostG_PADDING
@@ -259,8 +259,8 @@ class Settings:
         w = 220
         gap = 24
         x = (self.width - (2 * w + gap)) // 2
-        self.btn_start = Button(Rect(x, y, w, self.btn_h), "Start", self.screen, description="Commencer la simulation")
-        self.btn_back = Button(Rect(x + w + gap, y, w, self.btn_h), "Back", self.screen, description="Retour à l'écran d'acceuil")
+        self.btn_start = Button(Rect(x, y, w, self.btn_h), "Start", self.screen)
+        self.btn_back = Button(Rect(x + w + gap, y, w, self.btn_h), "Back", self.screen)
 
 
     def draw(self):
