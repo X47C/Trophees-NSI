@@ -23,6 +23,10 @@ class Day_Manager():
                 if not c.energy == 0:
                     c.moove()
                     c.Eat()
+                else:
+                    if c.sleep == False:
+                        c.sleep = True
+                        c.image.set_alpha(125)
 
 
     def first_day(self) -> None:
@@ -41,16 +45,16 @@ class Day_Manager():
         for pop in settings.POPULATIONS:
             a = []
             for i in range(pop['quantity']):
-                a.append(Creature(pop['speed'], pop['size'], pop['view'], pop['speed_variation'],pop['size_variation'], pop['view_variation'], pop['life'], pop['color']))
+                a.append(Creature(pop['speed'], pop['size'], pop['view'], pop['speed_variation'], pop['size_variation'], pop['view_variation'], pop['life'], pop['color']))
             settings.creatures_list.append(a)
 
         #crée la nouriture
         for i in range(settings.Food_quantity[0]):
-             settings.food_list.append(Food(rd(280, 1000), rd(70, 650)))
+            settings.food_list.append(Food(rd(100, 1180), rd(50, 700)))
         self.distribute_on_border(settings.creatures_list, settings.Display_size)
 
         #implemente les premier jour pour les graphes
-        settings.creatures_list_dico[self.current_day] = [pop.copy() for pop in settings.creatures_list]# pas touche
+        settings.creatures_list_dico[self.current_day] = [pop.copy() for pop in settings.creatures_list] # pas touche
         settings.food_list_dico[self.current_day] = len(settings.food_list)
 
 
@@ -58,19 +62,21 @@ class Day_Manager():
         """
         Renvoie 'end' si le jour actuel est fini, 'continue' dans l'autre cas
         """
-        a = True 
+        # vérifie si toutes les créatures ont épuisé leur énergie
+        a = True
         for elt in settings.creatures_list:
             for c in elt:
                 if c.energy != 0:
                     a = False
                 if not a:
                     break
+
         if len(settings.food_list) == 0 or a:
             if self.current_day >= settings.Days_max:
                 return 'end'
             else:
                 return 'continue'
-  
+
 
     def new_day(self) -> None:
         """
@@ -88,18 +94,17 @@ class Day_Manager():
                     c.New_Day()
                     alive_creatures.append(c)
             settings.creatures_list[i] = alive_creatures
-        
+
         #réinitialise et recréé la nouriture
         settings.food_list = []
         for i in range(settings.Food_quantity[self.current_day - 1]):
-             settings.food_list.append(Food(rd(280, 1000), rd(70, 650)))
+            settings.food_list.append(Food(rd(100, 1180), rd(50, 700)))
         self.distribute_on_border(settings.creatures_list, settings.Display_size)
 
-        #Implemente le jour actuel dans les graphes
+        #implemente le jour actuel dans les graphes
         settings.creatures_list_dico[self.current_day] = [pop.copy() for pop in settings.creatures_list]
         settings.food_list_dico[self.current_day] = len(settings.food_list)
 
-        
 
     def draw_current_day(self) -> None:
         """
@@ -107,7 +112,8 @@ class Day_Manager():
         """
         if not getattr(settings, 'toolbox_show_day', True):
             return
-        self.surf.blit(pg.font.SysFont(settings.Days_font, settings.Days_font_size).render(f'Jour : {self.current_day} / {settings.Days_max}', True, (255, 255, 255)),(10, 10))
+        self.surf.blit(pg.font.SysFont(settings.Days_font, settings.Days_font_size).render(f'Jour : {self.current_day} / {settings.Days_max}', True, (255, 255, 255)), (10, 10))
+
 
     def draw_creature_number(self) -> None:
         """
@@ -115,10 +121,11 @@ class Day_Manager():
         """
         if not getattr(settings, 'toolbox_show_creatures', True):
             return
-        # Compte combien d'infos sont affichées au-dessus
-        offset = sum([getattr(settings, 'toolbox_show_day', True),])
+        # compte combien d'infos sont affichées au-dessus
+        offset = sum([getattr(settings, 'toolbox_show_day', True)])
         y = 10 + offset * (settings.Days_font_size + 8)
-        self.surf.blit(pg.font.SysFont(settings.Days_font, settings.Days_font_size).render(f'Nombre de créatures : {sum([len(l) for l in settings.creatures_list])}',True, (255, 255, 255)),(10, y))
+        self.surf.blit(pg.font.SysFont(settings.Days_font, settings.Days_font_size).render(f'Nombre de créatures : {sum([len(l) for l in settings.creatures_list])}', True, (255, 255, 255)), (10, y))
+
 
     def draw_food_number(self) -> None:
         """
@@ -126,10 +133,11 @@ class Day_Manager():
         """
         if not getattr(settings, 'toolbox_show_food', True):
             return
-        # Compte combien d'infos sont affichées au-dessus
-        offset = sum([getattr(settings, 'toolbox_show_day', True),getattr(settings, 'toolbox_show_creatures',  True),])
+        # compte combien d'infos sont affichées au-dessus
+        offset = sum([getattr(settings, 'toolbox_show_day', True), getattr(settings, 'toolbox_show_creatures', True)])
         y = 10 + offset * (settings.Days_font_size + 8)
-        self.surf.blit(pg.font.SysFont(settings.Days_font, settings.Days_font_size).render(f'Quantité de nouriture : {len(settings.food_list)}',True, (255, 255, 255)),(10, y))
+        self.surf.blit(pg.font.SysFont(settings.Days_font, settings.Days_font_size).render(f'Quantité de nouriture : {len(settings.food_list)}', True, (255, 255, 255)), (10, y))
+
 
     def distribute_on_border(self, lists: list, screen_size: tuple, margin: int = 0) -> None:
         """
@@ -142,18 +150,22 @@ class Day_Manager():
         w, h = screen_size
         eff_w = max(0, w - 2 * margin)
         eff_h = max(0, h - 2 * margin)
+
+        # aplatit toutes les sous-listes en une seule
         flat = []
         for sub in lists:
             for obj in sub:
                 flat.append(obj)
         shuffle(flat)
+
         N = len(flat)
         if N == 0:
             return
+
         perimeter = 2 * (eff_w + eff_h)
         spacing = perimeter / N
 
-        #positionnement
+        #positionnement sur le périmètre
         for i, obj in enumerate(flat):
             d = i * spacing
             if d < eff_w:
