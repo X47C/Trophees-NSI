@@ -51,11 +51,11 @@ class Day_Manager():
 
         #crée la nouriture
         for i in range(settings.Food_quantity[0]):
-            settings.food_list.append(Food(rd(100, 1180), rd(50, 700)))
+            settings.food_list.append(Food(rd(100, settings.Display_size[0] - 100), rd(50, settings.Display_size[1] - 50)))
         self.distribute_on_border(settings.creatures_list, settings.Display_size)
 
         #implemente les premier jour pour les graphes
-        settings.creatures_list_dico[self.current_day] = [pop.copy() for pop in settings.creatures_list] # pas touche
+        settings.creatures_list_dico[self.current_day] = [pop.copy() for pop in settings.creatures_list]
         settings.food_list_dico[self.current_day] = len(settings.food_list)
 
 

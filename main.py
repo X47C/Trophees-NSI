@@ -119,6 +119,9 @@ while running:
     screen.fill((0, 0, 0))
 
     match state:
+        case 'tutorial':
+            Befg.tutorial()
+            state = 'home'
         case 'home':
             Befg.draw()
         case 'settings':
