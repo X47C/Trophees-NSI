@@ -240,14 +240,14 @@ class Creature():
                     other.ang_vel = getattr(other, "ang_vel", 0.0) * ang_vel_damp + uniform(-jitter, jitter)
 
         # consommation d'énergie par frame
-        base_cost = 0.06
-        coeff_speed = 0.008
-        coeff_size = 0.006
+        base_cost = 0.07
+        coeff_speed = 0.02
+        coeff_size = 0.0055
         coeff_view = 0.005
 
-        speed_cost = coeff_speed * (self.speed ** 2)
-        size_cost = coeff_size * self.size
-        view_cost = coeff_view * self.view
+        speed_cost = coeff_speed * (self.speed ** 2.8/17)
+        size_cost = coeff_size * (self.size** 1.6/12)
+        view_cost = coeff_view * (self.view ** 2/24)
 
         self.energy -= (base_cost + speed_cost + size_cost + view_cost)
 
