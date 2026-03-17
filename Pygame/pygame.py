@@ -27,7 +27,7 @@ class Before_Game:
         self.Button_credits = Button(Rect(self.width // 2 - 110, self.height // 2 + 50, 220, 80),'', self.screen) 
         self.Button_credits_exit = Button(Rect(self.width // 2 - 65, self.height // 2 + 130, 130, 50),'Back', self.screen)
         self.Button_tutorial = Button(Rect(self.width // 2 - 110, self.height // 2 + 140, 220, 80),'', self.screen) 
-        self.Button_tutorial_pass = Button(Rect(self.width // 2 - 65, self.height // 2 + 50, 130, 50),'', self.screen)
+        self.Button_tutorial_pass = Button(Rect(self.width // 2 - 65, self.height // 2 + 50, 130, 50),'Pass', self.screen)
         
         self.bg_asset = pg.image.load('assets/before-game-background.png')
 
@@ -58,8 +58,8 @@ class Before_Game:
                     return 'credits'
                 if self.Button_credits_exit.rect.collidepoint(event.pos):
                     return 'home'
-                #if self.Button_tutorial.rect.collidepoint(event.pos):
-                    #return 'tutorial'
+                if self.Button_tutorial.rect.collidepoint(event.pos):
+                    return 'tutorial'
 
 
     def tutorial(self):
@@ -68,10 +68,20 @@ class Before_Game:
         Version non définitive
         """
         self.Button_tutorial_pass.draw(self.screen, self.Button_font)
-        video = pg.video.Movie("a remplacer par le nom de fichier de la video")
-        clo_obj=pg.time.Clock() #ca apparemment c'est pour que la video se joue a la vitesse qu'on veut
-        video_screen=pg.Surface(video.get_size()).convert()
-        pass
+        window = pg.display.set_mode(())
+        video = pg.Video("video_test.mp4") #la video test c'est une des videos qui avait ete envoyee de l'ecran du jeu, parce que je voulais etre sure que c'etait pas la taille de la video le probleme
+        video.play()
+        while True :
+            video.draw_to(window, (0,0))
+            pg.display.flip()
+        
+        #video = pg.video.Movie("video_test.mp4")
+        #sur_obj=pg.display.set_mode(video.get_size())
+
+        #clo_obj=pg.time.Clock() #ca apparemment c'est pour que la video se joue a la vitesse qu'on veut
+        
+        #video_screen=pg.Surface(video.get_size()).convert()
+        #video.play()
 
 
     def credits(self):
@@ -233,23 +243,23 @@ class Settings:
             else:
                 display = str(cur_val)
             if key == "life": 
-                description = "Permet de modifier la durée de vie des créatures sur une journée"
+                description = "Permet de définir au bout de combien de jours une créature meurt de vieillesse, même si elle a mangé"
             if key == "color":
-                description = "Permet de choisir la couleur de chaque population, les couleurs defilent lorsque l'on appuie sur + ou -"
+                description = "Permet de choisir la couleur de chaque population, les couleurs défilent lorsque l'on appuie sur + ou -"
             if key == "quantity":
-                description = "Permet de definir le nombre de créatures au début de la simulation"
+                description = "Permet de définir le nombre de créatures au début de la simulation"
             if key == "speed_variation":
-                description = "Permet de definir à quel point la vitesse des créatures varie au fur et à mesure de leur évolution, chaque jour de la simulation"
+                description = "Permet de définir à quel point la vitesse des créatures varie au fur et à mesure de leur évolution, chaque jour de la simulation"
             if key == "size_variation":
-                description = "Permet de definir à quel point la taille des créatures varie au fur et à mesure de leur évolution, chaque jour de la simulation"
+                description = "Permet de définir à quel point la taille des créatures varie au fur et à mesure de leur évolution, chaque jour de la simulation"
             if key == "view_variation":
-                description = "Permet de definir à quel point le champ de vision des créatures varie au fur et à mesure de leur évolution, chaque jour de la simulation"
+                description = "Permet de définir à quel point le champ de vision des créatures varie au fur et à mesure de leur évolution, chaque jour de la simulation"
             if key == "view":
-                description = "Permet de definir le champ de vision des créatures au début de la simulation"
+                description = "Permet de définir le champ de vision des créatures au début de la simulation"
             if key == "speed":
-                description = "Permet de definir la vitesse des créatures au début de la simulation"
+                description = "Permet de définir la vitesse des créatures au début de la simulation"
             if key == "size":
-                description = "Permet de definir la taille des créatures au début de la simulation"
+                description = "Permet de définir la taille des créatures au début de la simulation"
             minus = Button(Rect(x, y_btn, self.small_w, self.btn_h), "-", self.screen)
             if isinstance(cur_val, int):
                 value = Button(Rect(x + self.small_w + 6, y_btn, val_w, self.btn_h), display, self.screen, editable=True, description=description)

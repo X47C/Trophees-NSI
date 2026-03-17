@@ -41,6 +41,8 @@ while running:
                         running = False
                     case 'credits':
                         state = 'credits'
+                    case 'tutorial':
+                        state = 'tutorial'
 
             case 'settings':
                 Sett.editable_button_refresh(event)
