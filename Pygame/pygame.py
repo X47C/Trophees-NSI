@@ -23,12 +23,14 @@ class Before_Game:
         self.width, self.height = settings.Display_size
         self.screen = screen
 
-        self.Button_exit = Button(Rect(self.width // 2 - 110, self.height // 2 - 40, 220, 80), '', self.screen)
-        self.Button_Start = Button(Rect(self.width // 2 - 110, self.height // 2 - 130, 220, 80), '', self.screen)
-        self.Button_credits = Button(Rect(self.width // 2 - 110, self.height // 2 + 50, 220, 80), '', self.screen)
-        self.Button_credits_exit = Button(Rect(self.width // 2 - 65, self.height // 2 + 130, 130, 50), 'Back', self.screen)
-        self.Button_tutorial = Button(Rect(self.width // 2 - 110, self.height // 2 + 140, 220, 80), '', self.screen)
-        self.Button_tutorial_pass = Button(Rect(self.width // 2 - 65, self.height // 2 + 50, 130, 50), '', self.screen)
+        self.Button_exit = Button(Rect(self.width // 2 - 110, self.height // 2 - 40, 220, 80),'', self.screen)
+        self.Button_Start = Button(Rect(self.width // 2 - 110, self.height // 2 - 130, 220, 80),'', self.screen)
+        self.Button_credits = Button(Rect(self.width // 2 - 110, self.height // 2 + 50, 220, 80),'', self.screen) 
+        self.Button_credits_exit = Button(Rect(self.width // 2 - 65, self.height // 2 + 130, 130, 50),'Back', self.screen)
+        self.Button_tutorial = Button(Rect(self.width // 2 - 110, self.height // 2 + 140, 220, 80),'', self.screen) 
+        self.Button_tutorial_pass = Button(Rect(self.width // 2 - 65, self.height // 2 + 50, 130, 50),'Pass', self.screen)
+        
+        self.bg_asset = pg.image.load('assets/before-game-background.png')
 
         self.bg_asset = pg.image.load('assets/before-game-background.png')
         self.Button_font = pg.font.SysFont(settings.Button_font, settings.Button_font_size)
@@ -50,24 +52,38 @@ class Before_Game:
         Gère les événements de l'écran avant le lancement de la partie
         """
         if event.type == pg.MOUSEBUTTONUP and event.button == 1:
-            if self.Button_exit.rect.collidepoint(event.pos):
-                return 'exit'
-            if self.Button_Start.rect.collidepoint(event.pos):
-                return 'start'
-            if self.Button_credits.rect.collidepoint(event.pos):
-                return 'credits'
-            if self.Button_credits_exit.rect.collidepoint(event.pos):
-                return 'home'
-            # if self.Button_tutorial.rect.collidepoint(event.pos):
-                # return 'tutorial'
+                if self.Button_exit.rect.collidepoint(event.pos):  
+                    return 'exit'
+                if self.Button_Start.rect.collidepoint(event.pos):
+                    return 'start'
+                if self.Button_credits.rect.collidepoint(event.pos):
+                    return 'credits'
+                if self.Button_credits_exit.rect.collidepoint(event.pos):
+                    return 'home'
+                if self.Button_tutorial.rect.collidepoint(event.pos):
+                    return 'tutorial'
 
 
     def tutorial(self):
         """
-        Affiche l'écran du tutoriel.
+        Affiche le tutoriel
+        Version non définitive
         """
         self.Button_tutorial_pass.draw(self.screen, self.Button_font)
-        pass
+        window = pg.display.set_mode(())
+        video = pg.Video("video_test.mp4") #la video test c'est une des videos qui avait ete envoyee de l'ecran du jeu, parce que je voulais etre sure que c'etait pas la taille de la video le probleme
+        video.play()
+        while True :
+            video.draw_to(window, (0,0))
+            pg.display.flip()
+        
+        #video = pg.video.Movie("video_test.mp4")
+        #sur_obj=pg.display.set_mode(video.get_size())
+
+        #clo_obj=pg.time.Clock() #ca apparemment c'est pour que la video se joue a la vitesse qu'on veut
+        
+        #video_screen=pg.Surface(video.get_size()).convert()
+        #video.play()
 
 
     def credits(self):
@@ -170,8 +186,8 @@ class Settings:
         """
         y = self.pop_manage_y
 
-        self.btn_add_pop = Button(Rect(settings.PostG_PADDING, y, 110, 36), "+ Pop", self.screen, description="Permet de d'augmenter le nombre de populations de la simulation, avec un minimum de 1")
-        self.btn_rem_pop = Button(Rect(settings.PostG_PADDING + 120, y, 110, 36), "- Pop", self.screen, description="Permet diminuer le nombre de populations de la simulation, avec un maximum de 6")
+        self.btn_add_pop = Button(Rect(settings.PostG_PADDING, y, 110, 36), "+ Pop", self.screen, description="Permet de d'augmenter le nombre de populations de la simulation, avec un maximum de 6")
+        self.btn_rem_pop = Button(Rect(settings.PostG_PADDING + 120, y, 110, 36), "- Pop", self.screen, description="Permet diminuer le nombre de populations de la simulation, avec un minimum de 1")
 
         # petits boutons numérotés pour chaque population
         self.pop_number_buttons = []
@@ -210,15 +226,15 @@ class Settings:
 
         # descriptions pour chaque champ
         descriptions = {
-            "life": "Permet de modifier la durée de vie des créatures sur une journée",
-            "color": "Permet de choisir la couleur de chaque population, les couleurs defilent lorsque l'on appuie sur + ou -",
-            "quantity": "Permet de definir le nombre de créatures au début de la simulation",
-            "speed_variation": "Permet de definir à quel point la vitesse des créatures varie au fur et à mesure de leur évolution, chaque jour de la simulation",
-            "size_variation": "Permet de definir à quel point la taille des créatures varie au fur et à mesure de leur évolution, chaque jour de la simulation",
-            "view_variation": "Permet de definir à quel point le champ de vision des créatures varie au fur et à mesure de leur évolution, chaque jour de la simulation",
-            "view": "Permet de definir le champ de vision des créatures au début de la simulation",
-            "speed": "Permet de definir la vitesse des créatures au début de la simulation",
-            "size": "Permet de definir la taille des créatures au début de la simulation",
+            "life": "Permet de modifier la durée de vie des créautres",
+            "color": "Défini la couleur de chaque population",
+            "quantity": "Permet de definir le nombre de créatures de cette population au début de la simulation",
+            "speed_variation": "Permet de definir le teux de transmission de la taille aux enfants des créatures",
+            "size_variation": "Permet de definir le teux de transmission de la taille aux enfants des créatures",
+            "view_variation": "Permet de definir le taux de transmission du champ de vision aux enfants de ces créatures",
+            "view": "Permet de definir le champ de vision des créatures de cette population au début de la simulation",
+            "speed": "Permet de definir la vitesse des créatures de cette population au début de la simulation",
+            "size": "Permet de definir la taille des créatures de cette population au début de la simulation",
         }
 
         total_w = self.width - 2 * settings.PostG_PADDING
@@ -238,6 +254,24 @@ class Settings:
                 display = '1' if cur_val else '0'
             else:
                 display = str(cur_val)
+            if key == "life": 
+                description = "Permet de définir au bout de combien de jours une créature meurt de vieillesse, même si elle a mangé"
+            if key == "color":
+                description = "Permet de choisir la couleur de chaque population, les couleurs défilent lorsque l'on appuie sur + ou -"
+            if key == "quantity":
+                description = "Permet de définir le nombre de créatures au début de la simulation"
+            if key == "speed_variation":
+                description = "Permet de définir à quel point la vitesse des créatures varie au fur et à mesure de leur évolution, chaque jour de la simulation"
+            if key == "size_variation":
+                description = "Permet de définir à quel point la taille des créatures varie au fur et à mesure de leur évolution, chaque jour de la simulation"
+            if key == "view_variation":
+                description = "Permet de définir à quel point le champ de vision des créatures varie au fur et à mesure de leur évolution, chaque jour de la simulation"
+            if key == "view":
+                description = "Permet de définir le champ de vision des créatures au début de la simulation"
+            if key == "speed":
+                description = "Permet de définir la vitesse des créatures au début de la simulation"
+            if key == "size":
+                description = "Permet de définir la taille des créatures au début de la simulation"
 
             description = descriptions.get(key, "")
             minus = Button(Rect(x, y_btn, self.small_w, self.btn_h), "-", self.screen)
@@ -259,8 +293,8 @@ class Settings:
         w = 220
         gap = 24
         x = (self.width - (2 * w + gap)) // 2
-        self.btn_start = Button(Rect(x, y, w, self.btn_h), "Start", self.screen, description="Commencer la simulation")
-        self.btn_back = Button(Rect(x + w + gap, y, w, self.btn_h), "Back", self.screen, description="Retour à l'écran d'acceuil")
+        self.btn_start = Button(Rect(x, y, w, self.btn_h), "Start", self.screen)
+        self.btn_back = Button(Rect(x + w + gap, y, w, self.btn_h), "Back", self.screen)
 
 
     def draw(self):

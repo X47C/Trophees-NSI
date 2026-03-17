@@ -426,5 +426,5 @@ class food_editor():
                 if ch and ch.isprintable():
                     self.input_text += ch
                     self.input_error = ""
-
+                    
         return None
