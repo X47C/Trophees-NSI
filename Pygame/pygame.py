@@ -710,7 +710,9 @@ class Post_Game:
         average_view = [(sum(vals) / len(vals)) if vals else 0 for vals in ([obj.view for sub in settings.creatures_list_dico[d] for obj in sub] for d in days)]
 
 
-        ax1.xaxis.set_major_locator(MaxNLocator(nbins=10, integer=True))
+        ax1.set_xlim(0.5, self.current_day + 0.5)
+        ax1.xaxis.set_major_locator(MaxNLocator(nbins=12, integer=True))
+        ax1.set_xticks([i for i in range(1, self.current_day + 1) if (self.current_day <= 12 or i % max(1, self.current_day // 12) == 0)])
         ax1.set_ylim(0, 10)
         ax1.set_yticks(range(0, 11))
         ax1.plot(jour, avrage_speed, label="Vitesse", lw=lw, marker='+')
@@ -720,6 +722,8 @@ class Post_Game:
         ax1.set_ylabel('Moyenne')
         ax1.set_title("Évolution des caractéristiques moyennes (toutes populations)", fontsize=13, fontweight='bold', pad=12)
         ax1.legend(loc='upper left', framealpha=0.8)
+        ax1.grid(True, linestyle='--', alpha=0.5)
+        ax1.set_axisbelow(True)
         fig1.tight_layout()
         self.graph_list.append(self.graph_to_surf(fig1))
         pylab.close(fig1)
@@ -732,13 +736,17 @@ class Post_Game:
         c_counts = [sum(len(sub) for sub in settings.creatures_list_dico[k]) for k in range(1, len(settings.creatures_list_dico) + 1)]
         f_counts = [settings.food_list_dico[i] for i in range(1, len(settings.food_list_dico) + 1)]
 
+        ax2.set_xlim(0.5, self.current_day + 0.5)
         ax2.xaxis.set_major_locator(MaxNLocator(nbins=10, integer=True))
+        ax2.set_xticks([i for i in range(1, self.current_day + 1) if (self.current_day <= 12 or i % max(1, self.current_day // 12) == 0)])
         ax2.plot(jour, c_counts, label='Créature', lw=lw, marker="x")
         ax2.plot(jour, f_counts, label='Nouriture', lw=lw, marker="o")
         ax2.set_xlabel('Jours')
         ax2.set_ylabel('Quantitée')
-        ax2.set_title("Évolution de la quantité de créatures par rapport à la quantité de nouriture", fontsize=13, fontweight='bold', pad=12)
+        ax2.set_title("Évolution de la quantité de créatures et de la quantité de nouriture", fontsize=13, fontweight='bold', pad=12)
         ax2.legend(loc='upper left', framealpha=0.8)
+        ax2.grid(True, linestyle='--', alpha=0.5)
+        ax2.set_axisbelow(True)
         fig2.tight_layout()
         self.graph_list.append(self.graph_to_surf(fig2))
         pylab.close(fig2)
@@ -748,14 +756,18 @@ class Post_Game:
         fig3 = pylab.figure(figsize=figsize, dpi=dpi)
         ax3 = fig3.gca()
 
-        ax3.xaxis.set_major_locator(MaxNLocator(nbins=10, integer=True))
         for i in range(len(settings.creatures_list_dico[1])):
             c_p_conts = [len(p[i]) for p in settings.creatures_list_dico.values()]
             ax3.plot(jour, c_p_conts, lw=lw, color=settings.creatures_list_dico[1][i][0].color)
+        ax3.set_xlim(0.5, self.current_day + 0.5)
+        ax3.xaxis.set_major_locator(MaxNLocator(nbins=10, integer=True))
+        ax3.set_xticks([i for i in range(1, self.current_day + 1) if (self.current_day <= 12 or i % max(1, self.current_day // 12) == 0)])
         ax3.set_xlabel('Jours')
         ax3.set_ylabel('Quantité')
         ax3.set_title("Évolution de la quantité de créatures par populations", fontsize=13, fontweight='bold', pad=12)
         ax3.yaxis.set_major_locator(MaxNLocator(integer=True))
+        ax3.grid(True, linestyle='--', alpha=0.5)
+        ax3.set_axisbelow(True)
         fig3.tight_layout()
         self.graph_list.append(self.graph_to_surf(fig3))
         pylab.close(fig3)
@@ -768,7 +780,9 @@ class Post_Game:
             fig4 = pylab.figure(figsize=figsize, dpi=dpi)
             ax4 = fig4.gca()
 
+            ax4.set_xlim(0.5, self.current_day + 0.5)
             ax4.xaxis.set_major_locator(MaxNLocator(nbins=10, integer=True))
+            ax4.set_xticks([i for i in range(1, self.current_day + 1) if (self.current_day <= 12 or i % max(1, self.current_day // 12) == 0)])
             ax4.set_ylim(0, 10)
             ax4.set_yticks(range(0, 11))
 
@@ -783,6 +797,8 @@ class Post_Game:
             ax4.set_ylabel('Moyenne')
             ax4.set_title(f"Évolution des caractéristiques moyennes de la population {color}", fontsize=13, fontweight='bold', pad=12)
             ax4.legend(loc='upper left', framealpha=0.8)
+            ax4.grid(True, linestyle='--', alpha=0.5)
+            ax4.set_axisbelow(True)
             fig4.tight_layout()
             self.graph_list.append(self.graph_to_surf(fig4))
             pylab.close(fig4)
