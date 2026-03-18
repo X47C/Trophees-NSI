@@ -23,7 +23,7 @@ Ing = In_Game(screen)
 day_manager = Day_Manager(screen)
 
 running = True
-state = 'home'
+state = 'tutorial'
 
 
 # boucle principale
@@ -43,8 +43,6 @@ while running:
                         running = False
                     case 'credits':
                         state = 'credits'
-                    case 'tutorial':
-                        state = 'tutorial'
 
             case 'settings':
                 Sett.editable_button_refresh(event)
