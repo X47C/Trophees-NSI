@@ -28,7 +28,7 @@ Credits_font_size = 18
 # boutons généraux et leurs limites
 Max_foood_quantity = 100
 Days_max = 5               # nombre de jours de la simulation
-Max_days_max = 100
+Max_days_max = 500
 Food_quantity_default = 40
 Food_quantity = [Food_quantity_default] * Days_max  # liste : quantité par jour
 

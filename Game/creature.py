@@ -23,7 +23,7 @@ class Creature():
 
         #position / déplacement
         self.angle_deg = rd(0, 360)
-        self.radius = 10 * self.view
+        self.radius = 10 * (self.view + 2)
         self.pos_x = 0
         self.pos_y = 0
 
@@ -56,7 +56,7 @@ class Creature():
         """
         # cercle de vision si l'option est activée
         if getattr(settings, 'toolbox_show_vision', True):
-            r = 10 * self.view
+            r = self.radius
             vision_surf = pg.Surface((r * 2, r * 2), pg.SRCALPHA)
             pg.draw.circle(vision_surf, (255, 255, 255, 30), (r, r), r)
             pg.draw.circle(vision_surf, (255, 255, 255, 120), (r, r), r, 2)
@@ -250,7 +250,7 @@ class Creature():
                     other.ang_vel = getattr(other, "ang_vel", 0.0) * ang_vel_damp + uniform(-jitter, jitter)
 
         # consommation d'énergie par frame
-        base_cost = 0.07
+        base_cost = 0.045
         coeff_speed = 0.02
         coeff_size = 0.0055
         coeff_view = 0.005
@@ -320,7 +320,6 @@ class Creature():
             self.ate = 0
             self.energy = 100
             self.sleep = False
-            self.image.set_alpha(255)
 
 
     def see(self) -> tuple:
@@ -411,7 +410,7 @@ class Creature():
         if self.sleep:
             self.image = self.animations['asleep'][self.frame]
         else:
-            o = orientation # sécurité si jamais dépasses 360
+            o = orientation
 
             if o >= 337.5 or o < 22.5:
                 self.image = self.animations['north'][self.frame]

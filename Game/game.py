@@ -27,7 +27,6 @@ class Day_Manager():
                     c.animate()
                     if c.sleep == False:
                         c.sleep = True
-                    
 
 
     def first_day(self) -> None:

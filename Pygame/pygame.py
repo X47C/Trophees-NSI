@@ -278,11 +278,11 @@ class Settings:
 
         # descriptions pour chaque champ
         descriptions = {
-            "life": "Permet de modifier la durée de vie des créautres",
+            "life": "Permet de définir au bout de combien de jours une créature meurt de vieillesse, même si elle a mangé",
             "color": "Défini la couleur de chaque population",
             "quantity": "Permet de definir le nombre de créatures de cette population au début de la simulation",
-            "speed_variation": "Permet de definir le teux de transmission de la taille aux enfants des créatures",
-            "size_variation": "Permet de definir le teux de transmission de la taille aux enfants des créatures",
+            "speed_variation": "Permet de definir le taux de transmission de la vitesse aux enfants des créatures",
+            "size_variation": "Permet de definir le taux de transmission de la taille aux enfants des créatures",
             "view_variation": "Permet de definir le taux de transmission du champ de vision aux enfants de ces créatures",
             "view": "Permet de definir le champ de vision des créatures de cette population au début de la simulation",
             "speed": "Permet de definir la vitesse des créatures de cette population au début de la simulation",
