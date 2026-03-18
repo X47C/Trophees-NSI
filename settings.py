@@ -12,8 +12,6 @@ editable_butons = {}
 Display_size = (1280, 720)  # largeur, hauteur
 FPS = 60
 
-# texte des crédits
-Credits_Text = ['Dévellopé par : ', 'Cyprien Cros', 'Jules Graffan', 'Sarah Vignaud-Quantin', 'Remerciement à : ', 'Mme Rebinguet-Martres']
 
 # polices
 Days_font = "arial"
