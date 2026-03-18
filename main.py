@@ -10,7 +10,9 @@ from Pygame.food_editor import food_editor
 pg.init()
 pg.display.set_caption('Darwined')
 
-screen = pg.display.set_mode(settings.Display_size)
+info = pg.display.Info()
+settings.Display_size = (info.current_w, info.current_h)
+screen = pg.display.set_mode(settings.Display_size, pg.NOFRAME)
 clock = pg.time.Clock()
 
 # création des écrans
@@ -41,6 +43,8 @@ while running:
                         running = False
                     case 'credits':
                         state = 'credits'
+                    case 'tutorial':
+                        state = 'tutorial'
 
             case 'settings':
                 Sett.editable_button_refresh(event)
@@ -115,6 +119,9 @@ while running:
     screen.fill((0, 0, 0))
 
     match state:
+        case 'tutorial':
+            Befg.tutorial()
+            state = 'home'
         case 'home':
             Befg.draw()
         case 'settings':

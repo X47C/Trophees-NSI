@@ -9,6 +9,7 @@ plt.use("Agg")  # backend sans fenêtre
 import pylab
 import matplotlib.backends.backend_agg as agg
 from matplotlib.ticker import MaxNLocator
+import cv2
 
 
 class Before_Game:
@@ -23,12 +24,12 @@ class Before_Game:
         self.width, self.height = settings.Display_size
         self.screen = screen
 
-        self.Button_exit = Button(Rect(self.width // 2 - 110, self.height // 2 - 40, 220, 80), '', self.screen)
-        self.Button_Start = Button(Rect(self.width // 2 - 110, self.height // 2 - 130, 220, 80), '', self.screen)
-        self.Button_credits = Button(Rect(self.width // 2 - 110, self.height // 2 + 50, 220, 80), '', self.screen)
-        self.Button_credits_exit = Button(Rect(self.width // 2 - 65, self.height // 2 + 130, 130, 50), 'Back', self.screen)
-        self.Button_tutorial = Button(Rect(self.width // 2 - 110, self.height // 2 + 140, 220, 80), '', self.screen)
-        self.Button_tutorial_pass = Button(Rect(self.width // 2 - 65, self.height // 2 + 50, 130, 50), '', self.screen)
+        self.Button_exit = Button(Rect(self.width // 2 - 110, self.height // 2 - 40, 220, 80),'', self.screen)
+        self.Button_Start = Button(Rect(self.width // 2 - 110, self.height // 2 - 130, 220, 80),'', self.screen)
+        self.Button_credits = Button(Rect(self.width // 2 - 110, self.height // 2 + 50, 220, 80),'', self.screen) 
+        self.Button_credits_exit = Button(Rect(self.width // 2 - 65, self.height // 2 + 130, 130, 50),'Back', self.screen)
+        self.Button_tutorial = Button(Rect(self.width // 2 - 110, self.height // 2 + 140, 220, 80),'Tutoriale', self.screen) 
+        self.Button_tutorial_pass = Button(Rect(self.width // 2 - 65, self.height // 2 + 50, 130, 50),'Pass', self.screen)
 
         self.bg_asset = pg.image.load('assets/before-game-background.png')
         self.Button_font = pg.font.SysFont(settings.Button_font, settings.Button_font_size)
@@ -42,7 +43,7 @@ class Before_Game:
         self.Button_exit.draw(self.screen, self.Button_font, 'assets/button-exit.png')
         self.Button_Start.draw(self.screen, self.Button_font, 'assets/button-start.png')
         self.Button_credits.draw(self.screen, self.Button_font, 'assets/button-credits.png')
-        self.Button_tutorial.draw(self.screen, self.Button_font, 'assets/button-credits.png') # image temporaire, remplacer par button-tutorial.png
+        self.Button_tutorial.draw(self.screen, self.Button_font) 
 
 
     def handle_event(self, event):
@@ -50,24 +51,91 @@ class Before_Game:
         Gère les événements de l'écran avant le lancement de la partie
         """
         if event.type == pg.MOUSEBUTTONUP and event.button == 1:
-            if self.Button_exit.rect.collidepoint(event.pos):
-                return 'exit'
-            if self.Button_Start.rect.collidepoint(event.pos):
-                return 'start'
-            if self.Button_credits.rect.collidepoint(event.pos):
-                return 'credits'
-            if self.Button_credits_exit.rect.collidepoint(event.pos):
-                return 'home'
-            # if self.Button_tutorial.rect.collidepoint(event.pos):
-                # return 'tutorial'
+                if self.Button_exit.rect.collidepoint(event.pos):  
+                    return 'exit'
+                if self.Button_Start.rect.collidepoint(event.pos):
+                    return 'start'
+                if self.Button_credits.rect.collidepoint(event.pos):
+                    return 'credits'
+                if self.Button_credits_exit.rect.collidepoint(event.pos):
+                    return 'home'
+                if self.Button_tutorial.rect.collidepoint(event.pos):
+                    return 'tutorial'
+
 
 
     def tutorial(self):
         """
-        Affiche l'écran du tutoriel.
+        Affiche le tutoriel sous forme de popup par-dessus l'écran d'accueil.
+        Utilise opencv pour lire la vidéo frame par frame et l'afficher dans pygame.
         """
-        self.Button_tutorial_pass.draw(self.screen, self.Button_font)
-        pass
+
+        # chargement de la vidéo
+        cap = cv2.VideoCapture('assets/video_test.mp4')
+
+        fps_video = cap.get(cv2.CAP_PROP_FPS) or 30
+        clock_tuto = pg.time.Clock()
+
+        # dimensions de la popup
+        popup_w = int(self.width * 0.75)
+        popup_h = int(self.height * 0.75)
+        popup_x = (self.width - popup_w) // 2
+        popup_y = (self.height - popup_h) // 2
+
+        # hauteur réservée pour le bouton "Passer" en bas de la popup
+        btn_zone_h = 60
+        video_h = popup_h - btn_zone_h
+
+        # bouton "Passer" centré en bas de la popup
+        btn_w, btn_h = 130, 44
+        btn_x = popup_x + (popup_w - btn_w) // 2
+        btn_y = popup_y + popup_h - btn_zone_h + (btn_zone_h - btn_h) // 2
+        self.Button_tutorial_pass.rect = pg.Rect(btn_x, btn_y, btn_w, btn_h)
+
+        running_tuto = True
+        while running_tuto:
+            self.draw()
+
+            # lecture d'une frame
+            ret, frame = cap.read()
+            if not ret:
+                # fin de la vidéo : on arrete
+                running_tuto = False
+                break
+
+            frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+            frame_rgb = cv2.resize(frame_rgb, (popup_w, video_h))
+            frame_surf = pg.surfarray.make_surface(frame_rgb.swapaxes(0, 1))
+
+            # fond semi-transparent par-dessus l'écran d'accueil
+            overlay = pg.Surface((self.width, self.height), pg.SRCALPHA)
+            overlay.fill((0, 0, 0, 160))
+            self.screen.blit(overlay, (0, 0))
+
+            # fond de la popup
+            pg.draw.rect(self.screen, (255, 255, 255), (popup_x - 15, popup_y - 15, popup_w + 30, popup_h + 15), border_radius=8)
+
+            # affichage de la frame vidéo
+            self.screen.blit(frame_surf, (popup_x, popup_y))
+
+            # bouton "Passer"
+            self.Button_tutorial_pass.draw(self.screen, self.Button_font)
+
+            pg.display.flip()
+            clock_tuto.tick(fps_video)
+
+            # gestion des événements
+            for event in pg.event.get():
+                if event.type == pg.QUIT:
+                    running_tuto = False
+                if event.type == pg.MOUSEBUTTONUP and event.button == 1:
+                    if self.Button_tutorial_pass.rect.collidepoint(event.pos):
+                        running_tuto = False
+                if event.type == pg.KEYDOWN:
+                    if event.key == pg.K_ESCAPE:
+                        running_tuto = False
+
+        cap.release()
 
 
     def credits(self):
@@ -238,6 +306,24 @@ class Settings:
                 display = '1' if cur_val else '0'
             else:
                 display = str(cur_val)
+            if key == "life": 
+                description = "Permet de définir au bout de combien de jours une créature meurt de vieillesse, même si elle a mangé"
+            if key == "color":
+                description = "Permet de choisir la couleur de chaque population, les couleurs défilent lorsque l'on appuie sur + ou -"
+            if key == "quantity":
+                description = "Permet de définir le nombre de créatures au début de la simulation"
+            if key == "speed_variation":
+                description = "Permet de définir à quel point la vitesse des créatures varie au fur et à mesure de leur évolution, chaque jour de la simulation"
+            if key == "size_variation":
+                description = "Permet de définir à quel point la taille des créatures varie au fur et à mesure de leur évolution, chaque jour de la simulation"
+            if key == "view_variation":
+                description = "Permet de définir à quel point le champ de vision des créatures varie au fur et à mesure de leur évolution, chaque jour de la simulation"
+            if key == "view":
+                description = "Permet de définir le champ de vision des créatures au début de la simulation"
+            if key == "speed":
+                description = "Permet de définir la vitesse des créatures au début de la simulation"
+            if key == "size":
+                description = "Permet de définir la taille des créatures au début de la simulation"
 
             description = descriptions.get(key, "")
             minus = Button(Rect(x, y_btn, self.small_w, self.btn_h), "-", self.screen)
