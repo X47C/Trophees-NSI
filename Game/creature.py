@@ -10,7 +10,7 @@ class Creature():
     Entrée : Speed, Size, View (int, compris entre 1 et 10)
     """
 
-    def __init__(self, Speed:int, Size:int, View:int, Variation_Speed:int, Variation_Size:int, Variation_View:int, Days_Max:int, Color:tuple) -> None:
+    def __init__(self, Speed:int, Size:int, View:int, Variation_Speed:int, Variation_Size:int, Variation_View:int, Days_Max:int, Color:str) -> None:
         #caracteristiques
         self.speed = Speed
         self.size = Size
@@ -23,7 +23,7 @@ class Creature():
 
         #position / déplacement
         self.angle_deg = rd(0, 360)
-        self.radius = 10 * self.view
+        self.radius = 10 * (self.view + 2)
         self.pos_x = 0
         self.pos_y = 0
 
@@ -34,9 +34,19 @@ class Creature():
         self.sleep = False
 
         #affichage
-        img = pg.image.load("assets/creature.png")
-        img_size = img.get_size()
-        self.image = pg.transform.smoothscale(img, (img_size[0] + self.size * 2, img_size[1] + self.size * 2))
+        self.nb = 0
+        self.frame = 0
+        self.animations = {
+            'east': self.load_animations('e'),
+            'west': self.load_animations('o'),
+            'north': self.load_animations('n'),
+            'south': self.load_animations('s'),
+            'north-east': self.load_animations('ne'),
+            'south-east': self.load_animations('se'),
+            'north-west': self.load_animations('no'),
+            'south-west': self.load_animations('so'),
+            'asleep': self.load_animations('asleep')}
+        self.image = self.animations['east'][1]
         self.rect = self.image.get_rect(center=(int(self.pos_x), int(self.pos_y)))
 
 
@@ -46,7 +56,7 @@ class Creature():
         """
         # cercle de vision si l'option est activée
         if getattr(settings, 'toolbox_show_vision', True):
-            r = 10 * self.view
+            r = self.radius
             vision_surf = pg.Surface((r * 2, r * 2), pg.SRCALPHA)
             pg.draw.circle(vision_surf, (255, 255, 255, 30), (r, r), r)
             pg.draw.circle(vision_surf, (255, 255, 255, 120), (r, r), r, 2)
@@ -240,7 +250,7 @@ class Creature():
                     other.ang_vel = getattr(other, "ang_vel", 0.0) * ang_vel_damp + uniform(-jitter, jitter)
 
         # consommation d'énergie par frame
-        base_cost = 0.07
+        base_cost = 0.045
         coeff_speed = 0.02
         coeff_size = 0.0055
         coeff_view = 0.005
@@ -259,6 +269,8 @@ class Creature():
         self.pos_y = min(max(self.pos_y, margin), h - margin)
         self.rect = self.image.get_rect(center=(int(self.pos_x), int(self.pos_y)))
 
+        # gere l'animation de le creature
+        self.animate((self.angle_deg + 90) % 360)
 
     def Baby(self) -> None:
         """
@@ -308,7 +320,6 @@ class Creature():
             self.ate = 0
             self.energy = 100
             self.sleep = False
-            self.image.set_alpha(255)
 
 
     def see(self) -> tuple:
@@ -372,3 +383,48 @@ class Creature():
         if self.size - 4 >= c.size and c.sleep == False:
             settings.creatures_list[i].pop(j)
             return
+        
+
+    def load_animations(self, type:str) -> list:
+        """
+        permet de charger tout les sprites d'un animation, les renvoie dans une liste
+        """
+        path = f'assets/creature/{self.color}/{type}'
+        frames = []
+        for i in range(5):
+            f = pg.image.load(f'{path}/{i}.png')
+            f_size = f.get_size()
+            if type == 'asleep':
+                f.set_alpha(125)
+            frames.append(pg.transform.smoothscale(f, (f_size[0] + self.size * 2, f_size[1] + self.size * 2)))
+        return frames
+
+
+    def animate(self, orientation=0) -> None:
+        self.nb += 1
+        if self.nb >= 15:
+            self.frame += 1
+            if self.frame >= 5:
+                self.frame = 0
+            self.nb = 0
+        if self.sleep:
+            self.image = self.animations['asleep'][self.frame]
+        else:
+            o = orientation
+
+            if o >= 337.5 or o < 22.5:
+                self.image = self.animations['north'][self.frame]
+            elif o < 67.5:
+                self.image = self.animations['north-east'][self.frame]
+            elif o < 112.5:
+                self.image = self.animations['east'][self.frame]
+            elif o < 157.5:
+                self.image = self.animations['south-east'][self.frame]
+            elif o < 202.5:
+                self.image = self.animations['south'][self.frame]
+            elif o < 247.5:
+                self.image = self.animations['south-west'][self.frame]
+            elif o < 292.5:
+                self.image = self.animations['west'][self.frame]
+            elif o < 337.5:
+                self.image = self.animations['north-west'][self.frame]

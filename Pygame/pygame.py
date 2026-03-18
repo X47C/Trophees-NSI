@@ -9,6 +9,7 @@ plt.use("Agg")  # backend sans fenêtre
 import pylab
 import matplotlib.backends.backend_agg as agg
 from matplotlib.ticker import MaxNLocator
+import cv2
 
 
 class Before_Game:
@@ -27,10 +28,8 @@ class Before_Game:
         self.Button_Start = Button(Rect(self.width // 2 - 110, self.height // 2 - 130, 220, 80),'', self.screen)
         self.Button_credits = Button(Rect(self.width // 2 - 110, self.height // 2 + 50, 220, 80),'', self.screen) 
         self.Button_credits_exit = Button(Rect(self.width // 2 - 65, self.height // 2 + 130, 130, 50),'Back', self.screen)
-        self.Button_tutorial = Button(Rect(self.width // 2 - 110, self.height // 2 + 140, 220, 80),'', self.screen) 
+        self.Button_tutorial = Button(Rect(self.width // 2 - 110, self.height // 2 + 140, 220, 80),'Tutoriale', self.screen) 
         self.Button_tutorial_pass = Button(Rect(self.width // 2 - 65, self.height // 2 + 50, 130, 50),'Pass', self.screen)
-        
-        self.bg_asset = pg.image.load('assets/before-game-background.png')
 
         self.bg_asset = pg.image.load('assets/before-game-background.png')
         self.Button_font = pg.font.SysFont(settings.Button_font, settings.Button_font_size)
@@ -44,7 +43,7 @@ class Before_Game:
         self.Button_exit.draw(self.screen, self.Button_font, 'assets/button-exit.png')
         self.Button_Start.draw(self.screen, self.Button_font, 'assets/button-start.png')
         self.Button_credits.draw(self.screen, self.Button_font, 'assets/button-credits.png')
-        self.Button_tutorial.draw(self.screen, self.Button_font, 'assets/button-credits.png') # image temporaire, remplacer par button-tutorial.png
+        self.Button_tutorial.draw(self.screen, self.Button_font) 
 
 
     def handle_event(self, event):
@@ -64,26 +63,79 @@ class Before_Game:
                     return 'tutorial'
 
 
+
     def tutorial(self):
         """
-        Affiche le tutoriel
-        Version non définitive
+        Affiche le tutoriel sous forme de popup par-dessus l'écran d'accueil.
+        Utilise opencv pour lire la vidéo frame par frame et l'afficher dans pygame.
         """
-        self.Button_tutorial_pass.draw(self.screen, self.Button_font)
-        window = pg.display.set_mode(())
-        video = pg.Video("video_test.mp4") #la video test c'est une des videos qui avait ete envoyee de l'ecran du jeu, parce que je voulais etre sure que c'etait pas la taille de la video le probleme
-        video.play()
-        while True :
-            video.draw_to(window, (0,0))
-            pg.display.flip()
-        
-        #video = pg.video.Movie("video_test.mp4")
-        #sur_obj=pg.display.set_mode(video.get_size())
 
-        #clo_obj=pg.time.Clock() #ca apparemment c'est pour que la video se joue a la vitesse qu'on veut
-        
-        #video_screen=pg.Surface(video.get_size()).convert()
-        #video.play()
+        # chargement de la vidéo
+        cap = cv2.VideoCapture('assets/video_test.mp4')
+
+        fps_video = cap.get(cv2.CAP_PROP_FPS) or 30
+        clock_tuto = pg.time.Clock()
+
+        # dimensions de la popup
+        popup_w = int(self.width * 0.75)
+        popup_h = int(self.height * 0.75)
+        popup_x = (self.width - popup_w) // 2
+        popup_y = (self.height - popup_h) // 2
+
+        # hauteur réservée pour le bouton "Passer" en bas de la popup
+        btn_zone_h = 60
+        video_h = popup_h - btn_zone_h
+
+        # bouton "Passer" centré en bas de la popup
+        btn_w, btn_h = 130, 44
+        btn_x = popup_x + (popup_w - btn_w) // 2
+        btn_y = popup_y + popup_h - btn_zone_h + (btn_zone_h - btn_h) // 2
+        self.Button_tutorial_pass.rect = pg.Rect(btn_x, btn_y, btn_w, btn_h)
+
+        running_tuto = True
+        while running_tuto:
+            self.draw()
+
+            # lecture d'une frame
+            ret, frame = cap.read()
+            if not ret:
+                # fin de la vidéo : on arrete
+                running_tuto = False
+                break
+
+            frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+            frame_rgb = cv2.resize(frame_rgb, (popup_w, video_h))
+            frame_surf = pg.surfarray.make_surface(frame_rgb.swapaxes(0, 1))
+
+            # fond semi-transparent par-dessus l'écran d'accueil
+            overlay = pg.Surface((self.width, self.height), pg.SRCALPHA)
+            overlay.fill((0, 0, 0, 160))
+            self.screen.blit(overlay, (0, 0))
+
+            # fond de la popup
+            pg.draw.rect(self.screen, (255, 255, 255), (popup_x - 15, popup_y - 15, popup_w + 30, popup_h + 15), border_radius=8)
+
+            # affichage de la frame vidéo
+            self.screen.blit(frame_surf, (popup_x, popup_y))
+
+            # bouton "Passer"
+            self.Button_tutorial_pass.draw(self.screen, self.Button_font)
+
+            pg.display.flip()
+            clock_tuto.tick(fps_video)
+
+            # gestion des événements
+            for event in pg.event.get():
+                if event.type == pg.QUIT:
+                    running_tuto = False
+                if event.type == pg.MOUSEBUTTONUP and event.button == 1:
+                    if self.Button_tutorial_pass.rect.collidepoint(event.pos):
+                        running_tuto = False
+                if event.type == pg.KEYDOWN:
+                    if event.key == pg.K_ESCAPE:
+                        running_tuto = False
+
+        cap.release()
 
 
     def credits(self):
@@ -226,11 +278,11 @@ class Settings:
 
         # descriptions pour chaque champ
         descriptions = {
-            "life": "Permet de modifier la durée de vie des créautres",
+            "life": "Permet de définir au bout de combien de jours une créature meurt de vieillesse, même si elle a mangé",
             "color": "Défini la couleur de chaque population",
             "quantity": "Permet de definir le nombre de créatures de cette population au début de la simulation",
-            "speed_variation": "Permet de definir le teux de transmission de la taille aux enfants des créatures",
-            "size_variation": "Permet de definir le teux de transmission de la taille aux enfants des créatures",
+            "speed_variation": "Permet de definir le taux de transmission de la vitesse aux enfants des créatures",
+            "size_variation": "Permet de definir le taux de transmission de la taille aux enfants des créatures",
             "view_variation": "Permet de definir le taux de transmission du champ de vision aux enfants de ces créatures",
             "view": "Permet de definir le champ de vision des créatures de cette population au début de la simulation",
             "speed": "Permet de definir la vitesse des créatures de cette population au début de la simulation",
@@ -657,7 +709,8 @@ class Post_Game:
         average_size = [(sum(vals) / len(vals)) if vals else 0 for vals in ([obj.size for sub in settings.creatures_list_dico[d] for obj in sub] for d in days)]
         average_view = [(sum(vals) / len(vals)) if vals else 0 for vals in ([obj.view for sub in settings.creatures_list_dico[d] for obj in sub] for d in days)]
 
-        ax1.set_xticks(range(1, self.current_day + 1))
+
+        ax1.xaxis.set_major_locator(MaxNLocator(nbins=10, integer=True))
         ax1.set_ylim(0, 10)
         ax1.set_yticks(range(0, 11))
         ax1.plot(jour, avrage_speed, label="Vitesse", lw=lw, marker='+')
@@ -665,8 +718,11 @@ class Post_Game:
         ax1.plot(jour, average_view, label="Vue", lw=lw, marker="o")
         ax1.set_xlabel('Jours')
         ax1.set_ylabel('Moyenne')
-        ax1.legend()
+        ax1.set_title("Évolution des caractéristiques moyennes (toutes populations)", fontsize=13, fontweight='bold', pad=12)
+        ax1.legend(loc='upper left', framealpha=0.8)
+        fig1.tight_layout()
         self.graph_list.append(self.graph_to_surf(fig1))
+        pylab.close(fig1)
         g_nb += 1
 
         # graphe 2 : nombre de créatures et de nourriture
@@ -676,35 +732,43 @@ class Post_Game:
         c_counts = [sum(len(sub) for sub in settings.creatures_list_dico[k]) for k in range(1, len(settings.creatures_list_dico) + 1)]
         f_counts = [settings.food_list_dico[i] for i in range(1, len(settings.food_list_dico) + 1)]
 
-        ax2.set_xticks(range(1, self.current_day + 1))
+        ax2.xaxis.set_major_locator(MaxNLocator(nbins=10, integer=True))
         ax2.plot(jour, c_counts, label='Créature', lw=lw, marker="x")
         ax2.plot(jour, f_counts, label='Nouriture', lw=lw, marker="o")
         ax2.set_xlabel('Jours')
         ax2.set_ylabel('Quantitée')
-        ax2.legend()
+        ax2.set_title("Évolution de la quantité de créatures par rapport à la quantité de nouriture", fontsize=13, fontweight='bold', pad=12)
+        ax2.legend(loc='upper left', framealpha=0.8)
+        fig2.tight_layout()
         self.graph_list.append(self.graph_to_surf(fig2))
+        pylab.close(fig2)
         g_nb += 1
 
         # graphe 3 : quantité par population
         fig3 = pylab.figure(figsize=figsize, dpi=dpi)
         ax3 = fig3.gca()
 
-        ax3.set_xticks(range(1, self.current_day + 1))
+        ax3.xaxis.set_major_locator(MaxNLocator(nbins=10, integer=True))
         for i in range(len(settings.creatures_list_dico[1])):
             c_p_conts = [len(p[i]) for p in settings.creatures_list_dico.values()]
             ax3.plot(jour, c_p_conts, lw=lw, color=settings.creatures_list_dico[1][i][0].color)
         ax3.set_xlabel('Jours')
         ax3.set_ylabel('Quantité')
+        ax3.set_title("Évolution de la quantité de créatures par populations", fontsize=13, fontweight='bold', pad=12)
         ax3.yaxis.set_major_locator(MaxNLocator(integer=True))
+        fig3.tight_layout()
         self.graph_list.append(self.graph_to_surf(fig3))
+        pylab.close(fig3)
         g_nb += 1
 
         # graphes 4+ : caractéristiques par population
         for i in range(len(settings.creatures_list)):
+            color = settings.creatures_list_dico[1][i][0].color
+
             fig4 = pylab.figure(figsize=figsize, dpi=dpi)
             ax4 = fig4.gca()
 
-            ax4.set_xticks(range(1, self.current_day))
+            ax4.xaxis.set_major_locator(MaxNLocator(nbins=10, integer=True))
             ax4.set_ylim(0, 10)
             ax4.set_yticks(range(0, 11))
 
@@ -712,13 +776,16 @@ class Post_Game:
             m_size = [sum(vals) / len(vals) if len(vals) != 0 else 0 for vals in ([c.size for c in settings.creatures_list_dico[d][i]] for d in days)]
             m_view = [sum(vals) / len(vals) if len(vals) != 0 else 0 for vals in ([c.view for c in settings.creatures_list_dico[d][i]] for d in days)]
 
-            ax4.plot(jour, m_speed, label="Vitesse", lw=lw, marker='+', color=settings.creatures_list_dico[1][i][0].color)
-            ax4.plot(jour, m_size, label="Taille", lw=lw, marker="x", color=settings.creatures_list_dico[1][i][0].color)
-            ax4.plot(jour, m_view, label="Vue", lw=lw, marker="o", color=settings.creatures_list_dico[1][i][0].color)
+            ax4.plot(jour, m_speed, label="Vitesse", lw=lw, marker='+', color=color)
+            ax4.plot(jour, m_size, label="Taille", lw=lw, marker="x", color=color)
+            ax4.plot(jour, m_view, label="Vue", lw=lw, marker="o", color=color)
             ax4.set_xlabel('Jours')
             ax4.set_ylabel('Moyenne')
-            ax4.legend()
+            ax4.set_title(f"Évolution des caractéristiques moyennes de la population {color}", fontsize=13, fontweight='bold', pad=12)
+            ax4.legend(loc='upper left', framealpha=0.8)
+            fig4.tight_layout()
             self.graph_list.append(self.graph_to_surf(fig4))
+            pylab.close(fig4)
             g_nb += 1
 
         return g_nb
