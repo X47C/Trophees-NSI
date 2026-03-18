@@ -320,7 +320,6 @@ class Creature():
             self.ate = 0
             self.energy = 100
             self.sleep = False
-            self.image.set_alpha(255)
 
 
     def see(self) -> tuple:
@@ -411,7 +410,7 @@ class Creature():
         if self.sleep:
             self.image = self.animations['asleep'][self.frame]
         else:
-            o = orientation # sécurité si jamais dépasses 360
+            o = orientation
 
             if o >= 337.5 or o < 22.5:
                 self.image = self.animations['north'][self.frame]
