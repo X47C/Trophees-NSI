@@ -473,6 +473,8 @@ class Settings:
         pop = settings.POPULATIONS[self.selected_pop]
         for key, c in self.pop_controls.items():
             if key != "color":
+                if key == 'quantity':
+                    c['value'].set_value(max(1, pop[key]))
                 c['value'].set_value(pop[key])
             else:
                 c["value"].text = str(pop.get(key, ""))
