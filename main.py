@@ -12,7 +12,7 @@ pg.display.set_caption('Darwined')
 
 info = pg.display.Info()
 settings.Display_size = (info.current_w, info.current_h)
-screen = pg.display.set_mode(settings.Display_size, pg.NOFRAME)
+screen = pg.display.set_mode(settings.Display_size, pg.RESIZABLE)
 clock = pg.time.Clock()
 
 # création des écrans
@@ -23,7 +23,7 @@ Ing = In_Game(screen)
 day_manager = Day_Manager(screen)
 
 running = True
-state = 'home'
+state = 'tutorial'
 
 
 # boucle principale
@@ -43,8 +43,6 @@ while running:
                         running = False
                     case 'credits':
                         state = 'credits'
-                    case 'tutorial':
-                        state = 'tutorial'
 
             case 'settings':
                 Sett.editable_button_refresh(event)

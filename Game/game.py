@@ -98,7 +98,7 @@ class Day_Manager():
         #réinitialise et recréé la nouriture
         settings.food_list = []
         for i in range(settings.Food_quantity[self.current_day - 1]):
-            settings.food_list.append(Food(rd(100, 1180), rd(50, 700)))
+            settings.food_list.append(Food(rd(100, settings.Display_size[0] - 100), rd(50, settings.Display_size[1] - 50)))
         self.distribute_on_border(settings.creatures_list, settings.Display_size)
 
         #implemente le jour actuel dans les graphes

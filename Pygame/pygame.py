@@ -23,15 +23,23 @@ class Before_Game:
         """
         self.width, self.height = settings.Display_size
         self.screen = screen
+        
+        # images des boutons
+        self.button_start_img = pg.transform.scale(pg.image.load('assets/home/start-button.png'), (int(self.width * 0.244), int(self.height * 0.086)))
+        self.button_credits_img = pg.transform.scale(pg.image.load('assets/home/credits-button.png'), (int(self.width * 0.167), int(self.height * 0.214)))
+        self.button_exit_img = pg.transform.scale(pg.image.load('assets/home/exit-button.png'), (int(self.width * 0.170), int(self.height * 0.094)))
+        self.button_credits_exit_img = pg.transform.scale(pg.image.load('assets/home/credits-exit-button.png'), (int(self.width * 0.049), int(self.height * 0.088)))
 
-        self.Button_exit = Button(Rect(self.width // 2 - 110, self.height // 2 - 40, 220, 80),'', self.screen)
-        self.Button_Start = Button(Rect(self.width // 2 - 110, self.height // 2 - 130, 220, 80),'', self.screen)
-        self.Button_credits = Button(Rect(self.width // 2 - 110, self.height // 2 + 50, 220, 80),'', self.screen) 
-        self.Button_credits_exit = Button(Rect(self.width // 2 - 65, self.height // 2 + 130, 130, 50),'Back', self.screen)
-        self.Button_tutorial = Button(Rect(self.width // 2 - 110, self.height // 2 + 140, 220, 80),'Tutoriale', self.screen) 
+        # boutons
+        self.Button_Start = Button(Rect(int(self.width * 0.378), int(self.height * 0.499), int(self.width * 0.244), int(self.height * 0.086)), '', self.screen)
+        self.Button_exit = Button(Rect(int(self.width * 0.415), int(self.height * 0.646), int(self.width * 0.170), int(self.height * 0.094)), '', self.screen)
+        self.Button_credits = Button(Rect(int(self.width * 0.417), int(self.height * 0.237), int(self.width * 0.167), int(self.height * 0.214)), '', self.screen)
+        self.Button_credits_exit = Button(Rect(int(self.width * 0.840), int(self.height * 0.081), int(self.width * 0.049), int(self.height * 0.088)), '', self.screen)
         self.Button_tutorial_pass = Button(Rect(self.width // 2 - 65, self.height // 2 + 50, 130, 50),'Pass', self.screen)
 
-        self.bg_asset = pg.image.load('assets/before-game-background.png')
+
+        bg_asset = pg.image.load('assets/home/background.png')
+        self.bg_asset = pg.transform.scale(bg_asset, settings.Display_size)
         self.Button_font = pg.font.SysFont(settings.Button_font, settings.Button_font_size)
 
 
@@ -40,10 +48,9 @@ class Before_Game:
         Dessine l'écran avant le lancement de la partie
         """
         self.screen.blit(self.bg_asset, (0, 0))
-        self.Button_exit.draw(self.screen, self.Button_font, 'assets/button-exit.png')
-        self.Button_Start.draw(self.screen, self.Button_font, 'assets/button-start.png')
-        self.Button_credits.draw(self.screen, self.Button_font, 'assets/button-credits.png')
-        self.Button_tutorial.draw(self.screen, self.Button_font) 
+        self.Button_exit.draw(self.screen, self.Button_font, self.button_exit_img)
+        self.Button_Start.draw(self.screen, self.Button_font, self.button_start_img)
+        self.Button_credits.draw(self.screen, self.Button_font, self.button_credits_img)
 
 
     def handle_event(self, event):
@@ -59,9 +66,6 @@ class Before_Game:
                     return 'credits'
                 if self.Button_credits_exit.rect.collidepoint(event.pos):
                     return 'home'
-                if self.Button_tutorial.rect.collidepoint(event.pos):
-                    return 'tutorial'
-
 
 
     def tutorial(self):
@@ -143,12 +147,11 @@ class Before_Game:
         Affiche les crédits du jeu
         A modifier avec une image quand on en aura une
         """
-        pg.draw.rect(self.screen, (255, 255, 255), (100, 100, self.width - 200, self.height - 200))
-        self.Button_credits_exit.draw(self.screen, self.Button_font)
-        for i in range(len(settings.Credits_Text)):
-            self.screen.blit(pg.font.SysFont(settings.Credits_font, settings.Credits_font_size).render(settings.Credits_Text[i], True, (0, 0, 0)), (self.width // 2 - 150, 130 + 80 * i))
-
-
+        credits_bg_asset = pg.image.load('assets/home/credits-background.png')
+        self.credits_bg_asset = pg.transform.scale(credits_bg_asset, settings.Display_size)
+        self.screen.blit(self.credits_bg_asset, (0, 0))
+        self.Button_credits_exit.draw(self.screen, self.Button_font, self.button_credits_exit_img)
+        
 
 
 class Settings:
@@ -160,32 +163,135 @@ class Settings:
         self.screen = screen
         self.width, self.height = settings.Display_size
 
-        #polices
+        # fond
+        self.bg_asset = pg.transform.scale(pg.image.load('assets/settings/background.png'), settings.Display_size)
+
+        # polices
         self.font_btn = pg.font.SysFont(settings.Button_font, settings.Button_font_size)
         self.font_lbl = pg.font.SysFont(settings.Button_label_font, settings.Button_label_font_size)
 
-        #dimensions des éléments
-        settings.PostG_PADDING = 20
-        self.gap = 30
-        self.btn_h = 44
-        self.small_w = 48
-        self.label_gap = 12
-
-        # couleur de fond pour le bouton numéroté sélectionné
-        self.pop_selected_bg = (120, 200, 140)
-
-        #espaces autour de la zone de gestion des populations
-        self.pop_manage_top_space = 60
-        self.pop_manage_bottom_space = 48
-
-        #index de la population sélectionnée
+        # index de la population sélectionnée
         self.selected_pop = 0
 
-        #construction de l'interface
+        # préchargement et resize des images
+        self.load_assets()
+
+        # construction de l'interface
         self.build_general_controls()
         self.build_pop_management_buttons()
         self.build_pop_controls()
         self.build_bottom_buttons()
+
+
+    def load_assets(self):
+        """
+        Précharge et redimensionne toutes les images des boutons.
+        """
+        def load(path, w, h):
+            return pg.transform.scale(pg.image.load(path).convert_alpha(), (int(self.width * w), int(self.height * h)))
+
+        # tailles en pourcentage de l'écran (basé sur 1280x720)
+        self.img_food = load('assets/settings/generals-buttons/food-button.png', 239/1280, 105/720)
+        self.img_pop_minus = load('assets/settings/population-buttons/minus.png', 52/1280, 51/720)
+        self.img_pop_plus = load('assets/settings/population-buttons/plus.png', 52/1280, 51/720)
+        self.img_pop_btn = load('assets/settings/population-buttons/button.png', 203/1280, 51/720)
+        self.img_gen_minus = load('assets/settings/generals-buttons/minus.png', 52/1280, 51/720)
+        self.img_gen_plus = load('assets/settings/generals-buttons/plus.png', 52/1280, 51/720)
+        self.img_gen_btn = load('assets/settings/generals-buttons/button.png', 203/1280, 51/720)
+        self.img_pop_add = load('assets/settings/generals-buttons/pop+.png', 99/1280, 59/720)
+        self.img_pop_rem = load('assets/settings/generals-buttons/pop-.png', 99/1280, 59/720)
+        self.img_pop_on = load('assets/settings/generals-buttons/pop-on.png', 52/1280, 51/720)
+        self.img_pop_off = load('assets/settings/generals-buttons/pop-off.png', 52/1280, 51/720)
+        self.img_back = load('assets/settings/generals-buttons/back.png', 113/1280, 63/720)
+        self.img_start = load('assets/settings/generals-buttons/start.png', 70/1280, 75/720)
+
+
+    def responsive(self, x, y, w, h):
+        """
+        Convertit des coordonnées 1280x720 en coordonnées responsives.
+        """
+        return Rect(int(self.width * x/1280), int(self.height * y/720), int(self.width * w/1280), int(self.height * h/720))
+
+
+    def build_general_controls(self):
+        """
+        Construit les contrôles généraux : nourriture et nombre de jours.
+        """
+        settings.PostG_PADDING = 20
+
+        settings.editable_butons['food_qtt'] = Button(self.responsive(100, 11, 239, 105), "", self.screen, description="Permet d'acceder à une fenetre permettant de gérer la quantité de nouriture de la simulation au cours du temps")
+        self.general_food = {"value": settings.editable_butons['food_qtt']}
+
+        settings.editable_butons['day_qtt'] = Button(self.responsive(914, 38, 203, 51), str(settings.Days_max), self.screen, editable=True, max_length=100, description="Permet de modifier le nombre de jours de la simulation, avec au minimum 1 jour et au maximum 100 jours.")
+        self.general_days = {"minus": Button(self.responsive(851, 38, 52, 51), "", self.screen),"value": settings.editable_butons['day_qtt'],"plus":  Button(self.responsive(1128, 38, 52, 51), "", self.screen),}
+
+
+    def build_pop_management_buttons(self):
+        """
+        Construit les boutons d'ajout, suppression et sélection de population.
+        """
+        self.btn_add_pop = Button(self.responsive(90, 142, 99, 59), "", self.screen, description="Permet d'augmenter le nombre de populations, maximum 6")
+        self.btn_rem_pop = Button(self.responsive(194, 142, 99, 59), "", self.screen, description="Permet de diminuer le nombre de populations, minimum 1")
+
+        # boutons numérotés pour chaque population (on/off selon existence)
+        pop_positions = [(340, 146), (403, 146), (466, 146), (529, 146), (592, 146), (655, 146)]
+        self.pop_number_buttons = []
+        for i, (x, y) in enumerate(pop_positions):
+            rect = self.responsive(x, y, 52, 51)
+            self.pop_number_buttons.append((rect, i))
+
+
+    def build_pop_controls(self):
+        """
+        Construit la grille de contrôles pour la population sélectionnée.
+        """
+        if len(settings.POPULATIONS) == 0:
+            settings.POPULATIONS.append(settings.DEFAULT_POP.copy())
+
+        self.selected_pop = max(0, min(self.selected_pop, len(settings.POPULATIONS) - 1))
+        pop = settings.POPULATIONS[self.selected_pop]
+
+        # positions des boutons - (x, y), + (x, y), valeur (x, y) pour chaque ligne/colonne
+        # ordre : life, color, quantity, speed_variation, size_variation, view_variation, speed, size, view
+        minus_positions = [(100, 247), (477, 247), (851, 247), (100, 332), (477, 332), (851, 332), (100, 416), (477, 416), (851, 416)]
+        plus_positions = [(377, 247), (754, 247), (1128, 247), (377, 332), (754, 332), (1128, 332), (377, 416), (754, 416), (1128, 416)]
+        btn_positions = [(163, 247), (540, 247), (914, 247), (163, 332), (540, 332), (914, 332), (163, 416), (540, 416), (914, 416)]
+
+        keys = ['life', 'color', 'quantity', 'speed_variation', 'size_variation', 'view_variation', 'speed', 'size', 'view']
+        descriptions = {
+            "life": "Permet de définir au bout de combien de jours une créature meurt de vieillesse",
+            "color": "Permet de choisir la couleur de chaque population",
+            "quantity": "Permet de définir le nombre de créatures au début de la simulation",
+            "speed_variation": "Permet de définir à quel point la vitesse varie à chaque évolution",
+            "size_variation": "Permet de définir à quel point la taille varie à chaque évolution",
+            "view_variation": "Permet de définir à quel point le champ de vision varie à chaque évolution",
+            "speed": "Permet de définir la vitesse des créatures au début de la simulation",
+            "size": "Permet de définir la taille des créatures au début de la simulation",
+            "view": "Permet de définir le champ de vision des créatures au début de la simulation",
+        }
+
+        self.pop_controls = {}
+        for idx, key in enumerate(keys):
+            cur_val = pop.get(key, "")
+            display = str(cur_val)
+            desc = descriptions.get(key, "")
+
+            minus = Button(self.responsive(*minus_positions[idx], 52, 51), "", self.screen)
+            if isinstance(cur_val, int):
+                value = Button(self.responsive(*btn_positions[idx], 203, 51), display, self.screen, editable=True, description=desc)
+            else:
+                value = Button(self.responsive(*btn_positions[idx], 203, 51), display, self.screen, description=desc)
+            plus = Button(self.responsive(*plus_positions[idx], 52, 51), "", self.screen)
+
+            self.pop_controls[key] = {"minus": minus, "value": value, "plus": plus}
+
+
+    def build_bottom_buttons(self):
+        """
+        Construit les boutons Back et Start en bas de l'écran.
+        """
+        self.btn_back  = Button(self.responsive(72, 512, 113, 63), "", self.screen)
+        self.btn_start = Button(self.responsive(1140, 506, 70, 75), "", self.screen)
 
 
     def update_layout(self):
@@ -199,6 +305,7 @@ class Settings:
         self.build_bottom_buttons()
         self.selected_pop = sel
         self.editable_button_set_value()
+<<<<<<< HEAD
         self.refresh_pop_display()
 
 
@@ -328,64 +435,45 @@ class Settings:
         x = (self.width - (2 * w + gap)) // 2
         self.btn_start = Button(Rect(x, y, w, self.btn_h), "Start", self.screen)
         self.btn_back = Button(Rect(x + w + gap, y, w, self.btn_h), "Back", self.screen)
+=======
+>>>>>>> 6d29ce92a2cc7784afea1710ebb9b45eb97c3dd3
 
 
     def draw(self):
         """
         Dessine l'écran des paramètres avec tous ses contrôles.
         """
-        self.screen.fill(settings.UI_BG_COLOR if hasattr(settings, 'UI_BG_COLOR') else (200, 200, 200))
-        pg.draw.rect(self.screen, settings.UI_PANEL_COLOR if hasattr(settings, 'UI_PANEL_COLOR') else (240, 240, 240), (0, 0, self.width, self.height))
+        self.screen.blit(self.bg_asset, (0, 0))
 
-        # nourriture
-        g = self.general_food
-        label_surf = self.font_lbl.render(g["label"], True, (0, 0, 0))
-        cx, ly = g["lbl_pos"]
-        lx = int(cx - label_surf.get_width() // 2)
-        self.screen.blit(label_surf, (lx, ly))
-        g["value"].draw(self.screen, self.font_btn)
+        # bouton nourriture
+        self.general_food["value"].draw(self.screen, self.font_btn, self.img_food)
 
-        # durée de la simulation
-        g = self.general_days
-        label_surf = self.font_lbl.render(g["label"], True, (0, 0, 0))
-        cx, ly = g["lbl_pos"]
-        lx = int(cx - label_surf.get_width() // 2)
-        self.screen.blit(label_surf, (lx, ly))
-        g["minus"].draw(self.screen, self.font_btn)
-        g["value"].draw(self.screen, self.font_btn)
-        g["plus"].draw(self.screen, self.font_btn)
+        # boutons jours
+        self.general_days["minus"].draw(self.screen, self.font_btn, self.img_gen_minus)
+        self.general_days["value"].draw(self.screen, self.font_btn, self.img_gen_btn)
+        self.general_days["plus"].draw(self.screen, self.font_btn, self.img_gen_plus)
 
-        # boutons de gestion des populations
-        self.btn_add_pop.draw(self.screen, self.font_btn)
-        self.btn_rem_pop.draw(self.screen, self.font_btn)
+        # boutons pop+ et pop-
+        self.btn_add_pop.draw(self.screen, self.font_btn, self.img_pop_add)
+        self.btn_rem_pop.draw(self.screen, self.font_btn, self.img_pop_rem)
 
-        # boutons numérotés des populations
+        # boutons numérotés des populations (on si la pop existe, off sinon)
         for rect, i in self.pop_number_buttons:
-            if i == self.selected_pop:
-                pg.draw.rect(self.screen, self.pop_selected_bg, (rect.x, rect.y, rect.width, rect.height))
-                txt = self.font_btn.render(str(i + 1), True, (255, 255, 255))
-                tx = rect.x + (rect.width - txt.get_width()) // 2
-                ty = rect.y + (rect.height - txt.get_height()) // 2
-                self.screen.blit(txt, (tx, ty))
-            else:
-                b = Button(Rect(rect.x, rect.y, rect.width, rect.height), str(i + 1), self.screen)
-                b.draw(self.screen, self.font_btn)
+            img = self.img_pop_on if i < len(settings.POPULATIONS) else self.img_pop_off
+            b = Button(rect, "", self.screen)
+            b.draw(self.screen, self.font_btn, img)
 
         # grille des contrôles de la population sélectionnée
         for key, c in self.pop_controls.items():
-            label_surf = self.font_lbl.render(c["label"], True, (0, 0, 0))
-            cx, ly = c["label_pos"]
-            lx = int(cx - label_surf.get_width() // 2)
-            self.screen.blit(label_surf, (lx, ly))
-            c["minus"].draw(self.screen, self.font_btn)
-            c["value"].draw(self.screen, self.font_btn)
-            c["plus"].draw(self.screen, self.font_btn)
+            c["minus"].draw(self.screen, self.font_btn, self.img_pop_minus)
+            c["value"].draw(self.screen, self.font_btn, self.img_pop_btn)
+            c["plus"].draw(self.screen, self.font_btn, self.img_pop_plus)
 
         # boutons du bas
-        self.btn_start.draw(self.screen, self.font_btn)
-        self.btn_back.draw(self.screen, self.font_btn)
+        self.btn_back.draw(self.screen, self.font_btn, self.img_back)
+        self.btn_start.draw(self.screen, self.font_btn, self.img_start)
 
-        # descriptions au dessus de tout le reste
+        # descriptions au survol
         settings.editable_butons['food_qtt'].description()
         settings.editable_butons['day_qtt'].description()
         self.btn_add_pop.description()
@@ -410,7 +498,7 @@ class Settings:
 
             mx, my = event.pos
 
-            # contrôles généraux
+            # contrôles généraux jours
             if self.general_days["minus"].rect.collidepoint((mx, my)):
                 settings.Days_max = max(1, settings.Days_max - 1)
                 settings.sync_food_quantity()
@@ -426,7 +514,7 @@ class Settings:
             if self.btn_add_pop.rect.collidepoint((mx, my)):
                 if len(settings.POPULATIONS) < settings.POPULATION_MAX:
                     new_idx = len(settings.POPULATIONS) + 1
-                    base = settings.DEFAULT_POP.copy() if hasattr(settings, 'DEFAULT_POP') else {"name": f"Population {new_idx}", "life": 50, "color": "blue", "quantity": 10, "speed_variation": 15, "size_variation": 15, "view_variation": 15, "view": 15, "speed": 3, "size": 3}
+                    base = settings.DEFAULT_POP.copy()
                     base["name"] = f"Population {new_idx}"
                     available = settings.get_available_colors()
                     base['color'] = available[0] if available else settings.Color_options[0]
@@ -448,7 +536,7 @@ class Settings:
 
             # sélection d'une population par son numéro
             for rect, idx in self.pop_number_buttons:
-                if rect.collidepoint((mx, my)):
+                if rect.collidepoint((mx, my)) and idx < len(settings.POPULATIONS):
                     self.selected_pop = idx
                     self.build_pop_controls()
                     self.editable_button_set_value()
@@ -468,10 +556,8 @@ class Settings:
                         cur_color = pop.get("color")
                         cycle = [c for c in opts_all if c in opts or c == cur_color]
                         if cycle:
-                            try:
-                                i = cycle.index(cur_color)
-                            except ValueError:
-                                i = 0
+                            try: i = cycle.index(cur_color)
+                            except ValueError: i = 0
                             pop["color"] = cycle[(i - 1) % len(cycle)]
                     elif isinstance(cur, int):
                         pop[key] = max(0, cur - 1)
@@ -487,27 +573,13 @@ class Settings:
                             cur_color = pop.get("color")
                             cycle = [c for c in opts_all if c in opts or c == cur_color]
                             if cycle:
-                                try:
-                                    i = cycle.index(cur_color)
-                                except ValueError:
-                                    i = 0
+                                try: i = cycle.index(cur_color)
+                                except ValueError: i = 0
                                 pop["color"] = cycle[(i + 1) % len(cycle)]
-                        case 'life':
-                            pop[key] = min(cur + 1, settings.Max_life)
-                        case 'quantity':
-                            pop[key] = min(cur + 1, settings.Max_quantity)
-                        case 'size':
-                            pop[key] = min(cur + 1, settings.Max_caracteristic)
-                        case 'speed':
-                            pop[key] = min(cur + 1, settings.Max_caracteristic)
-                        case 'view':
-                            pop[key] = min(cur + 1, settings.Max_caracteristic)
-                        case 'size_variation':
-                            pop[key] = min(cur + 1, 100) # pourcentage, max 100
-                        case 'view_variation':
-                            pop[key] = min(cur + 1, 100) # pourcentage, max 100
-                        case 'speed_variation':
-                            pop[key] = min(cur + 1, 100) # pourcentage, max 100
+                        case 'life': pop[key] = min(cur + 1, settings.Max_life)
+                        case 'quantity': pop[key] = min(cur + 1, settings.Max_quantity)
+                        case 'size' | 'speed' | 'view': pop[key] = min(cur + 1, settings.Max_caracteristic)
+                        case 'size_variation' | 'view_variation' | 'speed_variation': pop[key] = min(cur + 1, 100)
                     self.editable_button_set_value()
                     return None
 
@@ -530,11 +602,16 @@ class Settings:
         Met à jour l'affichage de tous les boutons éditables depuis les settings.
         """
         settings.editable_butons['day_qtt'].set_value(settings.Days_max)
-
         pop = settings.POPULATIONS[self.selected_pop]
         for key, c in self.pop_controls.items():
             if key != "color":
+<<<<<<< HEAD
                 c['value'].set_value(pop[key]) 
+=======
+                if key == 'quantity':
+                    c['value'].set_value(max(1, pop[key]))
+                c['value'].set_value(pop[key])
+>>>>>>> 6d29ce92a2cc7784afea1710ebb9b45eb97c3dd3
             else:
                 c["value"].text = settings.dico1[pop.get(key, "")]
 
@@ -543,7 +620,6 @@ class Settings:
         """
         Sauvegarde les valeurs saisies dans les boutons éditables vers les settings.
         """
-        # sauvegarde du nombre de jours
         if isinstance(settings.editable_butons['day_qtt'].get_number(), int):
             settings.Days_max = min(settings.Max_days_max, settings.editable_butons['day_qtt'].get_number())
             settings.sync_food_quantity()
@@ -552,41 +628,19 @@ class Settings:
             settings.Days_max = int(settings.editable_butons['day_qtt'].text)
             settings.sync_food_quantity()
 
-        # sauvegarde des caractéristiques de la population
         pop = settings.POPULATIONS[self.selected_pop]
         for key, c in self.pop_controls.items():
             if key != "color":
                 if isinstance(c['value'].get_number(), int):
                     match key:
-                        case 'life':
-                            pop[key] = min(c['value'].get_number(), settings.Max_life)
-                            c['value'].set_value(pop[key])
-                        case 'quantity':
-                            pop[key] = min(c['value'].get_number(), settings.Max_quantity)
-                            c['value'].set_value(pop[key])
-                        case 'size':
-                            pop[key] = min(c['value'].get_number(), settings.Max_caracteristic)
-                            c['value'].set_value(pop[key])
-                        case 'speed':
-                            pop[key] = min(c['value'].get_number(), settings.Max_caracteristic)
-                            c['value'].set_value(pop[key])
-                        case 'view':
-                            pop[key] = min(c['value'].get_number(), settings.Max_caracteristic)
-                            c['value'].set_value(pop[key])
-                        case 'size_variation':
-                            pop[key] = min(c['value'].get_number(), 100)
-                            c['value'].set_value(pop[key])
-                        case 'view_variation':
-                            pop[key] = min(c['value'].get_number(), 100)
-                            c['value'].set_value(pop[key])
-                        case 'speed_variation':
-                            pop[key] = min(c['value'].get_number(), 100)
-                            c['value'].set_value(pop[key])
+                        case 'life':            pop[key] = min(c['value'].get_number(), settings.Max_life);            c['value'].set_value(pop[key])
+                        case 'quantity':        pop[key] = min(c['value'].get_number(), settings.Max_quantity);        c['value'].set_value(pop[key])
+                        case 'size' | 'speed' | 'view': pop[key] = min(c['value'].get_number(), settings.Max_caracteristic); c['value'].set_value(pop[key])
+                        case 'size_variation' | 'view_variation' | 'speed_variation': pop[key] = min(c['value'].get_number(), 100); c['value'].set_value(pop[key])
                 else:
                     pop[key] = int(c['value'].text)
             else:
                 c["value"].text = str(pop.get(key, ""))
-
 
 
 
@@ -691,7 +745,9 @@ class Post_Game:
         average_view = [(sum(vals) / len(vals)) if vals else 0 for vals in ([obj.view for sub in settings.creatures_list_dico[d] for obj in sub] for d in days)]
 
 
-        ax1.xaxis.set_major_locator(MaxNLocator(nbins=10, integer=True))
+        ax1.set_xlim(0.5, self.current_day + 0.5)
+        ax1.xaxis.set_major_locator(MaxNLocator(nbins=12, integer=True))
+        ax1.set_xticks([i for i in range(1, self.current_day + 1) if (self.current_day <= 12 or i % max(1, self.current_day // 12) == 0)])
         ax1.set_ylim(0, 10)
         ax1.set_yticks(range(0, 11))
         ax1.plot(jour, avrage_speed, label="Vitesse", lw=lw, marker='+')
@@ -701,6 +757,8 @@ class Post_Game:
         ax1.set_ylabel('Moyenne')
         ax1.set_title("Évolution des caractéristiques moyennes (toutes populations)", fontsize=13, fontweight='bold', pad=12)
         ax1.legend(loc='upper left', framealpha=0.8)
+        ax1.grid(True, linestyle='--', alpha=0.5)
+        ax1.set_axisbelow(True)
         fig1.tight_layout()
         self.graph_list.append(self.graph_to_surf(fig1))
         pylab.close(fig1)
@@ -713,13 +771,17 @@ class Post_Game:
         c_counts = [sum(len(sub) for sub in settings.creatures_list_dico[k]) for k in range(1, len(settings.creatures_list_dico) + 1)]
         f_counts = [settings.food_list_dico[i] for i in range(1, len(settings.food_list_dico) + 1)]
 
+        ax2.set_xlim(0.5, self.current_day + 0.5)
         ax2.xaxis.set_major_locator(MaxNLocator(nbins=10, integer=True))
+        ax2.set_xticks([i for i in range(1, self.current_day + 1) if (self.current_day <= 12 or i % max(1, self.current_day // 12) == 0)])
         ax2.plot(jour, c_counts, label='Créature', lw=lw, marker="x")
         ax2.plot(jour, f_counts, label='Nouriture', lw=lw, marker="o")
         ax2.set_xlabel('Jours')
         ax2.set_ylabel('Quantitée')
-        ax2.set_title("Évolution de la quantité de créatures par rapport à la quantité de nouriture", fontsize=13, fontweight='bold', pad=12)
+        ax2.set_title("Évolution de la quantité de créatures et de la quantité de nouriture", fontsize=13, fontweight='bold', pad=12)
         ax2.legend(loc='upper left', framealpha=0.8)
+        ax2.grid(True, linestyle='--', alpha=0.5)
+        ax2.set_axisbelow(True)
         fig2.tight_layout()
         self.graph_list.append(self.graph_to_surf(fig2))
         pylab.close(fig2)
@@ -729,14 +791,18 @@ class Post_Game:
         fig3 = pylab.figure(figsize=figsize, dpi=dpi)
         ax3 = fig3.gca()
 
-        ax3.xaxis.set_major_locator(MaxNLocator(nbins=10, integer=True))
         for i in range(len(settings.creatures_list_dico[1])):
             c_p_conts = [len(p[i]) for p in settings.creatures_list_dico.values()]
             ax3.plot(jour, c_p_conts, lw=lw, color=settings.creatures_list_dico[1][i][0].color)
+        ax3.set_xlim(0.5, self.current_day + 0.5)
+        ax3.xaxis.set_major_locator(MaxNLocator(nbins=10, integer=True))
+        ax3.set_xticks([i for i in range(1, self.current_day + 1) if (self.current_day <= 12 or i % max(1, self.current_day // 12) == 0)])
         ax3.set_xlabel('Jours')
         ax3.set_ylabel('Quantité')
         ax3.set_title("Évolution de la quantité de créatures par populations", fontsize=13, fontweight='bold', pad=12)
         ax3.yaxis.set_major_locator(MaxNLocator(integer=True))
+        ax3.grid(True, linestyle='--', alpha=0.5)
+        ax3.set_axisbelow(True)
         fig3.tight_layout()
         self.graph_list.append(self.graph_to_surf(fig3))
         pylab.close(fig3)
@@ -749,7 +815,9 @@ class Post_Game:
             fig4 = pylab.figure(figsize=figsize, dpi=dpi)
             ax4 = fig4.gca()
 
+            ax4.set_xlim(0.5, self.current_day + 0.5)
             ax4.xaxis.set_major_locator(MaxNLocator(nbins=10, integer=True))
+            ax4.set_xticks([i for i in range(1, self.current_day + 1) if (self.current_day <= 12 or i % max(1, self.current_day // 12) == 0)])
             ax4.set_ylim(0, 10)
             ax4.set_yticks(range(0, 11))
 
@@ -764,6 +832,8 @@ class Post_Game:
             ax4.set_ylabel('Moyenne')
             ax4.set_title(f"Évolution des caractéristiques moyennes de la population {settings.dico2[color]}", fontsize=13, fontweight='bold', pad=12)
             ax4.legend(loc='upper left', framealpha=0.8)
+            ax4.grid(True, linestyle='--', alpha=0.5)
+            ax4.set_axisbelow(True)
             fig4.tight_layout()
             self.graph_list.append(self.graph_to_surf(fig4))
             pylab.close(fig4)
