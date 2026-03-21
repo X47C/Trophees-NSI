@@ -306,31 +306,12 @@ class Settings:
                 display = '1' if cur_val else '0'
             else:
                 display = str(cur_val)
-            if key == "life": 
-                description = "Permet de définir au bout de combien de jours une créature meurt de vieillesse, même si elle a mangé"
-            if key == "color":
-                description = "Permet de choisir la couleur de chaque population, les couleurs défilent lorsque l'on appuie sur + ou -"
-            if key == "quantity":
-                description = "Permet de définir le nombre de créatures au début de la simulation"
-            if key == "speed_variation":
-                description = "Permet de définir à quel point la vitesse des créatures varie au fur et à mesure de leur évolution, chaque jour de la simulation"
-            if key == "size_variation":
-                description = "Permet de définir à quel point la taille des créatures varie au fur et à mesure de leur évolution, chaque jour de la simulation"
-            if key == "view_variation":
-                description = "Permet de définir à quel point le champ de vision des créatures varie au fur et à mesure de leur évolution, chaque jour de la simulation"
-            if key == "view":
-                description = "Permet de définir le champ de vision des créatures au début de la simulation"
-            if key == "speed":
-                description = "Permet de définir la vitesse des créatures au début de la simulation"
-            if key == "size":
-                description = "Permet de définir la taille des créatures au début de la simulation"
-
             description = descriptions.get(key, "")
             minus = Button(Rect(x, y_btn, self.small_w, self.btn_h), "-", self.screen)
             if isinstance(cur_val, int):
                 value = Button(Rect(x + self.small_w + 6, y_btn, val_w, self.btn_h), display, self.screen, editable=True, description=description)
             else:
-                value = Button(Rect(x + self.small_w + 6, y_btn, val_w, self.btn_h), display, self.screen, description=description)
+                value = Button(Rect(x + self.small_w + 6, y_btn, val_w, self.btn_h), settings.dico1[display], self.screen, description=description)
             plus = Button(Rect(x + self.small_w + 6 + val_w + 6, y_btn, self.small_w, self.btn_h), "+", self.screen)
 
             center_x = x + (col_w // 2)
@@ -553,9 +534,9 @@ class Settings:
         pop = settings.POPULATIONS[self.selected_pop]
         for key, c in self.pop_controls.items():
             if key != "color":
-                c['value'].set_value(pop[key])
+                c['value'].set_value(pop[key]) 
             else:
-                c["value"].text = str(pop.get(key, ""))
+                c["value"].text = settings.dico1[pop.get(key, "")]
 
 
     def editable_button_save_value(self):
@@ -781,7 +762,7 @@ class Post_Game:
             ax4.plot(jour, m_view, label="Vue", lw=lw, marker="o", color=color)
             ax4.set_xlabel('Jours')
             ax4.set_ylabel('Moyenne')
-            ax4.set_title(f"Évolution des caractéristiques moyennes de la population {color}", fontsize=13, fontweight='bold', pad=12)
+            ax4.set_title(f"Évolution des caractéristiques moyennes de la population {settings.dico2[color]}", fontsize=13, fontweight='bold', pad=12)
             ax4.legend(loc='upper left', framealpha=0.8)
             fig4.tight_layout()
             self.graph_list.append(self.graph_to_surf(fig4))
