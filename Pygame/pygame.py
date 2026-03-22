@@ -192,18 +192,48 @@ class Settings:
 
         # tailles en pourcentage de l'écran (basé sur 1280x720)
         self.img_food = load('assets/settings/generals-buttons/food-button.png', 239/1280, 105/720)
-        self.img_pop_minus = load('assets/settings/population-buttons/minus.png', 52/1280, 51/720)
-        self.img_pop_plus = load('assets/settings/population-buttons/plus.png', 52/1280, 51/720)
-        self.img_pop_btn = load('assets/settings/population-buttons/button.png', 203/1280, 51/720)
         self.img_gen_minus = load('assets/settings/generals-buttons/minus.png', 52/1280, 51/720)
         self.img_gen_plus = load('assets/settings/generals-buttons/plus.png', 52/1280, 51/720)
         self.img_gen_btn = load('assets/settings/generals-buttons/button.png', 203/1280, 51/720)
         self.img_pop_add = load('assets/settings/generals-buttons/pop+.png', 99/1280, 59/720)
         self.img_pop_rem = load('assets/settings/generals-buttons/pop-.png', 99/1280, 59/720)
-        self.img_pop_on = load('assets/settings/generals-buttons/pop-on.png', 52/1280, 51/720)
         self.img_pop_off = load('assets/settings/generals-buttons/pop-off.png', 52/1280, 51/720)
         self.img_back = load('assets/settings/generals-buttons/back.png', 113/1280, 63/720)
         self.img_start = load('assets/settings/generals-buttons/start.png', 70/1280, 75/720)
+
+        self.pop_img_cache = {}
+
+
+    def get_pop_imgs(self, color: str) -> dict:
+        """
+        Retourne les images minus/plus/button pour la couleur donnée.
+        """
+        # correspondance couleur RGB
+        color_map = {
+            (255, 0, 0): 'red',
+            (0, 255, 0): 'green',
+            (0, 0, 255): 'blue',
+            (255, 255, 0): 'yellow',
+            (255, 165, 0): 'orange',
+            (128, 0, 128): 'purple'}
+
+        # convertit le tuple en nom si nécessaire
+        folder = color_map.get(color, color) if isinstance(color, tuple) else color
+
+        if folder not in self.pop_img_cache:
+            def load(name, w, h):
+                path = f'assets/settings/population-buttons/{folder}/{name}'
+                return pg.transform.scale(pg.image.load(path).convert_alpha(), (int(self.width * w), int(self.height * h)))
+            def load_general(name, w, h):
+                path = f'assets/settings/generals-buttons/{name}'
+                return pg.transform.scale(pg.image.load(path).convert_alpha(), (int(self.width * w), int(self.height * h)))
+
+            self.pop_img_cache[folder] = {
+                'minus': load('minus.png', 52/1280, 51/720),
+                'plus': load('plus.png', 52/1280, 51/720),
+                'button': load('button.png', 203/1280, 51/720),
+                'pop_on': load_general(f'pop-on/{folder}.png', 52/1280, 51/720)}
+        return self.pop_img_cache[folder]
 
 
     def responsive(self, x, y, w, h):
@@ -305,138 +335,6 @@ class Settings:
         self.build_bottom_buttons()
         self.selected_pop = sel
         self.editable_button_set_value()
-<<<<<<< HEAD
-        self.refresh_pop_display()
-
-
-    def build_general_controls(self):
-        """
-        Construit les contrôles généraux : nourriture et nombre de jours.
-        """
-        total_w = self.width - settings.PostG_PADDING * 2
-        col_w = (total_w - self.gap) // 2
-        val_w = col_w - self.small_w * 2 - 12
-        top_y = settings.PostG_PADDING
-
-        # bouton nourriture à gauche
-        x0 = settings.PostG_PADDING
-        lbl_y = top_y
-        btn_y = lbl_y + self.font_lbl.get_height() + self.label_gap
-        col_w = (total_w - self.gap) // 2
-
-        settings.editable_butons['food_qtt'] = Button(Rect(x0, btn_y, col_w, self.btn_h), "Modifier", self.screen, description="Permet d'acceder à une fenetre permettant de gérer la quantité de nouriture de la simulation au cours du temps")
-        self.general_food = {"label": "Quantité de nourriture", "value": settings.editable_butons['food_qtt'], "lbl_pos": (x0 + (col_w // 2), lbl_y)}
-
-        # bouton jours à droite
-        x1 = settings.PostG_PADDING + col_w + self.gap
-        lbl_y = top_y
-        btn_y = lbl_y + self.font_lbl.get_height() + self.label_gap
-        settings.editable_butons['day_qtt'] = Button(Rect(x1 + self.small_w + 6, btn_y, val_w, self.btn_h), str(settings.Days_max), self.screen, editable=True, max_length=100, description="Permet de modifier le nombre de jours de la simulation, avec au minimum 1 jour et au maximum 100 jours.")
-        self.general_days = {"label": "Nombre de jours de la simulation", "minus": Button(Rect(x1, btn_y, self.small_w, self.btn_h), "-", self.screen), "value": settings.editable_butons['day_qtt'], "plus": Button(Rect(x1 + self.small_w + 6 + val_w + 6, btn_y, self.small_w, self.btn_h), "+", self.screen), "lbl_pos": (x1 + (col_w // 2), lbl_y)}
-
-        base_line = btn_y + self.btn_h
-        self.pop_manage_y = base_line + self.pop_manage_top_space
-        self.pop_controls_start_y = self.pop_manage_y + 36 + self.pop_manage_bottom_space
-
-
-    def build_pop_management_buttons(self):
-        """
-        Construit les boutons d'ajout, suppression et sélection de population.
-        """
-        y = self.pop_manage_y
-
-        self.btn_add_pop = Button(Rect(settings.PostG_PADDING, y, 110, 36), "+ Pop", self.screen, description="Permet de d'augmenter le nombre de populations de la simulation, avec un maximum de 6")
-        self.btn_rem_pop = Button(Rect(settings.PostG_PADDING + 120, y, 110, 36), "- Pop", self.screen, description="Permet diminuer le nombre de populations de la simulation, avec un minimum de 1")
-
-        # petits boutons numérotés pour chaque population
-        self.pop_number_buttons = []
-        x = settings.PostG_PADDING + 260
-        for i in range(len(settings.POPULATIONS)):
-            rect = Rect(x, y, 40, 36)
-            self.pop_number_buttons.append((rect, i))
-            x += 46
-
-
-    def build_pop_controls(self):
-        """
-        Construit la grille de contrôles pour la population sélectionnée.
-        """
-        # crée une population par défaut si la liste est vide
-        if len(settings.POPULATIONS) == 0:
-            if hasattr(settings, 'DEFAULT_POP'):
-                settings.POPULATIONS.append(settings.DEFAULT_POP.copy())
-            else:
-                settings.POPULATIONS.append({"name": "Population 1", "life": 50, "color": "blue", "quantity": 10, "speed_variation": 15, "size_variation": 15, "view_variation": 15, "view": 15, "speed": 3, "size": 3})
-
-        self.selected_pop = max(0, min(self.selected_pop, len(settings.POPULATIONS) - 1))
-        pop = settings.POPULATIONS[self.selected_pop]
-
-        labels = [
-            ("Durée de vie des créatures", "life"),
-            ("Couleur des créatures", "color"),
-            ("Quantité de créatures", "quantity"),
-            ("Taux de variation de la vitesse", "speed_variation"),
-            ("Taux de variation de la taille", "size_variation"),
-            ("Taux de variation de la vue", "view_variation"),
-            ("Taille de vue au départ", "view"),
-            ("Vitesse de départ", "speed"),
-            ("Taille de départ", "size"),
-        ]
-
-        # descriptions pour chaque champ
-        descriptions = {
-            "life": "Permet de définir au bout de combien de jours une créature meurt de vieillesse, même si elle a mangé",
-            "color": "Défini la couleur de chaque population",
-            "quantity": "Permet de definir le nombre de créatures de cette population au début de la simulation",
-            "speed_variation": "Permet de definir le taux de transmission de la vitesse aux enfants des créatures",
-            "size_variation": "Permet de definir le taux de transmission de la taille aux enfants des créatures",
-            "view_variation": "Permet de definir le taux de transmission du champ de vision aux enfants de ces créatures",
-            "view": "Permet de definir le champ de vision des créatures de cette population au début de la simulation",
-            "speed": "Permet de definir la vitesse des créatures de cette population au début de la simulation",
-            "size": "Permet de definir la taille des créatures de cette population au début de la simulation",
-        }
-
-        total_w = self.width - 2 * settings.PostG_PADDING
-        col_w = (total_w - 2 * self.gap) // 3
-        val_w = col_w - self.small_w * 2 - 12
-
-        self.pop_controls = {}
-        for idx, (label, key) in enumerate(labels):
-            col = idx % 3
-            row = idx // 3
-            x = settings.PostG_PADDING + col * (col_w + self.gap)
-            y_label = self.pop_controls_start_y + row * (self.font_lbl.get_height() + self.label_gap + self.btn_h + 18)
-            y_btn = y_label + self.font_lbl.get_height() + self.label_gap
-
-            cur_val = pop.get(key, "")
-            if isinstance(cur_val, bool):
-                display = '1' if cur_val else '0'
-            else:
-                display = str(cur_val)
-            description = descriptions.get(key, "")
-            minus = Button(Rect(x, y_btn, self.small_w, self.btn_h), "-", self.screen)
-            if isinstance(cur_val, int):
-                value = Button(Rect(x + self.small_w + 6, y_btn, val_w, self.btn_h), display, self.screen, editable=True, description=description)
-            else:
-                value = Button(Rect(x + self.small_w + 6, y_btn, val_w, self.btn_h), settings.dico1[display], self.screen, description=description)
-            plus = Button(Rect(x + self.small_w + 6 + val_w + 6, y_btn, self.small_w, self.btn_h), "+", self.screen)
-
-            center_x = x + (col_w // 2)
-            self.pop_controls[key] = {"label": label, "label_pos": (center_x, y_label), "minus": minus, "value": value, "plus": plus}
-
-
-    def build_bottom_buttons(self):
-        """
-        Construit les boutons Start et Back en bas de l'écran.
-        """
-        y = self.height - (self.btn_h + 20)
-        w = 220
-        gap = 24
-        x = (self.width - (2 * w + gap)) // 2
-        self.btn_start = Button(Rect(x, y, w, self.btn_h), "Start", self.screen)
-        self.btn_back = Button(Rect(x + w + gap, y, w, self.btn_h), "Back", self.screen)
-=======
->>>>>>> 6d29ce92a2cc7784afea1710ebb9b45eb97c3dd3
 
 
     def draw(self):
@@ -459,15 +357,23 @@ class Settings:
 
         # boutons numérotés des populations (on si la pop existe, off sinon)
         for rect, i in self.pop_number_buttons:
-            img = self.img_pop_on if i < len(settings.POPULATIONS) else self.img_pop_off
-            b = Button(rect, "", self.screen)
-            b.draw(self.screen, self.font_btn, img)
+            if i < len(settings.POPULATIONS):
+                color = settings.POPULATIONS[i].get('color', 'default')
+                img_on = self.get_pop_imgs(color)['pop_on']
+                b = Button(rect, "", self.screen)
+                b.draw(self.screen, self.font_btn, img_on)
+            else:
+                b = Button(rect, "", self.screen)
+                b.draw(self.screen, self.font_btn, self.img_pop_off)
 
         # grille des contrôles de la population sélectionnée
+        color = settings.POPULATIONS[self.selected_pop].get('color', 'default')
+        pop_imgs = self.get_pop_imgs(color)
+
         for key, c in self.pop_controls.items():
-            c["minus"].draw(self.screen, self.font_btn, self.img_pop_minus)
-            c["value"].draw(self.screen, self.font_btn, self.img_pop_btn)
-            c["plus"].draw(self.screen, self.font_btn, self.img_pop_plus)
+            c["minus"].draw(self.screen, self.font_btn, pop_imgs['minus'])
+            c["value"].draw(self.screen, self.font_btn, pop_imgs['button'])
+            c["plus"].draw(self.screen,  self.font_btn, pop_imgs['plus'])
 
         # boutons du bas
         self.btn_back.draw(self.screen, self.font_btn, self.img_back)
@@ -605,15 +511,11 @@ class Settings:
         pop = settings.POPULATIONS[self.selected_pop]
         for key, c in self.pop_controls.items():
             if key != "color":
-<<<<<<< HEAD
-                c['value'].set_value(pop[key]) 
-=======
                 if key == 'quantity':
                     c['value'].set_value(max(1, pop[key]))
                 c['value'].set_value(pop[key])
->>>>>>> 6d29ce92a2cc7784afea1710ebb9b45eb97c3dd3
             else:
-                c["value"].text = settings.dico1[pop.get(key, "")]
+                c["value"].text = str(pop.get(key, ""))
 
 
     def editable_button_save_value(self):
@@ -700,14 +602,10 @@ class Post_Game:
         self.screen = screen
         self.current_day = current_day
 
-        #fond blanc
-        self.bg_asset = pg.Surface(settings.Display_size)
-        self.bg_asset.fill((255, 255, 255))
-
-        #boutons de navigation
-        self.Button_exit = Button(Rect(self.width // 2 - 110, self.height - 180, 220, 60), 'Exit to Desktop', self.screen)
-        self.Button_home = Button(Rect(self.width // 2 - 110, self.height - 110, 220, 60), 'Return to Home', self.screen)
-        self.Button_font = pg.font.SysFont(settings.Button_font, settings.Button_font_size)
+        #images de fond 
+        self.bg_up = pg.transform.scale(pg.image.load('assets/post-game/up.png'), (self.width, 360))
+        self.bg_down = pg.transform.scale(pg.image.load('assets/post-game/down.png'), (self.width, 360))
+        self.bg_middle = pg.transform.scale(pg.image.load('assets/post-game/middle.png'), (self.width, 540))
 
         #scrollbar
         self.scroll_y = 0
@@ -721,6 +619,45 @@ class Post_Game:
         self.graph_list = []
         g_nb = self.build_graphs()
         self.content_height = 540 * g_nb
+
+        # construction du fond
+        self.build_background()
+        self.content_height = max(self.content_height, self.bg_total_height)
+
+        #boutons
+        btn_w, btn_h = 220, 60
+        btn_gap = 20
+        total_w = btn_w * 2 + btn_gap
+        start_x = (self.width - total_w) // 2
+        btn_y_scroll = self.content_height - btn_h - 30
+        self.Button_exit = Button(Rect(start_x, btn_y_scroll, btn_w, btn_h), 'Exit to Desktop', self.screen)
+        self.Button_home = Button(Rect(start_x + btn_w + btn_gap, btn_y_scroll, btn_w, btn_h), 'Return to Home', self.screen)
+        self.Button_font = pg.font.SysFont(settings.Button_font, settings.Button_font_size)
+
+
+    def build_background(self):
+        """
+        Assemble les trois images en une seule grande surface de la hauteur du contenu.
+        """
+        fixed_h = 360 + 360 # hauteur fixe : haut + bas
+        middle_h = 540
+        available = max(0, self.content_height - fixed_h)
+        repeats = -(-available // middle_h)
+
+        self.bg_total_height = fixed_h + repeats * middle_h
+        self.bg_surf = pg.Surface((self.width, self.bg_total_height))
+
+        # image du haut
+        self.bg_surf.blit(self.bg_up, (0, 0))
+
+        # répétition de l'image du milieu
+        y = 360
+        for _ in range(repeats):
+            self.bg_surf.blit(self.bg_middle, (0, y))
+            y += middle_h
+
+        # image du bas 
+        self.bg_surf.blit(self.bg_down, (0, self.bg_total_height - 360))
 
 
     def build_graphs(self):
@@ -830,7 +767,7 @@ class Post_Game:
             ax4.plot(jour, m_view, label="Vue", lw=lw, marker="o", color=color)
             ax4.set_xlabel('Jours')
             ax4.set_ylabel('Moyenne')
-            ax4.set_title(f"Évolution des caractéristiques moyennes de la population {settings.dico2[color]}", fontsize=13, fontweight='bold', pad=12)
+            ax4.set_title(f"Évolution des caractéristiques moyennes de la population {color}", fontsize=13, fontweight='bold', pad=12)
             ax4.legend(loc='upper left', framealpha=0.8)
             ax4.grid(True, linestyle='--', alpha=0.5)
             ax4.set_axisbelow(True)
@@ -860,22 +797,32 @@ class Post_Game:
         """
         Dessine l'écran post-partie avec les graphes et la scrollbar.
         """
-        self.screen.blit(self.bg_asset, (0, 0))
+        # fond
+        self.screen.blit(self.bg_surf, (0, 0), area=Rect(0, self.scroll_y, self.width, self.height))
 
         # surface scrollable contenant les graphes
-        content_surf = pg.Surface((self.width - 30, self.content_height))
-        content_surf.fill((230, 230, 230))
+        content_surf = pg.Surface((self.width - 30, self.content_height), pg.SRCALPHA   )
 
-        y = 30
+        y = 160
         for g in self.graph_list:
             content_surf.blit(g, (self.width // 2 - 410, y))
             y += 530
 
-        self.screen.blit(content_surf, (0, 0), area=Rect(0, self.scroll_y, self.width - 30, self.height))
 
+        self.screen.blit(content_surf, (0, 0), area=Rect(0, self.scroll_y, self.width - 30, self.height))
         self.draw_scrollbar()
-        self.Button_exit.draw(self.screen, self.Button_font)
-        self.Button_home.draw(self.screen, self.Button_font)
+
+        # repositionne les boutons en coordonnées écran selon le scroll
+        btn_y_screen = self.Button_exit.rect.y - self.scroll_y
+
+        # dessine uniquement si visible à l'écran
+        if 0 <= btn_y_screen <= self.height:
+            self.Button_exit.rect.y = btn_y_screen
+            self.Button_home.rect.y = btn_y_screen
+            self.Button_exit.draw(self.screen, self.Button_font)
+            self.Button_home.draw(self.screen, self.Button_font)
+            self.Button_exit.rect.y = btn_y_screen + self.scroll_y 
+            self.Button_home.rect.y = btn_y_screen + self.scroll_y
 
 
     def draw_scrollbar(self):
@@ -891,9 +838,12 @@ class Post_Game:
         Gère le scroll et les clics sur les boutons de navigation.
         """
         if event.type == pg.MOUSEBUTTONUP and event.button == 1:
-            if self.Button_exit.rect.collidepoint(event.pos):
+            mx, my = event.pos
+            adjusted = (mx, my + self.scroll_y)
+
+            if self.Button_exit.rect.collidepoint(adjusted):
                 return 'exit'
-            if self.Button_home.rect.collidepoint(event.pos):
+            if self.Button_home.rect.collidepoint(adjusted):
                 return 'home'
             self.dragging_scroll = False
 
