@@ -106,3 +106,9 @@ toolbox_show_creatures = True
 toolbox_show_food = True
 toolbox_show_vision = True
 toolbox_simulation_speed = 1  # multiplicateur : 0.5, 1, 2, 4, 8, 16
+
+# noms des couleurs des populations 
+#les noms au masculin pour les boutons :
+dico1 = {"blue" : "bleu", "pink" : "rose", "red" : "rouge", "green" : "vert", "yellow" : "jaune", "purple" : "violet", "gray" : "gris"}
+#les noms au feminin pour les graphiques :
+dico2 = {"blue" : "bleue", "pink" : "rose", "red" : "rouge", "green" : "verte", "yellow" : "jaune", "purple" : "violette", "gray" : "grise"}
