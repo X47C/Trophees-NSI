@@ -75,7 +75,7 @@ class food_editor():
         self.cursor_vis = True
         self.cursor_tick = 0
 
-        btn_apply = pg.Rect(self.input_rect.right + 10, input_y, 90, 34)
+        btn_apply = pg.Rect(self.input_rect.right + 10, input_y + 10, 90, 34)
         self.btn_apply = Button(btn_apply, "Appliquer", self.screen)
 
         # boutons pour les fonctions prédéfinies

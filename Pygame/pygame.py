@@ -123,7 +123,7 @@ class Before_Game:
             self.screen.blit(frame_surf, (popup_x, popup_y))
 
             # bouton "Passer"
-            self.Button_tutorial_pass.draw(self.screen, self.Button_font)
+            self.Button_tutorial_pass.draw(self.screen, self.Button_font, bg=(50, 180, 100))
 
             pg.display.flip()
             clock_tuto.tick(fps_video)
@@ -515,7 +515,7 @@ class Settings:
                     c['value'].set_value(max(1, pop[key]))
                 c['value'].set_value(pop[key])
             else:
-                c["value"].text = str(pop.get(key, ""))
+                c["value"].text = settings.color.get(str(pop.get(key, "")), str(pop.get(key, "")))
 
 
     def editable_button_save_value(self):
@@ -535,14 +535,14 @@ class Settings:
             if key != "color":
                 if isinstance(c['value'].get_number(), int):
                     match key:
-                        case 'life':            pop[key] = min(c['value'].get_number(), settings.Max_life);            c['value'].set_value(pop[key])
-                        case 'quantity':        pop[key] = min(c['value'].get_number(), settings.Max_quantity);        c['value'].set_value(pop[key])
+                        case 'life': pop[key] = min(c['value'].get_number(), settings.Max_life); c['value'].set_value(pop[key])
+                        case 'quantity': pop[key] = min(c['value'].get_number(), settings.Max_quantity); c['value'].set_value(pop[key])
                         case 'size' | 'speed' | 'view': pop[key] = min(c['value'].get_number(), settings.Max_caracteristic); c['value'].set_value(pop[key])
                         case 'size_variation' | 'view_variation' | 'speed_variation': pop[key] = min(c['value'].get_number(), 100); c['value'].set_value(pop[key])
                 else:
                     pop[key] = int(c['value'].text)
             else:
-                c["value"].text = str(pop.get(key, ""))
+                c["value"].text = settings.color.get(str(pop.get(key, "")), str(pop.get(key, "")))
 
 
 
@@ -767,7 +767,7 @@ class Post_Game:
             ax4.plot(jour, m_view, label="Vue", lw=lw, marker="o", color=color)
             ax4.set_xlabel('Jours')
             ax4.set_ylabel('Moyenne')
-            ax4.set_title(f"Évolution des caractéristiques moyennes de la population {color}", fontsize=13, fontweight='bold', pad=12)
+            ax4.set_title(f"Évolution des caractéristiques moyennes de la population {settings.color_fe[color]}", fontsize=13, fontweight='bold', pad=12)
             ax4.legend(loc='upper left', framealpha=0.8)
             ax4.grid(True, linestyle='--', alpha=0.5)
             ax4.set_axisbelow(True)
@@ -819,8 +819,8 @@ class Post_Game:
         if 0 <= btn_y_screen <= self.height:
             self.Button_exit.rect.y = btn_y_screen
             self.Button_home.rect.y = btn_y_screen
-            self.Button_exit.draw(self.screen, self.Button_font)
-            self.Button_home.draw(self.screen, self.Button_font)
+            self.Button_exit.draw(self.screen, self.Button_font, bg=(200, 50, 50))
+            self.Button_home.draw(self.screen, self.Button_font, bg=(50, 120, 200))
             self.Button_exit.rect.y = btn_y_screen + self.scroll_y 
             self.Button_home.rect.y = btn_y_screen + self.scroll_y
 

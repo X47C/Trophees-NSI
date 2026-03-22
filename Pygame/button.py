@@ -35,13 +35,19 @@ class Button:
                 surf.blit(image, (self.rect.x, self.rect.y))
                 ts = font.render(display_text, True, (255, 255, 255))
                 surf.blit(ts, (self.rect.x + (self.rect.w - ts.get_width()) // 2, self.rect.y + (self.rect.h - ts.get_height()) // 2))
-                return
             else:
                 image = asset.convert_alpha()
                 surf.blit(image, (self.rect.x, self.rect.y))
                 ts = font.render(display_text, True, (255, 255, 255))
                 surf.blit(ts, (self.rect.x + (self.rect.w - ts.get_width()) // 2, self.rect.y + (self.rect.h - ts.get_height()) // 2))
-                return
+            # curseur clignotant si le champ est actif (même avec image)
+            if self.editable and self.active:
+                if (pg.time.get_ticks() // 500) % 2 == 0:
+                    text_w = ts.get_width()
+                    caret_x = self.rect.x + (self.rect.w - text_w) // 2 + text_w + 2
+                    caret_y = self.rect.y + (self.rect.h - ts.get_height()) // 2
+                    pg.draw.rect(surf, (255, 255, 255), (caret_x, caret_y, 2, ts.get_height()))
+            return
 
         pg.draw.rect(surf, bg, self.rect, border_radius=8)
         pg.draw.rect(surf, (0, 0, 0), self.rect, 2, border_radius=8)
