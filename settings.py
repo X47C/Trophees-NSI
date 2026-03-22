@@ -11,6 +11,7 @@ editable_butons = {}
 # affichage
 Display_size = (1280, 720)  # largeur, hauteur
 FPS = 60
+PostG_PADDING = 20
 
 
 # polices

@@ -192,18 +192,48 @@ class Settings:
 
         # tailles en pourcentage de l'écran (basé sur 1280x720)
         self.img_food = load('assets/settings/generals-buttons/food-button.png', 239/1280, 105/720)
-        self.img_pop_minus = load('assets/settings/population-buttons/minus.png', 52/1280, 51/720)
-        self.img_pop_plus = load('assets/settings/population-buttons/plus.png', 52/1280, 51/720)
-        self.img_pop_btn = load('assets/settings/population-buttons/button.png', 203/1280, 51/720)
         self.img_gen_minus = load('assets/settings/generals-buttons/minus.png', 52/1280, 51/720)
         self.img_gen_plus = load('assets/settings/generals-buttons/plus.png', 52/1280, 51/720)
         self.img_gen_btn = load('assets/settings/generals-buttons/button.png', 203/1280, 51/720)
         self.img_pop_add = load('assets/settings/generals-buttons/pop+.png', 99/1280, 59/720)
         self.img_pop_rem = load('assets/settings/generals-buttons/pop-.png', 99/1280, 59/720)
-        self.img_pop_on = load('assets/settings/generals-buttons/pop-on.png', 52/1280, 51/720)
         self.img_pop_off = load('assets/settings/generals-buttons/pop-off.png', 52/1280, 51/720)
         self.img_back = load('assets/settings/generals-buttons/back.png', 113/1280, 63/720)
         self.img_start = load('assets/settings/generals-buttons/start.png', 70/1280, 75/720)
+
+        self.pop_img_cache = {}
+
+
+    def get_pop_imgs(self, color: str) -> dict:
+        """
+        Retourne les images minus/plus/button pour la couleur donnée.
+        """
+        # correspondance couleur RGB
+        color_map = {
+            (255, 0, 0): 'red',
+            (0, 255, 0): 'green',
+            (0, 0, 255): 'blue',
+            (255, 255, 0): 'yellow',
+            (255, 165, 0): 'orange',
+            (128, 0, 128): 'purple'}
+
+        # convertit le tuple en nom si nécessaire
+        folder = color_map.get(color, color) if isinstance(color, tuple) else color
+
+        if folder not in self.pop_img_cache:
+            def load(name, w, h):
+                path = f'assets/settings/population-buttons/{folder}/{name}'
+                return pg.transform.scale(pg.image.load(path).convert_alpha(), (int(self.width * w), int(self.height * h)))
+            def load_general(name, w, h):
+                path = f'assets/settings/generals-buttons/{name}'
+                return pg.transform.scale(pg.image.load(path).convert_alpha(), (int(self.width * w), int(self.height * h)))
+
+            self.pop_img_cache[folder] = {
+                'minus': load('minus.png', 52/1280, 51/720),
+                'plus': load('plus.png', 52/1280, 51/720),
+                'button': load('button.png', 203/1280, 51/720),
+                'pop_on': load_general(f'pop-on/{folder}.png', 52/1280, 51/720)}
+        return self.pop_img_cache[folder]
 
 
     def responsive(self, x, y, w, h):
@@ -456,15 +486,23 @@ class Settings:
 
         # boutons numérotés des populations (on si la pop existe, off sinon)
         for rect, i in self.pop_number_buttons:
-            img = self.img_pop_on if i < len(settings.POPULATIONS) else self.img_pop_off
-            b = Button(rect, "", self.screen)
-            b.draw(self.screen, self.font_btn, img)
+            if i < len(settings.POPULATIONS):
+                color = settings.POPULATIONS[i].get('color', 'default')
+                img_on = self.get_pop_imgs(color)['pop_on']
+                b = Button(rect, "", self.screen)
+                b.draw(self.screen, self.font_btn, img_on)
+            else:
+                b = Button(rect, "", self.screen)
+                b.draw(self.screen, self.font_btn, self.img_pop_off)
 
         # grille des contrôles de la population sélectionnée
+        color = settings.POPULATIONS[self.selected_pop].get('color', 'default')
+        pop_imgs = self.get_pop_imgs(color)
+
         for key, c in self.pop_controls.items():
-            c["minus"].draw(self.screen, self.font_btn, self.img_pop_minus)
-            c["value"].draw(self.screen, self.font_btn, self.img_pop_btn)
-            c["plus"].draw(self.screen, self.font_btn, self.img_pop_plus)
+            c["minus"].draw(self.screen, self.font_btn, pop_imgs['minus'])
+            c["value"].draw(self.screen, self.font_btn, pop_imgs['button'])
+            c["plus"].draw(self.screen,  self.font_btn, pop_imgs['plus'])
 
         # boutons du bas
         self.btn_back.draw(self.screen, self.font_btn, self.img_back)
@@ -606,7 +644,7 @@ class Settings:
                     c['value'].set_value(max(1, pop[key]))
                 c['value'].set_value(pop[key])
             else:
-                c["value"].text = settings.dico1[pop.get(key, "")]
+                c["value"].text = str(pop.get(key, ""))
 
 
     def editable_button_save_value(self):
@@ -693,14 +731,10 @@ class Post_Game:
         self.screen = screen
         self.current_day = current_day
 
-        #fond blanc
-        self.bg_asset = pg.Surface(settings.Display_size)
-        self.bg_asset.fill((255, 255, 255))
-
-        #boutons de navigation
-        self.Button_exit = Button(Rect(self.width // 2 - 110, self.height - 180, 220, 60), 'Exit to Desktop', self.screen)
-        self.Button_home = Button(Rect(self.width // 2 - 110, self.height - 110, 220, 60), 'Return to Home', self.screen)
-        self.Button_font = pg.font.SysFont(settings.Button_font, settings.Button_font_size)
+        #images de fond 
+        self.bg_up = pg.transform.scale(pg.image.load('assets/post-game/up.png'), (self.width, 360))
+        self.bg_down = pg.transform.scale(pg.image.load('assets/post-game/down.png'), (self.width, 360))
+        self.bg_middle = pg.transform.scale(pg.image.load('assets/post-game/middle.png'), (self.width, 540))
 
         #scrollbar
         self.scroll_y = 0
@@ -714,6 +748,45 @@ class Post_Game:
         self.graph_list = []
         g_nb = self.build_graphs()
         self.content_height = 540 * g_nb
+
+        # construction du fond
+        self.build_background()
+        self.content_height = max(self.content_height, self.bg_total_height)
+
+        #boutons
+        btn_w, btn_h = 220, 60
+        btn_gap = 20
+        total_w = btn_w * 2 + btn_gap
+        start_x = (self.width - total_w) // 2
+        btn_y_scroll = self.content_height - btn_h - 30
+        self.Button_exit = Button(Rect(start_x, btn_y_scroll, btn_w, btn_h), 'Exit to Desktop', self.screen)
+        self.Button_home = Button(Rect(start_x + btn_w + btn_gap, btn_y_scroll, btn_w, btn_h), 'Return to Home', self.screen)
+        self.Button_font = pg.font.SysFont(settings.Button_font, settings.Button_font_size)
+
+
+    def build_background(self):
+        """
+        Assemble les trois images en une seule grande surface de la hauteur du contenu.
+        """
+        fixed_h = 360 + 360 # hauteur fixe : haut + bas
+        middle_h = 540
+        available = max(0, self.content_height - fixed_h)
+        repeats = -(-available // middle_h)
+
+        self.bg_total_height = fixed_h + repeats * middle_h
+        self.bg_surf = pg.Surface((self.width, self.bg_total_height))
+
+        # image du haut
+        self.bg_surf.blit(self.bg_up, (0, 0))
+
+        # répétition de l'image du milieu
+        y = 360
+        for _ in range(repeats):
+            self.bg_surf.blit(self.bg_middle, (0, y))
+            y += middle_h
+
+        # image du bas 
+        self.bg_surf.blit(self.bg_down, (0, self.bg_total_height - 360))
 
 
     def build_graphs(self):
@@ -823,7 +896,7 @@ class Post_Game:
             ax4.plot(jour, m_view, label="Vue", lw=lw, marker="o", color=color)
             ax4.set_xlabel('Jours')
             ax4.set_ylabel('Moyenne')
-            ax4.set_title(f"Évolution des caractéristiques moyennes de la population {settings.dico2[color]}", fontsize=13, fontweight='bold', pad=12)
+            ax4.set_title(f"Évolution des caractéristiques moyennes de la population {color}", fontsize=13, fontweight='bold', pad=12)
             ax4.legend(loc='upper left', framealpha=0.8)
             ax4.grid(True, linestyle='--', alpha=0.5)
             ax4.set_axisbelow(True)
@@ -853,22 +926,32 @@ class Post_Game:
         """
         Dessine l'écran post-partie avec les graphes et la scrollbar.
         """
-        self.screen.blit(self.bg_asset, (0, 0))
+        # fond
+        self.screen.blit(self.bg_surf, (0, 0), area=Rect(0, self.scroll_y, self.width, self.height))
 
         # surface scrollable contenant les graphes
-        content_surf = pg.Surface((self.width - 30, self.content_height))
-        content_surf.fill((230, 230, 230))
+        content_surf = pg.Surface((self.width - 30, self.content_height), pg.SRCALPHA   )
 
-        y = 30
+        y = 160
         for g in self.graph_list:
             content_surf.blit(g, (self.width // 2 - 410, y))
             y += 530
 
-        self.screen.blit(content_surf, (0, 0), area=Rect(0, self.scroll_y, self.width - 30, self.height))
 
+        self.screen.blit(content_surf, (0, 0), area=Rect(0, self.scroll_y, self.width - 30, self.height))
         self.draw_scrollbar()
-        self.Button_exit.draw(self.screen, self.Button_font)
-        self.Button_home.draw(self.screen, self.Button_font)
+
+        # repositionne les boutons en coordonnées écran selon le scroll
+        btn_y_screen = self.Button_exit.rect.y - self.scroll_y
+
+        # dessine uniquement si visible à l'écran
+        if 0 <= btn_y_screen <= self.height:
+            self.Button_exit.rect.y = btn_y_screen
+            self.Button_home.rect.y = btn_y_screen
+            self.Button_exit.draw(self.screen, self.Button_font)
+            self.Button_home.draw(self.screen, self.Button_font)
+            self.Button_exit.rect.y = btn_y_screen + self.scroll_y 
+            self.Button_home.rect.y = btn_y_screen + self.scroll_y
 
 
     def draw_scrollbar(self):
@@ -884,9 +967,12 @@ class Post_Game:
         Gère le scroll et les clics sur les boutons de navigation.
         """
         if event.type == pg.MOUSEBUTTONUP and event.button == 1:
-            if self.Button_exit.rect.collidepoint(event.pos):
+            mx, my = event.pos
+            adjusted = (mx, my + self.scroll_y)
+
+            if self.Button_exit.rect.collidepoint(adjusted):
                 return 'exit'
-            if self.Button_home.rect.collidepoint(event.pos):
+            if self.Button_home.rect.collidepoint(adjusted):
                 return 'home'
             self.dragging_scroll = False
 
