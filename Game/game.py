@@ -13,6 +13,9 @@ class Day_Manager():
         self.current_day = 1
         self.time = 0
 
+        # police
+        self.font = pg.font.SysFont(settings.Days_font, settings.Days_font_size)
+
 
     def update(self) -> None:
         """
@@ -50,7 +53,19 @@ class Day_Manager():
 
         #crée la nouriture
         for i in range(settings.Food_quantity[0]):
-            settings.food_list.append(Food(rd(100, settings.Display_size[0] - 100), rd(50, settings.Display_size[1] - 50)))
+            w, h = settings.Display_size
+            s = w / 638.0
+            while True:
+                fx = rd(0, w)
+                fy = rd(0, h)
+                valide = True
+                if fx <= 255 * s and fy < 148 * s * (1.0 - fx / (255 * s)) + 20:
+                    valide = False
+                if fx >= 375 * s and fy < (138.0 / 263.0) * (fx - 375 * s) + 20:
+                    valide = False
+                if valide:
+                    settings.food_list.append(Food(fx, fy))
+                    break
         self.distribute_on_border(settings.creatures_list, settings.Display_size)
 
         #implemente les premier jour pour les graphes
@@ -98,7 +113,19 @@ class Day_Manager():
         #réinitialise et recréé la nouriture
         settings.food_list = []
         for i in range(settings.Food_quantity[self.current_day - 1]):
-            settings.food_list.append(Food(rd(100, settings.Display_size[0] - 100), rd(50, settings.Display_size[1] - 50)))
+            w, h = settings.Display_size
+            s = w / 638.0
+            while True:
+                fx = rd(0, w)
+                fy = rd(0, h)
+                valide = True
+                if fx <= 255 * s and fy < 148 * s * (1.0 - fx / (255 * s)) + 20:
+                    valide = False
+                if fx >= 375 * s and fy < (138.0 / 263.0) * (fx - 375 * s) + 20:
+                    valide = False
+                if valide:
+                    settings.food_list.append(Food(fx, fy))
+                    break
         self.distribute_on_border(settings.creatures_list, settings.Display_size)
 
         #implemente le jour actuel dans les graphes
@@ -112,7 +139,7 @@ class Day_Manager():
         """
         if not getattr(settings, 'toolbox_show_day', True):
             return
-        self.surf.blit(pg.font.SysFont(settings.Days_font, settings.Days_font_size).render(f'Jour : {self.current_day} / {settings.Days_max}', True, (255, 255, 255)), (10, 10))
+        self.surf.blit(self.font.render(f'Jour : {self.current_day} / {settings.Days_max}', True, (0, 0, 0)), (10, 10))
 
 
     def draw_creature_number(self) -> None:
@@ -121,10 +148,11 @@ class Day_Manager():
         """
         if not getattr(settings, 'toolbox_show_creatures', True):
             return
-        # compte combien d'infos sont affichées au-dessus
         offset = sum([getattr(settings, 'toolbox_show_day', True)])
         y = 10 + offset * (settings.Days_font_size + 8)
-        self.surf.blit(pg.font.SysFont(settings.Days_font, settings.Days_font_size).render(f'Nombre de créatures : {sum([len(l) for l in settings.creatures_list])}', True, (255, 255, 255)), (10, y))
+        debut = sum(len(l) for l in settings.creatures_list_dico[self.current_day])
+        actuel = sum(len(l) for l in settings.creatures_list)
+        self.surf.blit(pg.font.SysFont(settings.Days_font, settings.Days_font_size).render(f'Créatures : {actuel} / {debut}', True, (0, 0, 0)), (10, y))
 
 
     def draw_food_number(self) -> None:
@@ -133,53 +161,51 @@ class Day_Manager():
         """
         if not getattr(settings, 'toolbox_show_food', True):
             return
-        # compte combien d'infos sont affichées au-dessus
         offset = sum([getattr(settings, 'toolbox_show_day', True), getattr(settings, 'toolbox_show_creatures', True)])
         y = 10 + offset * (settings.Days_font_size + 8)
-        self.surf.blit(pg.font.SysFont(settings.Days_font, settings.Days_font_size).render(f'Quantité de nouriture : {len(settings.food_list)}', True, (255, 255, 255)), (10, y))
+        debut = settings.food_list_dico[self.current_day]
+        actuel = len(settings.food_list)
+        self.surf.blit(pg.font.SysFont(settings.Days_font, settings.Days_font_size).render(f'Nourriture : {actuel} / {debut}', True, (0, 0, 0)), (10, y))
 
 
     def distribute_on_border(self, lists: list, screen_size: tuple, margin: int = 0) -> None:
         """
-        Distribue les objets (dans lists) uniformément sur le bord de l'écran.
-
-        - lists : liste de listes contenant des objets avec attributs pos_x et pos_y
-        - screen_size : (width, height)
-        - margin : marge intérieure depuis le bord (pixels)
+        distribue les créatures sur le bord de la surface de jeu
         """
         w, h = screen_size
-        eff_w = max(0, w - 2 * margin)
-        eff_h = max(0, h - 2 * margin)
+        s = w / 638.0
 
-        # aplatit toutes les sous-listes en une seule
-        flat = []
-        for sub in lists:
-            for obj in sub:
-                flat.append(obj)
+        # les 6 coins du polygone 
+        coins = [
+            (0, 148 * s),
+            (0, h),
+            (w, h),
+            (w, 138 * s),
+            (375 * s, 0),
+            (255 * s, 0)]
+        coins.append(coins[0])  # fermeture
+
+        # longueur de chaque segment
+        from math import hypot
+        seg_lens = [hypot(coins[i+1][0]-coins[i][0], coins[i+1][1]-coins[i][1]) for i in range(6)]
+        perimetre = sum(seg_lens)
+
+        # aplatit et mélange
+        flat = [obj for sub in lists for obj in sub]
         shuffle(flat)
-
         N = len(flat)
         if N == 0:
             return
 
-        perimeter = 2 * (eff_w + eff_h)
-        spacing = perimeter / N
+        spacing = perimetre / N
 
-        #positionnement sur le périmètre
         for i, obj in enumerate(flat):
             d = i * spacing
-            if d < eff_w:
-                x = margin + d
-                y = margin
-            elif d < eff_w + eff_h:
-                x = margin + eff_w
-                y = margin + (d - eff_w)
-            elif d < eff_w + eff_h + eff_w:
-                x = margin + (eff_w - (d - (eff_w + eff_h)))
-                y = margin + eff_h
-            else:
-                x = margin
-                y = margin + (eff_h - (d - (2 * eff_w + eff_h)))
-
-            obj.pos_x = int(round(x))
-            obj.pos_y = int(round(y))
+            cumul = 0.0
+            for k, seg_len in enumerate(seg_lens):
+                if d <= cumul + seg_len:
+                    t = (d - cumul) / seg_len if seg_len > 0 else 0.0
+                    obj.pos_x = int(round(coins[k][0] + t * (coins[k+1][0] - coins[k][0])))
+                    obj.pos_y = int(round(coins[k][1] + t * (coins[k+1][1] - coins[k][1])))
+                    break
+                cumul += seg_len

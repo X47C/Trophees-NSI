@@ -558,9 +558,7 @@ class In_Game:
         self.width, self.height = settings.Display_size
         self.screen = screen
 
-        # self.bg_asset = pg.image.load('assets/bg_in_game.png')
-        self.bg_asset = pg.Surface(settings.Display_size)
-        self.bg_asset.fill((34, 139, 34))
+        self.bg_asset = pg.transform.scale(pg.image.load('assets/game/background.png'), settings.Display_size)
 
         self.toolbox = Toolbox(screen)
 

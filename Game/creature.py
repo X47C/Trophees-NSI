@@ -50,17 +50,20 @@ class Creature():
         self.rect = self.image.get_rect(center=(int(self.pos_x), int(self.pos_y)))
 
 
+        # cercle de vision
+        r = self.radius
+        self.vision_surf = pg.Surface((r * 2, r * 2), pg.SRCALPHA)
+        pg.draw.circle(self.vision_surf, (255, 255, 255, 30), (r, r), r)
+        pg.draw.circle(self.vision_surf, (255, 255, 255, 120), (r, r), r, 2)
+
+
     def draw(self, screen: pg.surface) -> None:
         """
         Dessine la créature sur l'écran 'screen'
         """
         # cercle de vision si l'option est activée
         if getattr(settings, 'toolbox_show_vision', True):
-            r = self.radius
-            vision_surf = pg.Surface((r * 2, r * 2), pg.SRCALPHA)
-            pg.draw.circle(vision_surf, (255, 255, 255, 30), (r, r), r)
-            pg.draw.circle(vision_surf, (255, 255, 255, 120), (r, r), r, 2)
-            screen.blit(vision_surf, (self.pos_x - r, self.pos_y - r))
+            screen.blit(self.vision_surf, (self.pos_x - self.radius, self.pos_y - self.radius)) 
 
         # dessin de la créature
         rect = self.image.get_rect(center=(int(self.pos_x), int(self.pos_y)))
@@ -136,24 +139,49 @@ class Creature():
         # rebond sur les bords
         bounced = False
 
+        s = w / 638.0
+
+        # bord gauche
         if self.pos_x < margin:
             self.pos_x = margin
             self.angle_deg = (180.0 - self.angle_deg) % 360.0
             self.ang_vel = -self.ang_vel + uniform(-90, 90)
             bounced = True
+        # bord droit
         elif self.pos_x > w - margin:
             self.pos_x = w - margin
             self.angle_deg = (180.0 - self.angle_deg) % 360.0
             self.ang_vel = -self.ang_vel + uniform(-90, 90)
             bounced = True
 
-        if self.pos_y < margin:
-            self.pos_y = margin
+        # bord bas
+        if self.pos_y > h - margin:
+            self.pos_y = h - margin
             self.angle_deg = (-self.angle_deg) % 360.0
             self.ang_vel = -self.ang_vel + uniform(-90, 90)
             bounced = True
-        elif self.pos_y > h - margin:
-            self.pos_y = h - margin
+
+        # diagonal haut-gauche : (0, 148*s) -> (255*s, 0)
+        if self.pos_x <= 255 * s:
+            y_lim = 148 * s * (1.0 - self.pos_x / (255 * s)) + margin
+            if self.pos_y < y_lim:
+                self.pos_y = y_lim
+                self.angle_deg = (2 * 60.0 - self.angle_deg) % 360.0
+                self.ang_vel = -self.ang_vel + uniform(-90, 90)
+                bounced = True
+
+        # diagonal haut-droit : (375*s, 0) -> (638*s, 138*s)
+        elif self.pos_x >= 375 * s:
+            y_lim = (138.0 / 263.0) * (self.pos_x - 375 * s) + margin
+            if self.pos_y < y_lim:
+                self.pos_y = y_lim
+                self.angle_deg = (2 * 120.0 - self.angle_deg) % 360.0
+                self.ang_vel = -self.ang_vel + uniform(-90, 90)
+                bounced = True
+
+        # bord haut entre diagonales
+        elif self.pos_y < margin:
+            self.pos_y = margin
             self.angle_deg = (-self.angle_deg) % 360.0
             self.ang_vel = -self.ang_vel + uniform(-90, 90)
             bounced = True
@@ -264,13 +292,27 @@ class Creature():
         if self.energy < 0:
             self.energy = 0
 
-        # s'assure que la créature reste dans les limites
+        # fait en sorte que la créature reste dans les limites
+        s = w / 638.0
         self.pos_x = min(max(self.pos_x, margin), w - margin)
-        self.pos_y = min(max(self.pos_y, margin), h - margin)
+        # bord bas
+        self.pos_y = min(self.pos_y, h - margin)
+        # diagonale haut-gauche
+        if self.pos_x <= 255 * s:
+            y_lim = 148 * s * (1.0 - self.pos_x / (255 * s)) + margin
+            self.pos_y = max(self.pos_y, y_lim)
+        # diagonale haut-droit
+        elif self.pos_x >= 375 * s:
+            y_lim = (138.0 / 263.0) * (self.pos_x - 375 * s) + margin
+            self.pos_y = max(self.pos_y, y_lim)
+        # haut plat
+        else:
+            self.pos_y = max(self.pos_y, margin)
         self.rect = self.image.get_rect(center=(int(self.pos_x), int(self.pos_y)))
 
         # gere l'animation de le creature
         self.animate((self.angle_deg + 90) % 360)
+
 
     def Baby(self) -> None:
         """
@@ -330,19 +372,25 @@ class Creature():
         # cherche un predateur 
         for i, l in enumerate(settings.creatures_list):
             for j, c in enumerate(l):
-                if math.hypot(self.pos_x - c.pos_x, self.pos_y - c.pos_y) < self.radius:
+                dx = self.pos_x - c.pos_x
+                dy = self.pos_y - c.pos_y
+                if dx*dx + dy*dy < self.radius * self.radius:
                     if self.size + 4 <= c.size:
                         return 'predator', (i, j)
                     
         # cherche de le nourriture
         for i, food in enumerate(settings.food_list):
-            if math.hypot(self.pos_x - food.pos_x, self.pos_y - food.pos_y) < self.radius:
+            dx = self.pos_x - food.pos_x
+            dy = self.pos_y - food.pos_y
+            if dx*dx + dy*dy < self.radius * self.radius:
                 return 'food', (i, None)
 
         # cherche ensuite une créature plus petite à manger
         for i, l in enumerate(settings.creatures_list):
             for j, c in enumerate(l):
-                if math.hypot(self.pos_x - c.pos_x, self.pos_y - c.pos_y) < self.radius:
+                dx = self.pos_x - c.pos_x
+                dy = self.pos_y - c.pos_y
+                if dx*dx + dy*dy < self.radius * self.radius:
                     if self.size - 4 >= c.size:
                         return 'prey', (i, j)
 
