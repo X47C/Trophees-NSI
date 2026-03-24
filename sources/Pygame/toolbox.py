@@ -35,8 +35,7 @@ class Toolbox:
         self.font = pg.font.SysFont(settings.Button_font, 15)
         self.font_small = pg.font.SysFont(settings.Button_font, 13)
 
-        # self.bg_image = pg.image.load('assets/toolbox_bg.png').convert_alpha()
-        self.bg_image = None  # remplacer None par le chemin de l'image
+        self.bg_image = None 
 
         #position du burger en bas à gauche
         bx = 10
