@@ -305,7 +305,6 @@ class Settings:
         self.build_bottom_buttons()
         self.selected_pop = sel
         self.editable_button_set_value()
-<<<<<<< HEAD
         self.refresh_pop_display()
 
 
@@ -435,8 +434,6 @@ class Settings:
         x = (self.width - (2 * w + gap)) // 2
         self.btn_start = Button(Rect(x, y, w, self.btn_h), "Start", self.screen)
         self.btn_back = Button(Rect(x + w + gap, y, w, self.btn_h), "Back", self.screen)
-=======
->>>>>>> 6d29ce92a2cc7784afea1710ebb9b45eb97c3dd3
 
 
     def draw(self):
@@ -605,13 +602,9 @@ class Settings:
         pop = settings.POPULATIONS[self.selected_pop]
         for key, c in self.pop_controls.items():
             if key != "color":
-<<<<<<< HEAD
-                c['value'].set_value(pop[key]) 
-=======
                 if key == 'quantity':
                     c['value'].set_value(max(1, pop[key]))
                 c['value'].set_value(pop[key])
->>>>>>> 6d29ce92a2cc7784afea1710ebb9b45eb97c3dd3
             else:
                 c["value"].text = settings.dico1[pop.get(key, "")]
 
