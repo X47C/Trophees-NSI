@@ -1,6 +1,6 @@
 # Darwined
 
-Simulateur d'évolution simlifiée sur la base de la séléction naturelle, ayant pour objectif d'observer l'évolutions de différentes caractéristiques chez un ou plusieur groupe d'individus dans differentes situations.
+Simulateur d'évolution simlifiée sur la base de la séléction naturelle, ayant pour objectif d'observer l'évolutions de différentes caractéristiques chez un ou plusieurs groupes d'individus dans differentes situations.
 
 ## Pour commencer
 
