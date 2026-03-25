@@ -90,7 +90,7 @@ DEFAULT_POP = {
 }
 
 # valeurs maximales des caractéristiques
-Max_life = 53
+Max_life = 500
 Max_quantity = 100
 Max_caracteristic = 10  # s'applique à size, view et speed
 

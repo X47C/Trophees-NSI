@@ -466,7 +466,10 @@ class Settings:
                             except ValueError: i = 0
                             pop["color"] = cycle[(i - 1) % len(cycle)]
                     elif isinstance(cur, int):
-                        pop[key] = max(0, cur - 1)
+                        if key == 'quantity' : 
+                            pop[key] = max(1, cur - 1)
+                        else :
+                            pop[key] = max(0, cur - 1)
                     self.editable_button_set_value()
                     return None
 
@@ -522,8 +525,8 @@ class Settings:
         """
         Sauvegarde les valeurs saisies dans les boutons éditables vers les settings.
         """
-        if isinstance(settings.editable_butons['day_qtt'].get_number(), int):
-            settings.Days_max = min(settings.Max_days_max, settings.editable_butons['day_qtt'].get_number())
+        if isinstance( settings.editable_butons['day_qtt'].get_number(), int):
+            settings.Days_max =max(1, min(settings.Max_days_max, settings.editable_butons['day_qtt'].get_number()))
             settings.sync_food_quantity()
             settings.editable_butons['day_qtt'].set_value(settings.Days_max)
         else:
