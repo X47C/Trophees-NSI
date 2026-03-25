@@ -28,17 +28,6 @@ Le projet est pour nous actuellement terminé, en tout cas comme nous nous l'ima
 ## Ouverture 
 
 Nous avons plusieurs idées d'amélioration pour le projet. La principale est de rendre les résultats plus exploitables scientifiquements. Pour cela, nous voudrions permettre de rentrer plus de paramètres de départs, plus d'environnements, ou plus d'interactions possibles entre les créatures, par exemple.
-
+Avec du recul, nous trouvons ce projet très satisfaisant. Il manque peut-être légerement de clarté, et les résultats pourraient être plus exploitables scientifiquement.
 Ce projet a également permis de développer nos capacités de travail d'équipe et notre coordination en tant que groupe.
 Nous avons fait en sorte que chaque membre du groupe puisse participer et apporter sa touche personelle au projet.
-
-
-*Vous réalisez un bilan personnel sur ce projet et détaillez l'expérience vécue par chaque membre de l'équipe => compétences évaluées : analyse critique, prise de recul, implication dans le projet.*
-
-Précisez les informations suivantes :
-- idées d'amélioration du projet,
-- analyse critique, 
-- compétences personnelles développées.
-- démarche d'inclusion.
-
-Ceci est un MODELE_PRESENTATION.

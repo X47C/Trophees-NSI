@@ -4,21 +4,25 @@ Simulateur d'évolution simlifiée sur la base de la séléction naturelle, ayan
 
 ## Pour commencer
 
-Entrez ici les instructions pour bien débuter avec votre projet...
+Il est conseillé de regarder le tutoriel affiché lors du premier démarage du jeu, sinon, rien d'autre n'est requis !
 
 ### Pré-requis
 
-Ce qu'il est requis pour commencer avec votre projet...
+Dans le répertoire sources:
 
-- Programme 1
-- Programme 2
-- etc...
+- Pygame/button.py
+- Pygame/food_editor.py
+- Pygame/pygame.py
+- Pygame/toolbox.py
+- Game/creature.py
+- Game/food.py
+- Game/game.py
+- main.py
+- settings.py
 
 ### Installation
 
-Les étapes pour installer votre programme....
-
-Dites ce qu'il faut faire...
+Il faut tout d'abord installer python. Il faut ensuite installer les differentes librairies, à l'aide de la commande "pip install" dans l'invite de commannde.  
 
 ## Démarrage
 
@@ -30,13 +34,12 @@ Pygame, MatplotLib, opencv-python
 
 ## Versions
 
-Pygame 2.6.1, Matplotlib 1.17.0, opencv-python 2.2.3
+python 3.13, Pygame 2.6.1, Matplotlib 1.17.0, opencv-python 2.2.3
 
 ## Auteurs
 
-CROS Cyprien, GRAFFAN Jules, VIGNAUT-QUANTIN Sarah
+CROS Cyprien, GRAFFAN Jules, VIGNAUD-QUANTIN Sarah
 
 ## License
 
-Ce projet est sous licence XXX - voir le fichier LICENSE pour plus d'informations.
-
+Ce projet est sous licence GNU GENERAL PUBLIC LICENSE - voir le fichier LICENSE pour plus d'informations.
