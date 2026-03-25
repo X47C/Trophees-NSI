@@ -78,7 +78,7 @@ def get_available_colors(exclude_pop_index=None):
 # valeurs par défaut pour une population
 DEFAULT_POP = {
     "name": "Population 1",
-    "life": 50,         # durée de vie de la créature sur une journée
+    "life": 10,         # durée de vie de la créature sur une journée
     "color": "blue",
     "quantity": 10,
     "speed_variation": 30,

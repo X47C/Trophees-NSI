@@ -468,6 +468,8 @@ class Settings:
                     elif isinstance(cur, int):
                         if key == 'quantity' : 
                             pop[key] = max(1, cur - 1)
+                        if key == 'life' : 
+                            pop[key] = max(1, cur - 1)
                         else :
                             pop[key] = max(0, cur - 1)
                     self.editable_button_set_value()
@@ -538,7 +540,7 @@ class Settings:
             if key != "color":
                 if isinstance(c['value'].get_number(), int):
                     match key:
-                        case 'life': pop[key] = min(c['value'].get_number(), settings.Max_life); c['value'].set_value(pop[key])
+                        case 'life': pop[key] = max(1, min(c['value'].get_number(), settings.Max_life)); c['value'].set_value(pop[key])
                         case 'quantity': pop[key] = max(1, min(c['value'].get_number(), settings.Max_quantity)); c['value'].set_value(max(1,pop[key]))
                         case 'size' | 'speed' | 'view': pop[key] = min(c['value'].get_number(), settings.Max_caracteristic); c['value'].set_value(pop[key])
                         case 'size_variation' | 'view_variation' | 'speed_variation': pop[key] = min(c['value'].get_number(), 100); c['value'].set_value(pop[key])
