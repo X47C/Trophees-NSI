@@ -75,7 +75,7 @@ class Before_Game:
         """
 
         # chargement de la vidéo
-        cap = cv2.VideoCapture('data/video_test.mp4')
+        cap = cv2.VideoCapture('data/tutorial.mp4')
 
         fps_video = cap.get(cv2.CAP_PROP_FPS) or 30
         clock_tuto = pg.time.Clock()
