@@ -80,7 +80,7 @@ class Creature():
         w, h = settings.Display_size
 
         speed_px_s = float(self.speed) * 15.0
-        margin = 40 + int(self.size)
+        margin = 10 + int(self.size)
 
         # paramètres du mouvement aléatoire
         turn_noise = 450.0
@@ -155,18 +155,18 @@ class Creature():
             bounced = True
 
         # bord bas
-        if self.pos_y > h - margin:
+        elif self.pos_y > h - margin:
             self.pos_y = h - margin
             self.angle_deg = (-self.angle_deg) % 360.0
             self.ang_vel = -self.ang_vel + uniform(-90, 90)
             bounced = True
 
         # diagonal haut-gauche : (0, 148*s) -> (255*s, 0)
-        if self.pos_x <= 255 * s:
+        elif self.pos_x <= 255 * s:
             y_lim = 148 * s * (1.0 - self.pos_x / (255 * s)) + margin
             if self.pos_y < y_lim:
                 self.pos_y = y_lim
-                self.angle_deg = (2 * 60.0 - self.angle_deg) % 360.0
+                self.angle_deg = (- self.angle_deg)
                 self.ang_vel = -self.ang_vel + uniform(-90, 90)
                 bounced = True
 
@@ -175,7 +175,7 @@ class Creature():
             y_lim = (138.0 / 263.0) * (self.pos_x - 375 * s) + margin
             if self.pos_y < y_lim:
                 self.pos_y = y_lim
-                self.angle_deg = (2 * 120.0 - self.angle_deg) % 360.0
+                self.angle_deg = (- self.angle_deg)
                 self.ang_vel = -self.ang_vel + uniform(-90, 90)
                 bounced = True
 
@@ -437,7 +437,7 @@ class Creature():
         """
         permet de charger tout les sprites d'un animation, les renvoie dans une liste
         """
-        path = f'assets/creature/{self.color}/{type}'
+        path = f'data/creature/{self.color}/{type}'
         frames = []
         for i in range(5):
             f = pg.image.load(f'{path}/{i}.png')

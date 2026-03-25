@@ -10,7 +10,8 @@ class Food():
         self.pos_y = y
 
         #affichage
-        self.image = pg.image.load('assets/game/food.png')
+        image = pg.image.load('data/game/food.png')
+        self.image = pg.transform.scale_by(image, (1.5, 1.5))
         self.rect = self.image.get_rect(center=(int(self.pos_x), int(self.pos_y)))
 
 

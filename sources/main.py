@@ -10,7 +10,7 @@ from Pygame.food_editor import food_editor
 pg.init()
 #musique 
 pg.mixer.init()
-pg.mixer.music.load('assets/music.mp3')
+pg.mixer.music.load('data/music.mp3')
 pg.mixer.music.play(-1)  # -1 = boucle infinie
 pg.display.set_caption('Darwined')
 
