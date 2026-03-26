@@ -4,13 +4,16 @@ from Pygame.pygame import Before_Game, Settings, In_Game, Post_Game
 import settings
 from Game.game import Day_Manager
 from Pygame.food_editor import food_editor
+import os
+
+os.chdir(os.path.dirname(os.path.abspath(__file__))) # se placer dans le bon dossier pour être sur que les images soient trouvées
 
 
 # initialisation de pygame
 pg.init()
 #musique 
 pg.mixer.init()
-pg.mixer.music.load('data/music.mp3')
+pg.mixer.music.load('../data/music.mp3')
 pg.mixer.music.play(-1)  # -1 = boucle infinie
 pg.display.set_caption('Darwined')
 

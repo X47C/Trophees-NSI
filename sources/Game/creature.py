@@ -437,7 +437,7 @@ class Creature():
         """
         permet de charger tout les sprites d'un animation, les renvoie dans une liste
         """
-        path = f'data/creature/{self.color}/{type}'
+        path = f'../data/creature/{self.color}/{type}'
         frames = []
         for i in range(5):
             f = pg.image.load(f'{path}/{i}.png')

@@ -25,10 +25,10 @@ class Before_Game:
         self.screen = screen
         
         # images des boutons
-        self.button_start_img = pg.transform.scale(pg.image.load('data/home/start-button.png'), (int(self.width * 0.244), int(self.height * 0.086)))
-        self.button_credits_img = pg.transform.scale(pg.image.load('data/home/credits-button.png'), (int(self.width * 0.167), int(self.height * 0.214)))
-        self.button_exit_img = pg.transform.scale(pg.image.load('data/home/exit-button.png'), (int(self.width * 0.170), int(self.height * 0.094)))
-        self.button_credits_exit_img = pg.transform.scale(pg.image.load('data/home/credits-exit-button.png'), (int(self.width * 0.049), int(self.height * 0.088)))
+        self.button_start_img = pg.transform.scale(pg.image.load('../data/home/start-button.png'), (int(self.width * 0.244), int(self.height * 0.086)))
+        self.button_credits_img = pg.transform.scale(pg.image.load('../data/home/credits-button.png'), (int(self.width * 0.167), int(self.height * 0.214)))
+        self.button_exit_img = pg.transform.scale(pg.image.load('../data/home/exit-button.png'), (int(self.width * 0.170), int(self.height * 0.094)))
+        self.button_credits_exit_img = pg.transform.scale(pg.image.load('../data/home/credits-exit-button.png'), (int(self.width * 0.049), int(self.height * 0.088)))
 
         # boutons
         self.Button_Start = Button(Rect(int(self.width * 0.378), int(self.height * 0.499), int(self.width * 0.244), int(self.height * 0.086)), '', self.screen)
@@ -38,7 +38,7 @@ class Before_Game:
         self.Button_tutorial_pass = Button(Rect(self.width // 2 - 65, self.height // 2 + 50, 130, 50),'Pass', self.screen)
 
 
-        bg_asset = pg.image.load('data/home/background.png')
+        bg_asset = pg.image.load('../data/home/background.png')
         self.bg_asset = pg.transform.scale(bg_asset, settings.Display_size)
         self.Button_font = pg.font.SysFont(settings.Button_font, settings.Button_font_size)
 
@@ -75,7 +75,7 @@ class Before_Game:
         """
 
         # chargement de la vidéo
-        cap = cv2.VideoCapture('data/tutorial.mp4')
+        cap = cv2.VideoCapture('../data/tutorial.mp4')
 
         fps_video = cap.get(cv2.CAP_PROP_FPS) or 30
         clock_tuto = pg.time.Clock()
@@ -147,7 +147,7 @@ class Before_Game:
         Affiche les crédits du jeu
         A modifier avec une image quand on en aura une
         """
-        credits_bg_asset = pg.image.load('data/home/credits-background.png')
+        credits_bg_asset = pg.image.load('../data/home/credits-background.png')
         self.credits_bg_asset = pg.transform.scale(credits_bg_asset, settings.Display_size)
         self.screen.blit(self.credits_bg_asset, (0, 0))
         self.Button_credits_exit.draw(self.screen, self.Button_font, self.button_credits_exit_img)
@@ -164,7 +164,7 @@ class Settings:
         self.width, self.height = settings.Display_size
 
         # fond
-        self.bg_asset = pg.transform.scale(pg.image.load('data/settings/background.png'), settings.Display_size)
+        self.bg_asset = pg.transform.scale(pg.image.load('../data/settings/background.png'), settings.Display_size)
 
         # polices
         self.font_btn = pg.font.SysFont(settings.Button_font, settings.Button_font_size)
@@ -191,15 +191,15 @@ class Settings:
             return pg.transform.scale(pg.image.load(path).convert_alpha(), (int(self.width * w), int(self.height * h)))
 
         # tailles en pourcentage de l'écran (basé sur 1280x720)
-        self.img_food = load('data/settings/generals-buttons/food-button.png', 239/1280, 105/720)
-        self.img_gen_minus = load('data/settings/generals-buttons/minus.png', 52/1280, 51/720)
-        self.img_gen_plus = load('data/settings/generals-buttons/plus.png', 52/1280, 51/720)
-        self.img_gen_btn = load('data/settings/generals-buttons/button.png', 203/1280, 51/720)
-        self.img_pop_add = load('data/settings/generals-buttons/pop+.png', 99/1280, 59/720)
-        self.img_pop_rem = load('data/settings/generals-buttons/pop-.png', 99/1280, 59/720)
-        self.img_pop_off = load('data/settings/generals-buttons/pop-off.png', 52/1280, 51/720)
-        self.img_back = load('data/settings/generals-buttons/back.png', 113/1280, 63/720)
-        self.img_start = load('data/settings/generals-buttons/start.png', 70/1280, 75/720)
+        self.img_food = load('../data/settings/generals-buttons/food-button.png', 239/1280, 105/720)
+        self.img_gen_minus = load('../data/settings/generals-buttons/minus.png', 52/1280, 51/720)
+        self.img_gen_plus = load('../data/settings/generals-buttons/plus.png', 52/1280, 51/720)
+        self.img_gen_btn = load('../data/settings/generals-buttons/button.png', 203/1280, 51/720)
+        self.img_pop_add = load('../data/settings/generals-buttons/pop+.png', 99/1280, 59/720)
+        self.img_pop_rem = load('../data/settings/generals-buttons/pop-.png', 99/1280, 59/720)
+        self.img_pop_off = load('../data/settings/generals-buttons/pop-off.png', 52/1280, 51/720)
+        self.img_back = load('../data/settings/generals-buttons/back.png', 113/1280, 63/720)
+        self.img_start = load('../data/settings/generals-buttons/start.png', 70/1280, 75/720)
 
         self.pop_img_cache = {}
 
@@ -222,10 +222,10 @@ class Settings:
 
         if folder not in self.pop_img_cache:
             def load(name, w, h):
-                path = f'data/settings/population-buttons/{folder}/{name}'
+                path = f'../data/settings/population-buttons/{folder}/{name}'
                 return pg.transform.scale(pg.image.load(path).convert_alpha(), (int(self.width * w), int(self.height * h)))
             def load_general(name, w, h):
-                path = f'data/settings/generals-buttons/{name}'
+                path = f'../data/settings/generals-buttons/{name}'
                 return pg.transform.scale(pg.image.load(path).convert_alpha(), (int(self.width * w), int(self.height * h)))
 
             self.pop_img_cache[folder] = {
@@ -563,7 +563,7 @@ class In_Game:
         self.width, self.height = settings.Display_size
         self.screen = screen
 
-        self.bg_asset = pg.transform.scale(pg.image.load('data/game/background.png'), settings.Display_size)
+        self.bg_asset = pg.transform.scale(pg.image.load('../data/game/background.png'), settings.Display_size)
 
         self.toolbox = Toolbox(screen)
 
@@ -606,9 +606,9 @@ class Post_Game:
         self.current_day = current_day
 
         #images de fond 
-        self.bg_up = pg.transform.scale(pg.image.load('data/post-game/up.png'), (self.width, 360))
-        self.bg_down = pg.transform.scale(pg.image.load('data/post-game/down.png'), (self.width, 360))
-        self.bg_middle = pg.transform.scale(pg.image.load('data/post-game/middle.png'), (self.width, 540))
+        self.bg_up = pg.transform.scale(pg.image.load('../data/post-game/up.png'), (self.width, 360))
+        self.bg_down = pg.transform.scale(pg.image.load('../data/post-game/down.png'), (self.width, 360))
+        self.bg_middle = pg.transform.scale(pg.image.load('../data/post-game/middle.png'), (self.width, 540))
 
         #scrollbar
         self.scroll_y = 0
